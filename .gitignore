@@ -1,0 +1,5 @@
+docs/
+.venv
+node_modules/
+.env
+!.env.example
