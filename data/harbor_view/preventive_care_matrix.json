@@ -1,0 +1,129 @@
+{
+    "preventive_protocol_metadata": {
+        "clinic": "Harbor View Veterinary Clinic",
+        "standard_version": "AAHA-AAFP-2024.2",
+        "jurisdiction": "State Companion Animal Board",
+        "currency": "USD",
+        "note": "Protocols are individualized by the attending veterinarian based on lifestyle risk assessment."
+    },
+    "canine_protocols": {
+        "core_vaccines": [
+            {
+                "vaccine_name": "Rabies (1-Year / 3-Year)",
+                "initial_series_weeks": [16],
+                "booster_cadence_years": 3,
+                "first_booster": "12 months after initial dose",
+                "state_legal_requirement": true,
+                "target_pathogens": ["Rabies Rhabdovirus"]
+            },
+            {
+                "vaccine_name": "DHPP / DA2PP",
+                "initial_series_weeks": [8, 12, 16],
+                "booster_cadence_years": 3,
+                "first_booster": "12 months after final puppy dose",
+                "state_legal_requirement": false,
+                "target_pathogens": ["Distemper", "Adenovirus-2", "Parvovirus", "Parainfluenza"]
+            }
+        ],
+        "non_core_lifestyle_vaccines": [
+            {
+                "vaccine_name": "Bordetella (Oral/Intranasal)",
+                "lifestyle_criteria": "Boarding, grooming, dog daycare, or dog park exposure",
+                "booster_cadence_months": 12
+            },
+            {
+                "vaccine_name": "Leptospirosis (4-Serovar)",
+                "lifestyle_criteria": "Exposure to standing puddle water, wildlife corridors, or rural trails",
+                "initial_series": "2 doses, 3 to 4 weeks apart",
+                "booster_cadence_months": 12
+            },
+            {
+                "vaccine_name": "Canine Influenza (H3N2/H3N8)",
+                "lifestyle_criteria": "Boarding, daycare, shows, or regional outbreak",
+                "initial_series": "2 doses, 2 to 4 weeks apart",
+                "booster_cadence_months": 12
+            },
+            {
+                "vaccine_name": "Lyme Disease",
+                "lifestyle_criteria": "Tick-endemic regions, hiking, or wooded yards",
+                "initial_series": "2 doses, 2 to 4 weeks apart",
+                "booster_cadence_months": 12
+            }
+        ],
+        "parasite_prevention": {
+            "heartworm_screening": "Annual canine antigen SNAP test required prior to refilling preventative",
+            "preventative_schedule": "Monthly year-round oral/topical isoxazoline and macrocyclic lactone",
+            "intestinal_parasites": "Fecal flotation test at least once yearly (twice in puppies and in high-risk dogs); dewormed at 2, 4, 6, and 8 weeks as puppies",
+            "flea_and_tick": "Monthly year-round isoxazoline-class product",
+            "dose_basis": "Weight-based; recalculated at every wellness visit"
+        },
+        "wellness_exam_cadence": {
+            "puppies": "Every 3 to 4 weeks until 16 weeks",
+            "adults_1_to_7_years": "Every 12 months",
+            "seniors_over_7_years": "Every 6 months, with annual bloodwork and urinalysis"
+        }
+    },
+    "feline_protocols": {
+        "core_vaccines": [
+            {
+                "vaccine_name": "Rabies (1-Year / 3-Year)",
+                "initial_series_weeks": [16],
+                "booster_cadence_years": 3,
+                "first_booster": "12 months after initial dose",
+                "state_legal_requirement": true,
+                "target_pathogens": ["Rabies Rhabdovirus"]
+            },
+            {
+                "vaccine_name": "FVRCP",
+                "initial_series_weeks": [8, 12, 16],
+                "booster_cadence_years": 3,
+                "first_booster": "12 months after final kitten dose",
+                "state_legal_requirement": false,
+                "target_pathogens": ["Feline Herpesvirus-1 (Rhinotracheitis)", "Calicivirus", "Panleukopenia"]
+            }
+        ],
+        "non_core_lifestyle_vaccines": [
+            {
+                "vaccine_name": "FeLV (Feline Leukemia Virus)",
+                "lifestyle_criteria": "All kittens under 1 year; adult cats with outdoor access or exposure to unknown cats",
+                "initial_series": "2 doses, 3 to 4 weeks apart",
+                "booster_cadence_months": 12
+            }
+        ],
+        "parasite_prevention": {
+            "heartworm_screening": "Heartworm antigen/antibody screening on a risk basis; monthly preventative recommended year-round",
+            "preventative_schedule": "Monthly year-round topical or oral flea, tick, and heartworm preventive labeled for cats",
+            "intestinal_parasites": "Fecal flotation test at least once yearly; dewormed at 2, 4, 6, and 8 weeks as kittens",
+            "flea_and_tick": "Monthly year-round; cat-specific products only. Dog permethrin products are toxic to cats",
+            "dose_basis": "Weight-based; recalculated at every wellness visit"
+        },
+        "wellness_exam_cadence": {
+            "kittens": "Every 3 to 4 weeks until 16 weeks",
+            "adults_1_to_10_years": "Every 12 months",
+            "seniors_over_10_years": "Every 6 months, with annual bloodwork, urinalysis, and blood pressure"
+        }
+    },
+    "lifestyle_risk_factors": [
+        {
+            "factor": "Indoor-only",
+            "relevant_vaccines": ["Rabies (legally required)", "FVRCP / DHPP"],
+            "rationale": "Bats, wild vectors, and virus carried on shoes and clothing can enter the home."
+        },
+        {
+            "factor": "Boarding, daycare, or grooming",
+            "relevant_vaccines": ["Bordetella", "Canine Influenza"],
+            "rationale": "Airborne respiratory pathogens spread quickly in shared spaces."
+        },
+        {
+            "factor": "Outdoor, hiking, or rural exposure",
+            "relevant_vaccines": ["Leptospirosis", "Lyme", "FeLV"],
+            "rationale": "Wildlife, standing water, and ticks raise exposure."
+        }
+    ],
+    "fever_reference": {
+        "normal_range_f": "100.5-102.5",
+        "normal_range_c": "38.1-39.2",
+        "emergency_threshold_f": 104.0,
+        "emergency_threshold_c": 40.0
+    }
+}

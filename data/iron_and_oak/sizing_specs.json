@@ -1,0 +1,320 @@
+{
+    "sizing_metadata": {
+        "brand": "Iron & Oak Provision Co.",
+        "version": "1.2",
+        "units": "inches",
+        "measurement_disclaimer": "Measurements correspond to garment dimensions, not body measurements. Field Fit accommodates midweight thermal underlayers. Allow +/- 0.5 inch tolerance from hand-cut and hand-sewn production.",
+        "last_updated": "2024-10-15"
+    },
+    "fit_definitions": {
+        "field_fit": {
+            "description": "Relaxed through shoulders and chest with room for movement and layering.",
+            "layering_allowance": "Fits over a thermal base layer and a midweight knit (up to approximately 1 inch of garment ease per layer, 2 inches total)",
+            "recommended_for": [
+                "Timberline Waxed Chore Coat",
+                "Ridgeline Wool Overshirt"
+            ]
+        },
+        "tailored_fit": {
+            "description": "Closer cut through chest and waist for single-layer wear.",
+            "layering_allowance": "Fits over a light shirt or thin base layer only (approximately 1 inch of ease)",
+            "note": "Size up one size to wear over a midweight knit."
+        }
+    },
+    "how_to_measure": {
+        "chest": "Measure around the fullest part of the chest under the arms. Add 3 inches for Field Fit over layers.",
+        "waist": "Measure around the natural waistline where you wear your trousers.",
+        "sleeve": "Measure from the center back of the neck, across the shoulder, to the wrist bone.",
+        "belt": "Measure the waist size of your best-fitting trousers and order 2 inches larger."
+    },
+    "products": [
+        {
+            "sku": "APP-CC-001",
+            "name": "Timberline Waxed Chore Coat",
+            "category": "Outerwear",
+            "fit_profile": "Field Fit (relaxed through shoulders and chest)",
+            "size_matrix": {
+                "XS": {
+                    "chest": 39,
+                    "sleeve": 33.5,
+                    "shoulder": 17.5,
+                    "length": 28.5
+                },
+                "S": {
+                    "chest": 42,
+                    "sleeve": 34.5,
+                    "shoulder": 18.5,
+                    "length": 29
+                },
+                "M": {
+                    "chest": 45,
+                    "sleeve": 35.5,
+                    "shoulder": 19.5,
+                    "length": 30
+                },
+                "L": {
+                    "chest": 48,
+                    "sleeve": 36.5,
+                    "shoulder": 20.5,
+                    "length": 30.5
+                },
+                "XL": {
+                    "chest": 51,
+                    "sleeve": 37.0,
+                    "shoulder": 21.5,
+                    "length": 31
+                },
+                "2XL": {
+                    "chest": 54,
+                    "sleeve": 37.5,
+                    "shoulder": 22.5,
+                    "length": 31.5
+                },
+                "3XL": {
+                    "chest": 57,
+                    "sleeve": 38.0,
+                    "shoulder": 23.5,
+                    "length": 32
+                }
+            },
+            "sku_size_mapping": {
+                "XS": "APP-CC-001-XS",
+                "S": "APP-CC-001-S",
+                "M": "APP-CC-001-M",
+                "L": "APP-CC-001-L",
+                "XL": "APP-CC-001-XL",
+                "2XL": "APP-CC-001-2XL",
+                "3XL": "APP-CC-001-3XL"
+            },
+            "sizing_advice": "Between sizes: size up if layering over a midweight knit."
+        },
+        {
+            "sku": "APP-OS-002",
+            "name": "Ridgeline Heavy Wool Overshirt",
+            "category": "Outerwear",
+            "fit_profile": "Field Fit (relaxed through shoulders and chest)",
+            "size_matrix": {
+                "XS": {
+                    "chest": 37,
+                    "sleeve": 33.0,
+                    "shoulder": 17.0,
+                    "length": 27.0
+                },
+                "S": {
+                    "chest": 40,
+                    "sleeve": 34.0,
+                    "shoulder": 18.0,
+                    "length": 27.5
+                },
+                "M": {
+                    "chest": 43,
+                    "sleeve": 35.0,
+                    "shoulder": 19.0,
+                    "length": 28.5
+                },
+                "L": {
+                    "chest": 46,
+                    "sleeve": 36.0,
+                    "shoulder": 20.0,
+                    "length": 29.0
+                },
+                "XL": {
+                    "chest": 49,
+                    "sleeve": 36.5,
+                    "shoulder": 21.0,
+                    "length": 29.5
+                },
+                "2XL": {
+                    "chest": 52,
+                    "sleeve": 37.0,
+                    "shoulder": 22.0,
+                    "length": 30.0
+                },
+                "3XL": {
+                    "chest": 55,
+                    "sleeve": 37.5,
+                    "shoulder": 23.0,
+                    "length": 30.5
+                }
+            },
+            "sku_size_mapping": {
+                "XS": "APP-OS-002-XS",
+                "S": "APP-OS-002-S",
+                "M": "APP-OS-002-M",
+                "L": "APP-OS-002-L",
+                "XL": "APP-OS-002-XL",
+                "2XL": "APP-OS-002-2XL",
+                "3XL": "APP-OS-002-3XL"
+            },
+            "sizing_advice": "Wool is cut a touch slimmer than the chore coat. Order your usual size if wearing as a mid-layer, or size up to wear over a midweight knit.",
+            "shrinkage_note": "Hand wash cold only. Tumble drying can shrink wool by up to 1 full size."
+        },
+        {
+            "sku": "APP-FP-003",
+            "name": "Trailhand Canvas Field Pants",
+            "category": "Bottoms",
+            "fit_profile": "Field Fit (straight leg, room through seat and thigh)",
+            "size_matrix": {
+                "XS": {
+                    "waist": 30,
+                    "hip": 38,
+                    "front_rise": 11.5,
+                    "thigh": 12.5,
+                    "leg_opening": 8.0,
+                    "inseam_standard": 32,
+                    "waist_size_range": "28-30"
+                },
+                "S": {
+                    "waist": 32,
+                    "hip": 40,
+                    "front_rise": 11.75,
+                    "thigh": 13.0,
+                    "leg_opening": 8.25,
+                    "inseam_standard": 32,
+                    "waist_size_range": "30-32"
+                },
+                "M": {
+                    "waist": 34,
+                    "hip": 42,
+                    "front_rise": 12.0,
+                    "thigh": 13.5,
+                    "leg_opening": 8.5,
+                    "inseam_standard": 32,
+                    "waist_size_range": "32-34"
+                },
+                "L": {
+                    "waist": 36,
+                    "hip": 44,
+                    "front_rise": 12.25,
+                    "thigh": 14.0,
+                    "leg_opening": 8.75,
+                    "inseam_standard": 32,
+                    "waist_size_range": "34-36"
+                },
+                "XL": {
+                    "waist": 38,
+                    "hip": 46,
+                    "front_rise": 12.5,
+                    "thigh": 14.5,
+                    "leg_opening": 9.0,
+                    "inseam_standard": 32,
+                    "waist_size_range": "36-38"
+                },
+                "2XL": {
+                    "waist": 40,
+                    "hip": 48,
+                    "front_rise": 12.75,
+                    "thigh": 15.0,
+                    "leg_opening": 9.25,
+                    "inseam_standard": 32,
+                    "waist_size_range": "38-40"
+                },
+                "3XL": {
+                    "waist": 42,
+                    "hip": 50,
+                    "front_rise": 13.0,
+                    "thigh": 15.5,
+                    "leg_opening": 9.5,
+                    "inseam_standard": 32,
+                    "waist_size_range": "40-42"
+                }
+            },
+            "available_inseams": [
+                30,
+                32,
+                34
+            ],
+            "sku_size_mapping": {
+                "XS": "APP-FP-003-XS",
+                "S": "APP-FP-003-S",
+                "M": "APP-FP-003-M",
+                "L": "APP-FP-003-L",
+                "XL": "APP-FP-003-XL",
+                "2XL": "APP-FP-003-2XL",
+                "3XL": "APP-FP-003-3XL"
+            },
+            "sizing_advice": "Order your trouser waist size. Canvas relaxes about 0.5 inch after the first 2 weeks of wear."
+        },
+        {
+            "sku": "LTH-BLT-004",
+            "name": "Standard Field Belt (1.5 Inch)",
+            "category": "Leather Accessories",
+            "fit_profile": "Order 2 inches above standard trouser waist size",
+            "size_matrix": {
+                "30": {
+                    "center_hole_length": 32,
+                    "total_length": 37,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                },
+                "32": {
+                    "center_hole_length": 34,
+                    "total_length": 39,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                },
+                "34": {
+                    "center_hole_length": 36,
+                    "total_length": 41,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                },
+                "36": {
+                    "center_hole_length": 38,
+                    "total_length": 43,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                },
+                "38": {
+                    "center_hole_length": 40,
+                    "total_length": 45,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                },
+                "40": {
+                    "center_hole_length": 42,
+                    "total_length": 47,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                },
+                "42": {
+                    "center_hole_length": 44,
+                    "total_length": 49,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                },
+                "44": {
+                    "center_hole_length": 46,
+                    "total_length": 51,
+                    "width": 1.5,
+                    "hole_count": 5,
+                    "adjustment_range": "+/- 2 inches from center hole"
+                }
+            },
+            "sku_size_mapping": {
+                "30": "LTH-BLT-004-30",
+                "32": "LTH-BLT-004-32",
+                "34": "LTH-BLT-004-34",
+                "36": "LTH-BLT-004-36",
+                "38": "LTH-BLT-004-38",
+                "40": "LTH-BLT-004-40",
+                "42": "LTH-BLT-004-42",
+                "44": "LTH-BLT-004-44"
+            },
+            "sizing_advice": "If you wear a 34-inch trouser, order a size 36 belt, so the buckle tongue fastens at the center hole."
+        }
+    ],
+    "custom_tailoring_disclaimer": {
+        "sleeve_hem_requests": "Custom sleeve hemming is available on request on outerwear, in 0.5 inch increments, up to 3 inches shorter.",
+        "impact_on_returns": "Items with altered sleeve hems are final sale and excluded from the 45-day field trial return window.",
+        "lead_time_days": "Add 5 to 7 business days to standard order processing."
+    },
+    "boot_footbed_notes": "Iron & Oak footbed sizing follows US men's sizing. If between half sizes, size up and wear a midweight wool sock. Order the width you normally wear."
+}
