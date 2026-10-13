@@ -1,0 +1,198 @@
+{
+    "knowledgebase_metadata": {
+        "company": "Iron & Oak Provision Co.",
+        "system_id": "KB-IO-2024-V1",
+        "total_entries": 26,
+        "categories": [
+            "Warranty & Repair",
+            "Product & Materials",
+            "Sizing & Fit",
+            "Orders & Shipping",
+            "Wholesale & B2B"
+        ]
+    },
+    "faqs": [
+        {
+            "id": "FAQ-REP-001",
+            "category": "Warranty & Repair",
+            "question": "What is covered under the Iron & Oak Heritage Guarantee?",
+            "answer": "Our Heritage Guarantee covers structural failures, blown seams, detached rivets, zipper teeth failure, and broken brass hardware resulting from regular field use for the lifetime of the product. It excludes aesthetic patina, deliberate abuse, pet damage, and unauthorized third-party alterations.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-REP-002",
+            "category": "Warranty & Repair",
+            "question": "How do I submit a repair?",
+            "answer": "Five steps. Submit clear photos through the customer intake portal, receive your RMA number within 24 hours, ship the gear to our bench workshop, wait 10 to 14 business days for repair, and we return it with complimentary ground shipping. Don't wash the item first.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-REP-003",
+            "category": "Warranty & Repair",
+            "question": "Who pays for shipping on a repair?",
+            "answer": "You cover the incoming shipping to our workshop. We cover repair labor, materials, and return ground shipping. Expedited return shipping is available at carrier rates.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-REP-004",
+            "category": "Warranty & Repair",
+            "question": "How long does a repair take?",
+            "answer": "The average repair cycle is 10 to 14 business days from when the item arrives at our bench. From October through December it can run up to 5 business days longer. You get an email when we receive it, start the repair, and ship it back.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-REP-005",
+            "category": "Warranty & Repair",
+            "question": "My coat is damaged beyond repair. What are my options?",
+            "answer": "When structural repair would compromise safety or integrity, you receive a 40% trade-in credit toward a replacement item, valid for 12 months. A bench craftsperson makes the repair-versus-replace call and we explain it with photos.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-REP-006",
+            "category": "Warranty & Repair",
+            "question": "Is a repair that isn't covered by the guarantee still possible?",
+            "answer": "Yes. We quote the work before we start and you approve it or we send the item back unrepaired. Typical prices run $15 to $30 for a seam re-stitch and $45 to $75 for a zipper replacement. The quote is binding for 30 days.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MAT-001",
+            "category": "Product & Materials",
+            "question": "What are your products made from?",
+            "answer": "Heavy-gauge organic waxed cotton canvas, full-grain vegetable-tanned leather from domestic American hides, and solid brass hardware from certified conflict-free sources. We use exposed stress points and modular seams so the gear can be serviced for decades.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MAT-002",
+            "category": "Product & Materials",
+            "question": "Is waxed canvas waterproof?",
+            "answer": "Water resistant, not waterproof. Waxed canvas sheds rain and snow well, but a sustained downpour will eventually soak through. Rewax once a year, or when water stops beading, to keep it shedding water.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MAT-003",
+            "category": "Product & Materials",
+            "question": "How often should I condition my leather?",
+            "answer": "Every 6 months with natural beeswax or neatsfoot oil balm. In dry climates, every 3 to 4 months. Use a dime-sized amount, work it in with a clean cloth, wait 12 hours, and buff off the excess. Don't over-oil.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MAT-004",
+            "category": "Product & Materials",
+            "question": "Can I machine wash my waxed canvas coat?",
+            "answer": "No. Machine washing or heat drying strips the wax and ruins the water resistance. Brush off dry mud, spot clean with cold water and a soft brush, and air dry. If you already washed it, you can rewax it.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MAT-005",
+            "category": "Product & Materials",
+            "question": "How do I rewax my coat?",
+            "answer": "Clean the canvas with cold water and a soft brush, then let it dry. Rub a paraffin/beeswax bar over the weave in circular motions, then melt it in with a hairdryer on medium or a heat gun on low, held 4 to 6 inches away. Cure it in a cool, dry place for 24 hours.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MAT-006",
+            "category": "Product & Materials",
+            "question": "My leather got soaked. What do I do?",
+            "answer": "Blot it with a towel and dry it slowly at room temperature for 24 to 48 hours, away from heat and direct sun. Never use a radiator, stove, or hair dryer. Once dry, condition it. Heat-damaged leather cracks and is not covered by the guarantee.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SIZ-001",
+            "category": "Sizing & Fit",
+            "question": "How should I select the right belt size?",
+            "answer": "We recommend ordering your belt two inches larger than your standard pant waist size (e.g., if you wear a 34-inch trouser, order a size 36 belt). This ensures the buckle tongue fastens at the center hole of the five sizing holes.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SIZ-002",
+            "category": "Sizing & Fit",
+            "question": "What is Field Fit?",
+            "answer": "Field Fit is relaxed through the shoulders and chest so you can wear a thermal base layer and a midweight knit underneath. Garment measurements are listed in inches in our sizing chart, so compare them to a coat that fits you well.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SIZ-003",
+            "category": "Sizing & Fit",
+            "question": "What are the chest measurements for the Timberline Waxed Chore Coat?",
+            "answer": "Garment chest measurements are S 42 in., M 45 in., L 48 in., XL 51 in., and the range extends from XS (39 in.) to 3XL (57 in.). Sleeve lengths run from 33.5 in. in XS to 38 in. in 3XL.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SIZ-004",
+            "category": "Sizing & Fit",
+            "question": "Will my wool overshirt shrink?",
+            "answer": "It can if it's tumble dried. Hand wash cold (under 86°F / 30°C) with wool detergent and dry flat. Heat shrinks wool by up to a full size.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SIZ-005",
+            "category": "Sizing & Fit",
+            "question": "Can I get my sleeves hemmed, and can I return a hemmed coat?",
+            "answer": "Custom sleeve hemming is available in 0.5 inch increments, up to 3 inches shorter, and adds 5 to 7 business days. Altered items are final sale and excluded from the 45-day return window, so be sure of your measurements first.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ORD-001",
+            "category": "Orders & Shipping",
+            "question": "How long does shipping take?",
+            "answer": "Standard ground is 3 to 7 business days, free over $150.00 and $9.95 otherwise. Expedited 2-day is $24.95 and overnight is $39.95. Orders placed before 2:00 PM Mountain, Monday through Friday, ship the same or next business day.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ORD-002",
+            "category": "Orders & Shipping",
+            "question": "What is your return policy?",
+            "answer": "A 45-day field trial. Return unwashed items in original condition with tags attached for a full refund to your original payment method. There are no restocking fees, and inspections are done within 3 business days of receipt. Domestic return shipping is $7.95 deducted from the refund, except for exchanges and defects.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ORD-003",
+            "category": "Orders & Shipping",
+            "question": "How do I exchange for a different size?",
+            "answer": "Start the exchange in the customer portal. A prepaid digital label is generated automatically for domestic size and color exchanges. Your first exchange per item is free.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ORD-004",
+            "category": "Orders & Shipping",
+            "question": "Which items can't be returned?",
+            "answer": "Custom monogrammed leather goods, altered sleeve hems, factory seconds, archived sale batches marked Final Sale, and gift cards. These are still covered by the Heritage Guarantee for defects.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ORD-005",
+            "category": "Orders & Shipping",
+            "question": "My package arrived damaged or with the wrong item.",
+            "answer": "Contact us within 14 days of delivery with photos. We ship a replacement or refund in full with free return shipping.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-WHO-001",
+            "category": "Wholesale & B2B",
+            "question": "Can we deboss our company logo onto wholesale leather field notebooks?",
+            "answer": "Yes. We offer custom hot-stamp debossing on orders meeting our Tier 1 MOQ of 25 units. A one-time $150 brass die tooling fee applies, and artwork must be supplied as a vectorized PDF or AI file.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WHO-002",
+            "category": "Wholesale & B2B",
+            "question": "What are your wholesale tiers and discounts?",
+            "answer": "Tier 1 is 25 to 99 units at 40% off MSRP. Tier 2 is 100 to 499 units at 48% off. Tier 3 is 500 or more units at 55% off. Mixed SKUs count toward the tier.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WHO-003",
+            "category": "Wholesale & B2B",
+            "question": "What payment terms and lead times do you offer for commercial accounts?",
+            "answer": "Net-30 terms after an approved credit evaluation, with a 50% deposit required on custom co-branded batches. Standard manufacturing lead time is 4 to 6 weeks from deposit or PO approval.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WHO-004",
+            "category": "Wholesale & B2B",
+            "question": "Do you handle corporate gifting and tax-exempt purchases?",
+            "answer": "Yes, for orders of 25 or more units. Tax-exempt buyers must provide a valid certificate before invoicing. Your account manager will help with gift packaging and delivery schedules.",
+            "escalate_to_human": true
+        }
+    ]
+}

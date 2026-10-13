@@ -1,0 +1,191 @@
+{
+    "knowledgebase_metadata": {
+        "company": "Kettle & Loom Cleaning Collective",
+        "system_id": "KB-KL-2024-V1",
+        "total_entries": 25,
+        "categories": [
+            "Chemical Safety & Eco-Standards",
+            "Property Access & Security",
+            "Booking & Cancellations",
+            "Scope of Services",
+            "Post-Construction Services"
+        ]
+    },
+    "faqs": [
+        {
+            "id": "FAQ-ECO-001",
+            "category": "Chemical Safety & Eco-Standards",
+            "question": "Are your cleaning products safe for homes with infants and pets?",
+            "answer": "Our products are zero-VOC, plant- or mineral-derived, and EPA Design for the Environment (DfE) and Green Seal certified. Our hospital-grade disinfectant uses 0.05% thymol, a thyme extract, and kills 99.99% of bacteria and enveloped viruses on a 10-minute wet dwell. Botanical does not mean harmless, so we ask that pets and infants stay out of a room until surfaces dry.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ECO-002",
+            "category": "Chemical Safety & Eco-Standards",
+            "question": "What ingredients do you use?",
+            "answer": "Bio-Shield Disinfectant uses 0.05% thymol, OxyPure uses stabilized 3% hydrogen peroxide, Citrus-Loom Descaler uses 8% food-grade citric acid, and PureLoom Floor Wash is a saponified coconut and olive oil soap. We provide Safety Data Sheets for every product on request.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ECO-003",
+            "category": "Chemical Safety & Eco-Standards",
+            "question": "Why do you leave disinfectant wet for 10 minutes?",
+            "answer": "Disinfectants only work if the surface stays visibly wet for the product's full contact time. For Bio-Shield that is 10 minutes. Wiping sooner reduces how many germs are killed. OxyPure needs 3 minutes and Citrus-Loom needs 5 minutes.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ECO-004",
+            "category": "Chemical Safety & Eco-Standards",
+            "question": "I have a fragrance sensitivity or asthma. Can you adjust?",
+            "answer": "Yes. We record fragrance sensitivities, pets, and dust allergies during the walkthrough and can go fully unscented. Tell us when you book and we will note it in your property profile.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ECO-005",
+            "category": "Chemical Safety & Eco-Standards",
+            "question": "A cleaning product got in my eye. What should I do?",
+            "answer": "Flush your eye with clean water for 10 minutes with the eyelid held open, remove contact lenses if you can, and seek medical attention if irritation persists. For ingestion, rinse the mouth and call Poison Control at 1-800-222-1222. Then contact us so we can provide the SDS and file an incident report.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-ACC-001",
+            "category": "Property Access & Security",
+            "question": "Do I need to be home when the cleaning collective arrives?",
+            "answer": "No. Most residential and commercial clients provide a smart lock code or lockbox key. Our technicians arrive within the designated arrival window, complete the service scope, re-secure all windows and doors, and set the security alarm upon departure.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ACC-002",
+            "category": "Property Access & Security",
+            "question": "How do you handle my keys and door codes?",
+            "answer": "A smart lock with a unique service PIN is preferred. If you use physical keys, they stay in an on-site lockbox, and technicians never carry permanent property keys off-site. Alarm and access codes are stored in encrypted profiles.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ACC-003",
+            "category": "Property Access & Security",
+            "question": "What if the alarm goes off during a visit?",
+            "answer": "The technician calls you and your alarm company within 5 minutes and gives the verbal passcode. False alarm dispatch fees caused by an incorrect code supplied by the client are the client's responsibility, so please keep your codes current.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ACC-004",
+            "category": "Property Access & Security",
+            "question": "Do I need to put my dog away during cleaning?",
+            "answer": "Yes. For technician safety and to prevent pets from darting out exterior doors, dogs and cats must be secured in a designated room or crate, unless we've confirmed other arrangements in writing. A technician may decline to enter if a dog is not secured, and the visit is treated as a lockout.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ACC-005",
+            "category": "Property Access & Security",
+            "question": "Something in my home was damaged during a cleaning. What now?",
+            "answer": "Report it within 24 hours with photos. We maintain liability insurance and bonding, and claims are reviewed within 5 business days. We will compare against the pre-existing condition photos taken at your walkthrough.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-CAN-001",
+            "category": "Booking & Cancellations",
+            "question": "What happens if I need to cancel my cleaning appointment tomorrow?",
+            "answer": "Appointments canceled with less than 24 hours notice are subject to a 100% service fee charge because our collective members are paid for their booked time. If canceled between 24 and 48 hours in advance, a $50 administrative fee applies. Cancellations with over 48 hours notice are completely free.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-CAN-002",
+            "category": "Booking & Cancellations",
+            "question": "What is a lockout and what does it cost?",
+            "answer": "A lockout means we can't enter within 20 minutes of the start of the arrival window, for example because of a wrong code or a missing key. It is billed at 100% of the scheduled service fee.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-CAN-003",
+            "category": "Booking & Cancellations",
+            "question": "Do I have to pay an initial deep clean?",
+            "answer": "Yes, all recurring contracts start with a foundational Initial Deep Clean. It removes buildup, limescale, and synthetic wax residue from earlier cleaners, and typically takes 2.0 to 2.5 times a regular visit. It is quoted as a fixed price during your walkthrough.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-CAN-004",
+            "category": "Booking & Cancellations",
+            "question": "How do you price a cleaning?",
+            "answer": "Estimates use our scope matrix and a base rate of $55.00 per technician-hour. Maintenance cleans take about 75 minutes per 1,000 sq ft, short-term rental turnovers about 110 minutes, and commercial offices about 45 minutes. You receive a fixed-price proposal after your 30-minute walkthrough.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-CAN-005",
+            "category": "Booking & Cancellations",
+            "question": "What if bad weather stops the technicians from arriving?",
+            "answer": "If unsafe travel conditions or a documented emergency prevent service, we reschedule at no charge.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SCP-001",
+            "category": "Scope of Services",
+            "question": "Do you clean unsealed marble or antique wood furniture?",
+            "answer": "During your initial walkthrough, our team maps all sensitive surfaces. We use pH-neutral saponified soap washes for hardwood and unsealed stone. We strictly prohibit the use of acidic descalers on marble, limestone, or terrazzo to prevent etching.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SCP-002",
+            "category": "Scope of Services",
+            "question": "What does a standard residential clean include?",
+            "answer": "Kitchen: cabinet faces, countertops, stainless exteriors, sink, and floors. Bathrooms: grout, tubs, toilets, mirrors, and fixtures. Plus dusting, HEPA vacuuming, and damp mopping in living areas and bedrooms. Interior ovens, refrigerators, and cabinets are add-ons.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SCP-003",
+            "category": "Scope of Services",
+            "question": "Do you clean short-term rentals between guests?",
+            "answer": "Yes. Our turnover service takes about 110 minutes per 1,000 sq ft per technician and includes laundering linens with hypoallergenic wash, hotel-standard bed making, restocking amenities, sanitizing high-touch surfaces, and checking for left-behind property, with photos sent when finished.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SCP-004",
+            "category": "Scope of Services",
+            "question": "Is there anything you won't clean?",
+            "answer": "We do not handle biohazards, mold remediation, or asbestos and lead abatement, and we don't move furniture over 50 lb. We also do not use acid on unsealed natural stone.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SCP-005",
+            "category": "Scope of Services",
+            "question": "Do you provide commercial office cleaning?",
+            "answer": "Yes. Nightly, 3x weekly, or weekly service covering workstations, restrooms, break rooms, and common areas, at about 45 minutes per 1,000 sq ft per technician. Our technicians are W-2 employees of the cooperative, so you see the same familiar faces.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-PST-001",
+            "category": "Post-Construction Services",
+            "question": "Why does post-construction cleaning require multiple passes?",
+            "answer": "Drywall and sawdust particles remain suspended in the air for up to 48 hours after construction wraps up. We utilize certified 0.3-micron HEPA vacuums and a structured three-phase process (rough pass, deep vacuum, damp microfiber sparkle wipe) to prevent settling dust from coating surfaces after cleaning.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-PST-002",
+            "category": "Post-Construction Services",
+            "question": "What is a HEPA vacuum and why do you use one?",
+            "answer": "A certified HEPA vacuum captures 99.97% of particles down to 0.3 microns. Household vacuums blow fine drywall dust back into the air, whereas HEPA machines trap it.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-PST-003",
+            "category": "Post-Construction Services",
+            "question": "How long does a post-construction clean take?",
+            "answer": "About 240 technician-minutes per 1,000 sq ft across all three phases. That is roughly 20% rough debris, 40% HEPA vacuuming, and 40% wet microfiber. A 2,000 sq ft home takes about 8 technician-hours, spread over two visits so dust can settle.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-PST-004",
+            "category": "Post-Construction Services",
+            "question": "Can you clean up silica dust from cutting tile or concrete?",
+            "answer": "We use wet methods and HEPA only, with proper respirators, and never dry sweep. Large silica contamination or suspected asbestos or lead should be assessed by a certified abatement contractor, so please call us before work begins.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-PST-005",
+            "category": "Post-Construction Services",
+            "question": "Dust came back a few days after you cleaned. Can you return?",
+            "answer": "Fine dust can resettle for several days after finishing. We offer a touch-up visit within 7 days of the final clean, and will walk the punch list with you or your contractor within 48 hours.",
+            "escalate_to_human": true
+        }
+    ]
+}

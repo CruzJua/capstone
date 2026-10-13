@@ -1,0 +1,191 @@
+{
+    "knowledgebase_metadata": {
+        "company": "NorthStar Auto Care",
+        "system_id": "KB-NSA-2024-V1",
+        "total_entries": 25,
+        "categories": [
+            "Diagnostics & Estimates",
+            "Warranty & Guarantees",
+            "Fleet Services",
+            "Routine Maintenance",
+            "Appointments & Loaners"
+        ]
+    },
+    "faqs": [
+        {
+            "id": "FAQ-DIAG-001",
+            "category": "Diagnostics & Estimates",
+            "question": "How much does a check engine light diagnosis cost?",
+            "answer": "Our comprehensive diagnostic fee is $145.00, which includes computerized OBD-II telemetry scan, circuit testing, and up to one hour of hands-on mechanical triage. If you approve the recommended repair with us, 100% of the $145.00 diagnostic fee is credited directly toward your repair labor.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-DIAG-002",
+            "category": "Diagnostics & Estimates",
+            "question": "What do the Green, Yellow, and Red ratings on my inspection mean?",
+            "answer": "Every vehicle gets a 40-point digital inspection with photos. GREEN means the part is within specification. YELLOW means moderate wear, such as brake pads at 4 to 5 mm, so keep an eye on it before your next service. RED means a safety or drivability risk, such as brake pads below 2 mm, a torn CV boot, or a pressurized coolant leak, and needs prompt repair.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-DIAG-003",
+            "category": "Diagnostics & Estimates",
+            "question": "Will you start work before I approve the estimate?",
+            "answer": "No. Estimates are sent by SMS and email with inspection photos, and you approve or decline each line item individually. No repair work begins without a digital or written signature.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-DIAG-004",
+            "category": "Diagnostics & Estimates",
+            "question": "What happens if you find more problems after taking my car apart?",
+            "answer": "Work stops immediately and we send a supplement estimate by SMS with photos. You must approve it separately before we continue. The final bill will not exceed the authorized total by more than 10% or $50.00, whichever is less, without a new approval.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-DIAG-005",
+            "category": "Diagnostics & Estimates",
+            "question": "Can I bring my own parts for you to install?",
+            "answer": "To uphold our strict safety standards and back our work with our 24-month/24,000-mile nationwide warranty, we do not install customer-supplied parts. All components are sourced directly through certified OEM dealer networks or premium Tier-1 manufacturers.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-DIAG-006",
+            "category": "Diagnostics & Estimates",
+            "question": "Can I keep the parts you replace?",
+            "answer": "Yes. Ask when you authorize the work and we'll bag and tag them. Exchange items with a core charge, like alternators and starters, can be inspected on-site, but they must be returned to the distributor.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WAR-001",
+            "category": "Warranty & Guarantees",
+            "question": "What is covered under the NorthStar Peace of Mind Warranty?",
+            "answer": "Our warranty covers parts and labor on qualifying mechanical repairs for 24 months or 24,000 miles, whichever comes first. It is honored at over 35,000 certified facilities nationwide. It excludes customer-supplied parts, routine friction wear (wiper blades, brake pads), commercial severe-duty abuse, racing, and failures from skipped routine fluid maintenance.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WAR-002",
+            "category": "Warranty & Guarantees",
+            "question": "A part you replaced failed while I'm traveling. What should I do?",
+            "answer": "Call us or the nationwide warranty hotline before authorizing any repair, and have your invoice number ready. If you are at a participating facility, they diagnose the failure, and a covered repair costs you $0 for parts and labor.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-WAR-003",
+            "category": "Warranty & Guarantees",
+            "question": "Are brake pads covered under warranty?",
+            "answer": "A defect in a part or in our installation is covered, but normal friction wear is not. If pads fail early because of a defect or poor installation, we fix them. Pads that simply wear down with normal use are excluded.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WAR-004",
+            "category": "Warranty & Guarantees",
+            "question": "Does the warranty cover towing or a rental car?",
+            "answer": "No. The warranty covers the repaired part and labor, and not towing, rentals, lost time, or consequential damage, except where state law requires otherwise.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WAR-005",
+            "category": "Warranty & Guarantees",
+            "question": "Do I need to keep service records to keep my warranty valid?",
+            "answer": "Yes. Keep your invoice and records of routine fluid maintenance such as oil and coolant changes. A failure caused by skipped routine maintenance is excluded.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-FLT-001",
+            "category": "Fleet Services",
+            "question": "How do after-hours drop-offs work for commercial fleet vehicles?",
+            "answer": "Park your vehicle in our secure Fleet North Lot stalls, complete the Fleet Work Order envelope with your fleet unit number, odometer, and driver notes, and place the key in the tamper-evident dual-locking drop safe at the Bay 1 exterior wall. Our early-shift dispatch team logs all vehicles at 6:30 AM for priority triage.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-FLT-002",
+            "category": "Fleet Services",
+            "question": "How fast will you turn around my fleet vehicles?",
+            "answer": "Preventative maintenance (PM Tier 1) is same-day, under 4 hours, for drop-offs before 8:30 AM. Minor repairs such as brakes, alternators, and starters have a 24-hour window. Major drivetrain overhauls get a dedicated bay and a daily status update.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-FLT-003",
+            "category": "Fleet Services",
+            "question": "Can I pre-authorize repairs so my drivers don't wait?",
+            "answer": "Yes. Fleet managers set a pre-authorized repair limit per vehicle, per visit. The standard limit is $350.00, and it can be raised in writing for approved accounts. Repairs over the limit need written authorization.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-FLT-004",
+            "category": "Fleet Services",
+            "question": "What are your billing terms for commercial accounts?",
+            "answer": "Net-30 invoicing after a credit review. Consolidated monthly statements are itemized by VIN and your internal fleet unit ID, and issue on the first business day of each month.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-FLT-005",
+            "category": "Fleet Services",
+            "question": "Do you service heavy-duty trucks?",
+            "answer": "We service commercial light fleets, such as vans and light trucks. Vehicles above 14,000 lb GVWR are outside our standard scope, so please call us to discuss your unit.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-MNT-001",
+            "category": "Routine Maintenance",
+            "question": "How often should I change my oil?",
+            "answer": "Every 5,000 miles or 6 months with a full synthetic oil that meets API SP / ILSAC GF-6 (0W-20 or 5W-30, per your owner's manual). Our Tier 1 service includes the oil and OEM filter, a tire rotation, a brake measurement, and a 40-point inspection for $89.95.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MNT-002",
+            "category": "Routine Maintenance",
+            "question": "What happens at the 30,000-mile service?",
+            "answer": "Tier 3 includes a full synthetic oil change, a DOT 4 brake fluid exchange, engine and cabin air filters, a cooling system freeze-point and pH audit, and a battery CCA conductance test. It takes about 2.5 labor hours and the base package is $349.50.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MNT-003",
+            "category": "Routine Maintenance",
+            "question": "How do you test whether my battery will survive winter?",
+            "answer": "We use a conductance tester that compares the battery's output with its rated cold cranking amps (CCA). Batteries that test below 70% of rated CCA are flagged for replacement. Batteries can lose up to 50% of their cranking power below 32°F (0°C).",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MNT-004",
+            "category": "Routine Maintenance",
+            "question": "What coolant mix protects against freezing?",
+            "answer": "A 50/50 mix of ethylene glycol and deionized water protects to -34°F (-37°C). We check it with a hydrometer. Richer than about 70% glycol actually freezes at a higher temperature, so more is not better. Don't mix different coolant types.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-MNT-005",
+            "category": "Routine Maintenance",
+            "question": "How much tread do my tires need in winter?",
+            "answer": "At least 4/32 inch for snow traction, even though the legal minimum is 2/32 inch. All-season rubber also hardens below 45°F (7°C), so dedicated winter tires are recommended for sub-freezing driving.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-APPT-001",
+            "category": "Appointments & Loaners",
+            "question": "Do you offer loaner vehicles or shuttle services while my car is being serviced?",
+            "answer": "Yes. We offer complimentary local shuttle rides within a 10-mile radius. For repairs exceeding $600 or taking longer than 24 hours, complimentary courtesy loaner cars are available upon reservation request (subject to driver license and insurance verification).",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-APPT-002",
+            "category": "Appointments & Loaners",
+            "question": "How do I book a service appointment?",
+            "answer": "Call us or book online. Drop-offs before 8:30 AM give the best chance for same-day service on routine maintenance. For major repairs, we recommend booking a diagnostic first.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-APPT-003",
+            "category": "Appointments & Loaners",
+            "question": "Can I drop my car off when you are closed?",
+            "answer": "Yes. Park in a designated stall, fill out a work order envelope with your name, phone, odometer reading, and a description of the problem, and put the key in the night drop safe at Bay 1. We log your car in the next morning at 6:30 AM, and a service advisor texts you.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-APPT-004",
+            "category": "Appointments & Loaners",
+            "question": "My car was damaged while at your shop. What do I do?",
+            "answer": "Please tell us right away, ideally before leaving the lot, or within 24 hours, and bring photos. A manager reviews every damage report and will contact you.",
+            "escalate_to_human": true
+        }
+    ]
+}

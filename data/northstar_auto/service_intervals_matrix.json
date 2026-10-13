@@ -1,0 +1,274 @@
+{
+    "maintenance_matrix_metadata": {
+        "shop": "NorthStar Auto Care",
+        "standard_version": "2024.1",
+        "labor_rate_standard_hourly": 145.0,
+        "currency": "USD",
+        "mileage_units": "miles",
+        "note": "Intervals are baselines. The manufacturer's published schedule takes priority. Whichever of mileage or months occurs first triggers service. Package costs exclude tax and any repairs found during inspection."
+    },
+    "fluid_standards": {
+        "engine_oil": {
+            "spec": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+            "change_interval_miles": "5,000 to 7,500 (severe duty: 3,500 to 5,000)"
+        },
+        "brake_fluid": {
+            "spec": "DOT 4",
+            "dry_boiling_point_f": 446,
+            "dry_boiling_point_c": 230,
+            "wet_boiling_point_f": 311,
+            "wet_boiling_point_c": 155,
+            "replace_interval_months": 24,
+            "note": "Replace if moisture exceeds 3%. Do not mix with DOT 5 silicone fluid."
+        },
+        "coolant": {
+            "spec": "OAT / HOAT Extended Life",
+            "mix": "50/50 with deionized water",
+            "freeze_protection_f": -34,
+            "freeze_protection_c": -37,
+            "replace_interval_miles": "30,000 to 60,000 (per OEM)",
+            "note": "Never mix coolant types."
+        }
+    },
+    "dvi_color_codes": {
+        "GREEN": "Pass",
+        "YELLOW": "Future attention",
+        "RED": "Immediate safety risk"
+    },
+    "service_intervals": [
+        {
+            "mileage_threshold": 5000,
+            "interval_name": "Tier 1: Minor Lube & Safety Triage",
+            "recurrence_months": 6,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Brake system digital caliper measurement (pad thickness in mm)",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)"
+            },
+            "estimated_labor_hours": 0.8,
+            "base_package_cost": 89.95
+        },
+        {
+            "mileage_threshold": 15000,
+            "interval_name": "Tier 2: Filters & Brake Service Check",
+            "recurrence_months": 12,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report",
+                "Engine air intake filter replacement",
+                "Cabin micro-dust filter replacement",
+                "Brake pad and rotor measurement with caliper (pad thickness in mm)",
+                "Battery terminal cleaning and conductance check"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+                "washer_fluid": "-20°F (-29°C) rated winter blend in cold months"
+            },
+            "estimated_labor_hours": 1.4,
+            "base_package_cost": 189.95
+        },
+        {
+            "mileage_threshold": 30000,
+            "interval_name": "Tier 3: Intermediate Powertrain & Fluid Flush",
+            "recurrence_months": 24,
+            "included_operations": [
+                "Full synthetic engine oil exchange and filter",
+                "Brake hydraulic fluid exchange (DOT 4 pressure bleed)",
+                "Engine air intake filter and cabin micro-dust filter replacement",
+                "Cooling system chemical freeze-point and pH titration audit",
+                "Battery Cold Cranking Amps (CCA) conductance diagnostic"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+                "brake_fluid": "DOT 4 High Boiling Point Synthetic",
+                "coolant": "OAT / HOAT Extended Life Long-Life Antifreeze"
+            },
+            "estimated_labor_hours": 2.5,
+            "base_package_cost": 349.5
+        },
+        {
+            "mileage_threshold": 45000,
+            "interval_name": "Tier 4: Transmission & Drive System Service",
+            "recurrence_months": 36,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report",
+                "Automatic transmission fluid drain and fill (OEM-specified ATF)",
+                "Differential and transfer case fluid check, replace as specified",
+                "Engine air and cabin filters",
+                "Spark plug inspection (replace if specified by OEM)",
+                "Serpentine belt and hose inspection"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+                "transmission_fluid": "OEM-specified ATF (e.g., Dexron VI / Mercon LV / ATF+4 / Toyota WS)",
+                "differential_fluid": "API GL-5 75W-90 synthetic gear oil"
+            },
+            "estimated_labor_hours": 3.0,
+            "base_package_cost": 429.95
+        },
+        {
+            "mileage_threshold": 60000,
+            "interval_name": "Tier 5: Major Service - Brakes, Coolant & Ignition",
+            "recurrence_months": 48,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report",
+                "Brake hydraulic fluid exchange (DOT 4 pressure bleed)",
+                "Coolant exchange and system pressure test (17 psi / 117 kPa)",
+                "Spark plug replacement",
+                "Brake pad and rotor inspection with caliper (pad thickness in mm)",
+                "Battery CCA conductance diagnostic and charging system test",
+                "Fuel system and throttle body service"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+                "brake_fluid": "DOT 4 High Boiling Point Synthetic",
+                "coolant": "OAT / HOAT Extended Life Long-Life Antifreeze, 50/50 premix (freeze protection to -34°F / -37°C)"
+            },
+            "estimated_labor_hours": 4.2,
+            "base_package_cost": 619.95
+        },
+        {
+            "mileage_threshold": 75000,
+            "interval_name": "Tier 6: Filter, Fluid & Suspension Check",
+            "recurrence_months": 60,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report",
+                "Engine air intake and cabin filter replacement",
+                "Suspension and steering component inspection (ball joints, tie rods, control arm bushings)",
+                "Wheel alignment check",
+                "Battery CCA conductance diagnostic"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)"
+            },
+            "estimated_labor_hours": 2.0,
+            "base_package_cost": 279.95
+        },
+        {
+            "mileage_threshold": 90000,
+            "interval_name": "Tier 7: Timing, Belts & Powertrain Service",
+            "recurrence_months": 72,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report",
+                "Timing belt or chain inspection and replacement if belt-driven (per OEM interval)",
+                "Water pump replacement with timing belt service when applicable",
+                "Serpentine belt and tensioner replacement",
+                "Automatic transmission fluid drain and fill",
+                "Brake hydraulic fluid exchange (DOT 4 pressure bleed)",
+                "Coolant exchange and pressure test"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+                "brake_fluid": "DOT 4 High Boiling Point Synthetic",
+                "coolant": "OAT / HOAT Extended Life Long-Life Antifreeze",
+                "transmission_fluid": "OEM-specified ATF"
+            },
+            "estimated_labor_hours": 6.5,
+            "base_package_cost": 1049.95
+        },
+        {
+            "mileage_threshold": 105000,
+            "interval_name": "Tier 8: Filters & Safety Reassessment",
+            "recurrence_months": 84,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report",
+                "Engine air intake and cabin filter replacement",
+                "Brake system service (pad, rotor, and slide pin lubrication)",
+                "Battery CCA conductance diagnostic and replacement if below 70% of rated CCA"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+                "brake_fluid": "DOT 4 High Boiling Point Synthetic"
+            },
+            "estimated_labor_hours": 2.8,
+            "base_package_cost": 399.95
+        },
+        {
+            "mileage_threshold": 120000,
+            "interval_name": "Tier 9: Comprehensive Long-Life Service",
+            "recurrence_months": 96,
+            "included_operations": [
+                "Full synthetic engine oil exchange and OEM filter",
+                "Four-wheel tire rotation and tire tread depth audit",
+                "Full 40-point Digital Vehicle Inspection (DVI) with photo report",
+                "Spark plug replacement (iridium or platinum)",
+                "Coolant, brake fluid, and transmission fluid exchange",
+                "Differential and transfer case fluid exchange",
+                "Engine mount, CV boot, and suspension bushing inspection",
+                "Fuel filter replacement where serviceable",
+                "Battery CCA conductance diagnostic and charging system test"
+            ],
+            "fluid_specifications": {
+                "engine_oil": "Full Synthetic API SP / ILSAC GF-6 (0W-20 / 5W-30)",
+                "brake_fluid": "DOT 4 High Boiling Point Synthetic",
+                "coolant": "OAT / HOAT Extended Life Long-Life Antifreeze, 50/50 premix (freeze protection to -34°F / -37°C)",
+                "transmission_fluid": "OEM-specified ATF",
+                "differential_fluid": "API GL-5 75W-90 synthetic gear oil"
+            },
+            "estimated_labor_hours": 7.5,
+            "base_package_cost": 1289.95
+        }
+    ],
+    "standalone_flat_rate_labor_hours": [
+        {
+            "service": "Front brake pads and rotors, per axle",
+            "labor_hours": 1.5
+        },
+        {
+            "service": "Rear brake pads and rotors, per axle",
+            "labor_hours": 1.4
+        },
+        {
+            "service": "Brake fluid exchange (DOT 4)",
+            "labor_hours": 0.7
+        },
+        {
+            "service": "Battery replacement and charging system test",
+            "labor_hours": 0.5
+        },
+        {
+            "service": "Coolant exchange",
+            "labor_hours": 1.0
+        },
+        {
+            "service": "Serpentine belt replacement",
+            "labor_hours": 0.8
+        },
+        {
+            "service": "Alternator replacement",
+            "labor_hours": 1.8
+        },
+        {
+            "service": "Starter replacement",
+            "labor_hours": 1.6
+        },
+        {
+            "service": "Wheel alignment (4-wheel)",
+            "labor_hours": 1.0
+        },
+        {
+            "service": "Tire mount, balance, and install (set of 4)",
+            "labor_hours": 1.2
+        },
+        {
+            "service": "Diagnostic (OBD-II scan, circuit test, up to 1 hour teardown analysis)",
+            "labor_hours": 1.0,
+            "flat_fee": 145.0
+        }
+    ]
+}

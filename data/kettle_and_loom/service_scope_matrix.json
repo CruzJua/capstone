@@ -1,0 +1,183 @@
+{
+    "scope_matrix_metadata": {
+        "company": "Kettle & Loom Cleaning Collective",
+        "standard_version": "3.1",
+        "currency": "USD",
+        "base_hourly_rate_per_tech": 55.00,
+        "labor_estimate_basis": "Technician minutes per 1,000 sq ft of conditioned space for one technician. Divide by team size for on-site duration.",
+        "initial_deep_clean_multiplier": {
+            "min": 2.0,
+            "max": 2.5
+        },
+        "temperature_notes": {
+            "dilution_water_f": "60-80",
+            "dilution_water_c": "16-27",
+            "chemical_storage_f": "50-80",
+            "chemical_storage_c": "10-27"
+        }
+    },
+    "reference_room_zones_sqft": {
+        "kitchen": 200,
+        "primary_bathroom": 80,
+        "guest_bathroom": 45,
+        "primary_bedroom": 225,
+        "guest_bedroom": 140,
+        "living_room": 300,
+        "dining_room": 150,
+        "entry_hall": 60,
+        "office_open_plan_workstation_zone": 1000,
+        "restroom_commercial": 150
+    },
+    "service_tiers": [
+        {
+            "tier_id": "TIER-RES-01",
+            "tier_name": "Standard Residential Maintenance",
+            "frequency_options": [
+                "Weekly",
+                "Bi-Weekly",
+                "Monthly"
+            ],
+            "requires_initial_deep_clean": true,
+            "zones": {
+                "kitchen": [
+                    "Wipe exterior cabinet faces and drawer pulls",
+                    "Sanitize countertops and backsplash with OxyPure",
+                    "Clean and polish exterior stainless steel appliances",
+                    "Scrub sink basin, aerator, and faucet fixture",
+                    "Vacuum and damp-mop hard surface floors"
+                ],
+                "bathrooms": [
+                    "Scrub shower tile grout and sanitize fiberglass tubs",
+                    "Disinfect toilet bowl, tank, base, and flush lever (Bio-Shield, 10 minute wet dwell)",
+                    "Polish vanity mirrors and clean medicine cabinet fronts",
+                    "Wipe down light fixtures and exhaust fan covers"
+                ],
+                "living_areas_and_bedrooms": [
+                    "Dust all reachable surfaces, shelves, and décor",
+                    "Vacuum carpets and rugs with HEPA-filtered vacuum",
+                    "Damp-mop hardwood with PureLoom, mop dry immediately",
+                    "Make beds if linens are left out",
+                    "Empty trash and replace liners"
+                ]
+            },
+            "estimated_minutes_per_1000_sqft": 75
+        },
+        {
+            "tier_id": "TIER-TRN-02",
+            "tier_name": "Hospitality Short-Term Rental Turnover",
+            "frequency_options": [
+                "Per Turnover Checkout"
+            ],
+            "requires_initial_deep_clean": true,
+            "zones": {
+                "guest_readiness": [
+                    "Strip and launder bed linens and towels with hypoallergenic wash",
+                    "Make beds to hotel hospital-corner standard",
+                    "Restock guest amenities (botanical soaps, organic coffee pods)",
+                    "Sanitize high-touch surfaces (remotes, keypad deadbolts, thermostats)",
+                    "Inspect under furniture and in closets for left-behind guest property"
+                ],
+                "kitchen": [
+                    "Empty and wipe refrigerator, discard guest food",
+                    "Run dishwasher, put away dishes, and sanitize sink",
+                    "Sanitize countertops and appliance handles"
+                ],
+                "bathrooms": [
+                    "Disinfect toilets, showers, and tubs",
+                    "Replace towels and toiletries",
+                    "Descale fixtures with Citrus-Loom (5 minute dwell) on sealed surfaces only"
+                ],
+                "reporting": [
+                    "Photograph the completed property and any damage",
+                    "Report low inventory and maintenance issues within 1 hour of completion"
+                ]
+            },
+            "estimated_minutes_per_1000_sqft": 110
+        },
+        {
+            "tier_id": "TIER-COM-03",
+            "tier_name": "Commercial Office Janitorial",
+            "frequency_options": [
+                "Nightly (5x per week)",
+                "3x per week",
+                "Weekly"
+            ],
+            "requires_initial_deep_clean": true,
+            "zones": {
+                "workstations": [
+                    "Dust desks, monitors, and ledges (clients clear desktops)",
+                    "Sanitize shared keyboards, phones, and high-touch items on request",
+                    "Empty trash and recycling",
+                    "Vacuum carpets"
+                ],
+                "restrooms": [
+                    "Disinfect toilets, urinals, sinks, and partitions (Bio-Shield, 10 minute wet dwell)",
+                    "Restock paper, soap, and towels",
+                    "Damp-mop floors"
+                ],
+                "common_areas": [
+                    "Sanitize break room counters, sink, and appliance exteriors",
+                    "Wipe conference tables and door handles",
+                    "Spot clean glass and entry doors"
+                ]
+            },
+            "estimated_minutes_per_1000_sqft": 45
+        },
+        {
+            "tier_id": "TIER-PCN-04",
+            "tier_name": "Post-Construction Remediation",
+            "frequency_options": [
+                "One-time (three phases)",
+                "Touch-up visit within 7 days"
+            ],
+            "requires_initial_deep_clean": false,
+            "zones": {
+                "phase_1_rough_debris_pass": [
+                    "Remove construction packaging, protective films, stickers, and tape residue",
+                    "Scrape paint splatter with plastic blades",
+                    "Rough sweep floors with HEPA capture"
+                ],
+                "phase_2_high_to_low_hepa_vacuuming": [
+                    "HEPA vacuum ceiling joists, fans, HVAC diffusers, and light fixtures",
+                    "HEPA vacuum door casings, window tracks, and cabinet tops",
+                    "HEPA vacuum baseboards and floors (99.97% at 0.3 microns)"
+                ],
+                "phase_3_wet_microfiber_sparkle_pass": [
+                    "Damp wipe all surfaces with 8-quadrant folded microfiber",
+                    "Clean cabinet interiors, glass, and fixtures",
+                    "Final HEPA vacuum and white-glove inspection (3 sample points per room)"
+                ]
+            },
+            "phase_labor_share_percent": {
+                "phase_1": 20,
+                "phase_2": 40,
+                "phase_3": 40
+            },
+            "estimated_minutes_per_1000_sqft": 240
+        }
+    ],
+    "add_on_services": [
+        {
+            "name": "Interior oven or refrigerator",
+            "estimated_minutes_each": 30
+        },
+        {
+            "name": "Interior windows (per standard window)",
+            "estimated_minutes_each": 8
+        },
+        {
+            "name": "Interior cabinets (per kitchen)",
+            "estimated_minutes_each": 45
+        },
+        {
+            "name": "Laundry (per load, residential or rental)",
+            "estimated_minutes_each": 15
+        }
+    ],
+    "exclusions": [
+        "Biohazard, mold remediation, and asbestos or lead abatement",
+        "Exterior windows above the second floor",
+        "Moving heavy furniture (over 50 lb)",
+        "Cleaning of unsealed natural stone with acidic products"
+    ]
+}

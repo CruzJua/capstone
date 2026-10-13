@@ -1,0 +1,191 @@
+{
+    "knowledgebase_metadata": {
+        "company": "Cinder & Salt Bakery",
+        "system_id": "KB-CS-2024-V1",
+        "total_entries": 25,
+        "categories": [
+            "Allergens & Ingredients",
+            "Daily Retail & Orders",
+            "Wholesale Accounts",
+            "Bread Care & Storage",
+            "Catering & Events"
+        ]
+    },
+    "faqs": [
+        {
+            "id": "FAQ-ALG-001",
+            "category": "Allergens & Ingredients",
+            "question": "Are your sourdough breads safe for someone with Celiac Disease?",
+            "answer": "No. While our 24-36 hour wild fermentation process breaks down some starches and makes bread easier to digest for many gluten-sensitive people, our facility actively stone-mills grains on-site. Airborne flour particles are present throughout the bakery. We are NOT a certified celiac-safe environment, and we do not make certified gluten-free products.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ALG-002",
+            "category": "Allergens & Ingredients",
+            "question": "Which major allergens are present in your facility?",
+            "answer": "Wheat/gluten, rye, tree nuts (walnuts and almonds), sesame, dairy (butter, milk, cheese), and eggs are all handled in our facility. Nuts, sesame, dairy, and eggs use color-coded dedicated tools, but ovens, mixers, and the mill are shared, so cross-contact is possible. We do not guarantee any item is free of these allergens.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ALG-003",
+            "category": "Allergens & Ingredients",
+            "question": "What is in your sourdough bread?",
+            "answer": "Our core breads contain only flour (stone-milled in-house or from regional growers), water, wild sourdough starter, and sea salt. We use no commercial yeast, dough conditioners, preservatives, or artificial stabilizers. Seeded and enriched items add ingredients such as sesame, walnuts, cherries, or honey, and each item's label lists everything in it.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ALG-004",
+            "category": "Allergens & Ingredients",
+            "question": "Do you have a nut-free or sesame-free bread?",
+            "answer": "Several breads contain no nut or sesame ingredients, such as the Country Sourdough and Spelt Boule. We bake plain loaves first, at 2:00 AM, before seeded and nut items at 4:00 AM, and we sanitize at 12:00 PM and 8:00 PM. Shared ovens and airborne particles mean we cannot guarantee a nut-free or sesame-free product, so people with severe allergies should not rely on us.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ALG-005",
+            "category": "Allergens & Ingredients",
+            "question": "I have a wheat allergy. Is spelt or einkorn bread okay for me?",
+            "answer": "No. Spelt and einkorn are ancient wheats and contain gluten and wheat proteins. They are not safe for people with a wheat allergy or celiac disease. We can't offer medical advice, so please check with your allergist.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-ALG-006",
+            "category": "Allergens & Ingredients",
+            "question": "My child had a reaction after eating one of your products. What should I do?",
+            "answer": "Please seek medical attention immediately, and call 911 if there is any trouble breathing, swelling, or other signs of anaphylaxis. Once your child is safe, contact us with the product name, purchase time, and any batch code so our Quality Lead can investigate and quarantine the batch.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-RET-001",
+            "category": "Daily Retail & Orders",
+            "question": "What time do you usually sell out of Country Sourdough?",
+            "answer": "Our daily counter supply generally sells out between 11:30 AM and 1:00 PM on weekdays, and often before 11:00 AM on weekends. We strongly recommend placing a pre-order through our website 48 hours in advance to guarantee your items.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RET-002",
+            "category": "Daily Retail & Orders",
+            "question": "What days are you open?",
+            "answer": "We bake and sell Tuesday through Sunday. We are closed on Mondays, which is our rest and fermentation prep day, and there is no retail, delivery, or pickup on Mondays.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RET-003",
+            "category": "Daily Retail & Orders",
+            "question": "Can I pre-order a loaf for tomorrow?",
+            "answer": "Pre-orders need 48 hours of notice because of our cold fermentation. For same-day or next-day needs, the counter holds a limited daily supply, which is first come, first served.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RET-004",
+            "category": "Daily Retail & Orders",
+            "question": "How much does a Country Sourdough Boule cost?",
+            "answer": "The Country Sourdough Boule (850 g baked weight, 78% hydration) is $9.50. Prices for other loaves and pastries are in our daily bake matrix. For example, the Seeded Dark Rye is $10.50, and all prices are subject to change.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RET-005",
+            "category": "Daily Retail & Orders",
+            "question": "Which breads are baked on which days?",
+            "answer": "Country Sourdough and Sesame Baguettes are baked Tuesday through Sunday. Seeded Dark Rye is baked Tuesday, Thursday, Saturday, and Sunday. Spelt Boule is baked Wednesday, Friday, Saturday, and Sunday. Einkorn Honey Loaf is baked Thursday, Saturday, and Sunday. Seasonal specials are posted on our website each week.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RET-006",
+            "category": "Daily Retail & Orders",
+            "question": "I received the wrong item or a damaged loaf in my retail order. What now?",
+            "answer": "We're sorry about that. Please bring the item or a photo to the counter, or contact us within 24 hours of pickup, and our team will arrange a replacement or refund.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-WHO-001",
+            "category": "Wholesale Accounts",
+            "question": "Can I modify my wholesale delivery order for tomorrow morning?",
+            "answer": "All wholesale orders must adhere to our 48-hour fermentation lead time. Standing order modifications for tomorrow morning locked today at 2:00 PM. Any changes requested past 2:00 PM cannot be processed as our doughs are already in their final fermentation cycle.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-WHO-002",
+            "category": "Wholesale Accounts",
+            "question": "What is the minimum order for wholesale delivery?",
+            "answer": "The minimum order value is $75.00 per delivery drop. Orders below $75.00 incur a $15.00 small-drop surcharge.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WHO-003",
+            "category": "Wholesale Accounts",
+            "question": "When do you deliver, and which zones do you serve?",
+            "answer": "We deliver Tuesday through Sunday between 4:30 AM and 7:00 AM. Zone A (Urban Core) receives daily drops, and Zone B (Outer Metro) receives drops on Tuesday, Thursday, and Saturday.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WHO-004",
+            "category": "Wholesale Accounts",
+            "question": "What are your payment terms?",
+            "answer": "Terms are Net-15 via automated ACH through the wholesale portal. Invoices generate when the delivery departs. New accounts need credit approval before the first delivery, and balances more than 15 days past due pause deliveries.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WHO-005",
+            "category": "Wholesale Accounts",
+            "question": "Can you deliver to an outdoor lockbox in winter?",
+            "answer": "Not from November 1 through April 1. Exterior lockbox drops are prohibited in winter to prevent thermal shock to the bread. We need access to a walk-in cooler or a food-safe staging counter indoors via a keycode or key.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-WHO-006",
+            "category": "Wholesale Accounts",
+            "question": "A loaf in my delivery was damaged. How do I file a claim?",
+            "answer": "Report missing, damaged, or unsatisfactory items within 12 hours of the delivery drop, and include cross-section photos. Approved claims are credited to your next invoice. Claims made after 12 hours cannot be accepted.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-STR-001",
+            "category": "Bread Care & Storage",
+            "question": "Should I keep my sourdough loaf in the refrigerator?",
+            "answer": "Never refrigerate fresh artisan bread. Refrigerator temperatures (35°F-42°F / 1°C-5°C) accelerate starch retrogradation by up to 300%, causing the bread to dry out and go stale much faster. Store it cut-side down on a wooden board for days 1-2, then in a linen or paper bag for days 3-5.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-STR-002",
+            "category": "Bread Care & Storage",
+            "question": "How do I revive a stale loaf?",
+            "answer": "Preheat your oven to 375°F (190°C). Run the unsliced loaf under cold water for 3 to 5 seconds, or spritz it well, then bake it directly on the center rack for 6 to 8 minutes. Rest for 5 minutes before slicing. It works best on loaves up to about 3 days old.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-STR-003",
+            "category": "Bread Care & Storage",
+            "question": "Can I freeze sourdough, and for how long?",
+            "answer": "Yes. Slice the loaf, put parchment between slices, and seal it in a freezer bag at 0°F (-18°C). It keeps well for up to 3 months. Toast slices straight from frozen.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-CAT-001",
+            "category": "Catering & Events",
+            "question": "How far in advance do I need to book a wedding cake or dessert table?",
+            "answer": "We require a minimum of 6 weeks notice for wedding orders and large event catering (100+ guests), 14 days for smaller custom celebratory cakes, and 7 days for small wholesale event trays. Peak wedding season dates (May-October) can close up to 6 months ahead, so early booking is recommended.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-CAT-002",
+            "category": "Catering & Events",
+            "question": "How does the tasting box work, and what does it cost?",
+            "answer": "A tasting box is $45.00 and includes 4 sourdough cake options and 3 seasonal buttercreams or preserves. Boxes are prepared on the 1st and 3rd Saturday of each month and are available for pickup from 10:00 AM to 1:00 PM. The fee is credited toward any final catering contract over $300.00.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-CAT-003",
+            "category": "Catering & Events",
+            "question": "What are your deposit and cancellation terms for events?",
+            "answer": "A 50% non-refundable deposit is due at contract signing, and the balance is due 14 days before the event. If you cancel 30 or more days ahead we keep the deposit. If you cancel 14-29 days ahead we retain 50% of the contract value, and under 14 days we retain 100%.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-CAT-004",
+            "category": "Catering & Events",
+            "question": "Can my buttercream cake be displayed outdoors in summer?",
+            "answer": "Swiss meringue buttercream softens at 72°F (22°C) and collapses above 80°F (27°C). Above 72°F (22°C), outdoor display is limited to 2 hours maximum, and the cake must stay in complete shade because direct sunlight can cause collapse within 15 minutes. For hot events, ask us about a naked or fondant-finished cake.",
+            "escalate_to_human": false
+        }
+    ]
+}

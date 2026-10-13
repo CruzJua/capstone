@@ -1,0 +1,198 @@
+{
+    "knowledgebase_metadata": {
+        "company": "Harbor View Veterinary Clinic",
+        "system_id": "KB-HV-2024-V1",
+        "total_entries": 26,
+        "categories": [
+            "Post-Operative Recovery",
+            "Pharmacy & Refills",
+            "Appointments & Intake",
+            "Urgent Care & Emergencies",
+            "Vaccinations & Wellness"
+        ]
+    },
+    "faqs": [
+        {
+            "id": "FAQ-SUR-001",
+            "category": "Post-Operative Recovery",
+            "question": "My dog took off her E-collar and licked her incision for a few minutes. What should I do?",
+            "answer": "Immediately put the E-collar back on. Canine saliva contains heavy oral bacteria that can cause deep wound infections and dissolve absorbable sutures. Inspect the incision for redness, swelling, or opening of the wound. Contact our triage team at (555) 438-2323 to schedule an incision check or receive antibiotic ointment guidance.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-SUR-002",
+            "category": "Post-Operative Recovery",
+            "question": "How long does my pet need to wear the E-collar?",
+            "answer": "The E-collar must stay on 24/7 for 10 to 14 days, including while your pet sleeps and eats. Even 30 seconds of licking can introduce bacteria or open the incision. Remove it only when a veterinarian has cleared the incision at the recheck visit.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SUR-003",
+            "category": "Post-Operative Recovery",
+            "question": "What does a normal healing incision look like?",
+            "answer": "Mild redness, slight firm swelling along the suture line, clean closed margins, and some bruising are normal. Call us right away for active dripping of fresh blood, thick yellow or green discharge, a foul odor, a gap in the tissue, or extreme heat. Check twice daily in good light.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SUR-004",
+            "category": "Post-Operative Recovery",
+            "question": "Can my dog go for walks or play after surgery?",
+            "answer": "For 14 days, activity is limited to short potty breaks on a 6-foot leash. No running, jumping, stairs, roughhousing, or dog park visits. Keep your pet confined to a small carpeted room or crate. Many pets feel better by day 7 to 10, which is when overdoing it is most likely to cause injury.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-SUR-005",
+            "category": "Post-Operative Recovery",
+            "question": "Can I give my dog Tylenol, aspirin, or ibuprofen for post-surgery pain?",
+            "answer": "No. Human pain relievers can be dangerous or lethal to dogs and cats, and they can't be combined with carprofen. Use only the medications prescribed on your discharge sheet. For example, carprofen is 2.2 mg/kg every 12 hours and gabapentin is 10 mg/kg every 8 to 12 hours, given with food. If pain seems uncontrolled, call us.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-SUR-006",
+            "category": "Post-Operative Recovery",
+            "question": "Can I bathe my pet after surgery?",
+            "answer": "No bathing, swimming, or moisture exposure for 14 days, because moisture can carry bacteria into the suture tracks. If your pet is dirty, spot-clean away from the incision with a dry cloth, and call us if you have concerns.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RX-001",
+            "category": "Pharmacy & Refills",
+            "question": "How much notice do you need to refill a prescription?",
+            "answer": "Standard in-house refills need 48 hours (2 business days) for clinical review and doctor authorization. Compounded formulations need 5 business days. If your pet is about to run out of a critical medication, call us and we will see what we can do.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RX-002",
+            "category": "Pharmacy & Refills",
+            "question": "Why does my dog need a blood test before you refill his arthritis pain medication?",
+            "answer": "Non-steroidal anti-inflammatory drugs (NSAIDs like Carprofen) are metabolized by the liver and kidneys. Routine blood testing every 6 to 12 months ensures your dog's organ function remains healthy and that the medication can continue to be filtered safely without risking organ toxicity.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RX-003",
+            "category": "Pharmacy & Refills",
+            "question": "Why can't you refill my pet's medication if we haven't been in for over a year?",
+            "answer": "State veterinary licensing rules and FDA compliance require a physical exam within the last 365 days to maintain a valid veterinary-client-patient relationship (VCPR). Without it, we are legally unable to dispense or approve prescriptions. We would be happy to book a recheck.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RX-004",
+            "category": "Pharmacy & Refills",
+            "question": "Can you send my prescription to Chewy or 1-800-PetMeds?",
+            "answer": "We do not approve third-party digital faxes directly, to protect pets from counterfeit or improperly stored medication. You are welcome to pick up a complimentary written prescription, valid with a current exam, to submit to the pharmacy of your choice.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RX-005",
+            "category": "Pharmacy & Refills",
+            "question": "Which medications require lab monitoring?",
+            "answer": "NSAIDs such as carprofen and meloxicam need a chemistry panel (BUN, creatinine, ALT) every 6 to 12 months. Thyroid medication, phenobarbital, and Incurin need serum monitoring every 6 months. Heartworm preventive needs an annual antigen test.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-RX-006",
+            "category": "Pharmacy & Refills",
+            "question": "My pet is vomiting and has black stool after starting a new medication. What should I do?",
+            "answer": "Stop the medication and call us immediately. If we are closed, go to the Regional Animal Specialty & Emergency Center (24/7 ER) at (555) 948-3700. Vomiting and black or tarry stool can signal gastrointestinal bleeding, which is serious with NSAIDs.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-INT-001",
+            "category": "Appointments & Intake",
+            "question": "What should I bring to my new pet's first appointment?",
+            "answer": "Please provide your pet's complete medical and vaccination records at least 24 hours in advance. For the visit, bring a fresh fecal sample (under 12 hours old), any current medications/supplements, and ensure dogs are on a 6-foot non-retractable leash and cats are inside a secure carrier.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-INT-002",
+            "category": "Appointments & Intake",
+            "question": "Why is there a $65 deposit to book a new client appointment?",
+            "answer": "The $65.00 deposit secures your appointment slot and is applied directly toward your exam fee. It is transferable to a new date if you give at least 48 hours notice. Cancelling with less than 48 hours notice forfeits the deposit.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-INT-003",
+            "category": "Appointments & Intake",
+            "question": "My dog is reactive around other dogs. How can we avoid the waiting room?",
+            "answer": "Call reception at (555) 438-2323 from your car on arrival. We will bring you straight to an exam room, bypassing the lobby. Let us know when you book that your dog is reactive so we can plan a calmer visit.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-INT-004",
+            "category": "Appointments & Intake",
+            "question": "My cat panics in the carrier. How can I make the visit easier?",
+            "answer": "Use a hard-sided carrier lined with a familiar blanket and leave it out at home so it becomes familiar. Feliway-sprayed towels are available at our entrance. Ask us about pre-visit calming medication, which must be prescribed by a veterinarian.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-INT-005",
+            "category": "Appointments & Intake",
+            "question": "What happens if my previous clinic's records don't arrive before my appointment?",
+            "answer": "Your visit goes ahead as scheduled, but pets without verifiable records may be placed on an age-appropriate booster catch-up schedule so they are fully protected. Records received at least 24 hours in advance let us avoid repeating vaccines or tests.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-EMG-001",
+            "category": "Urgent Care & Emergencies",
+            "question": "My male cat is repeatedly going to the litter box, crying, and straining without producing urine. Is this an emergency?",
+            "answer": "Yes, this is a life-threatening medical emergency. A blocked urethra in male cats causes toxic buildup of potassium and kidney failure within 24 to 48 hours. Bring your cat to our clinic immediately or go straight to the nearest 24/7 emergency hospital if we are closed.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-EMG-002",
+            "category": "Urgent Care & Emergencies",
+            "question": "How do you decide who is seen first in urgent care?",
+            "answer": "We triage by medical need. RED cases (respiratory distress, collapse, seizures, bloated abdomen) go straight to treatment. YELLOW cases (suspected blocked cat, toxin ingestion, eye injury, deep wounds) are examined within 30 minutes. GREEN cases (mild ear infection, itching, limping while bearing weight) are seen in a same-day work-in slot.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-EMG-003",
+            "category": "Urgent Care & Emergencies",
+            "question": "Do you offer overnight care or hospitalization?",
+            "answer": "No. We are a day practice without overnight intensive care. Pets needing continuous IV fluids, blood transfusions, or overnight oxygen are stabilized and transferred to the Regional Animal Specialty & Emergency Center (24/7 ER) at (555) 948-3700. We send records and radiographs digitally.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-EMG-004",
+            "category": "Urgent Care & Emergencies",
+            "question": "What temperature is a fever in a dog or cat?",
+            "answer": "Normal is 100.5-102.5°F (38.1-39.2°C). A reading of 103.0°F (39.4°C) or above is a fever, so please call us the same day. At 104.0°F (40.0°C) or higher, seek immediate care.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-EMG-005",
+            "category": "Urgent Care & Emergencies",
+            "question": "My dog ate chocolate or something toxic. What now?",
+            "answer": "Call us right away at (555) 438-2323, and do not induce vomiting unless a veterinarian instructs you to. Bring the packaging and note the amount and time. If we are closed, go to the 24/7 ER at (555) 948-3700.",
+            "escalate_to_human": true
+        },
+        {
+            "id": "FAQ-VAC-001",
+            "category": "Vaccinations & Wellness",
+            "question": "Does my indoor-only cat really need vaccines?",
+            "answer": "Yes. Rabies vaccination is legally required by state law even for strictly indoor pets, as bats and wild vectors can enter homes. We also strongly recommend the FVRCP vaccine (feline viral rhinotracheitis, calicivirus, and panleukopenia) because these airborne and fomite-spread viruses can easily be brought indoors on human shoes and clothing.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-VAC-002",
+            "category": "Vaccinations & Wellness",
+            "question": "What is the puppy or kitten vaccine schedule?",
+            "answer": "DHPP (dogs) or FVRCP (cats) at 8, 12, and 16 weeks, with rabies at 16 weeks. A booster follows 12 months after the final puppy or kitten dose, then every 3 years. Non-core vaccines like Bordetella, Leptospirosis, or FeLV are added based on lifestyle.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-VAC-003",
+            "category": "Vaccinations & Wellness",
+            "question": "Does my dog need the Bordetella or Leptospirosis vaccine?",
+            "answer": "Bordetella is recommended if your dog boards, goes to daycare or grooming, or visits dog parks (every 12 months). Leptospirosis is recommended for dogs exposed to standing water, wildlife, or rural trails (every 12 months). We will discuss your dog's lifestyle and recommend accordingly.",
+            "escalate_to_human": false
+        },
+        {
+            "id": "FAQ-VAC-004",
+            "category": "Vaccinations & Wellness",
+            "question": "Why does my dog need a heartworm test every year?",
+            "answer": "An annual antigen test confirms your dog is heartworm-negative before we refill preventive. Giving preventive to an infected dog can be dangerous. Preventive itself is given monthly, year-round, alongside flea and tick protection.",
+            "escalate_to_human": false
+        }
+    ]
+}

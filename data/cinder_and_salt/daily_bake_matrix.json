@@ -1,0 +1,293 @@
+{
+    "bakery_metadata": {
+        "facility": "Cinder & Salt Bakery - Main Production Facility",
+        "version": "2.4",
+        "last_updated": "2024-10-15",
+        "operating_days": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "closed_days": ["Monday"],
+        "temperature_units": "Fahrenheit and Celsius",
+        "allergen_notice": "Facility is NOT celiac-safe. Contains or may contain wheat, rye, tree nuts, sesame, dairy, and eggs."
+    },
+    "production_catalog": [
+        {
+            "sku": "BRD-CS-001",
+            "item_name": "Country Sourdough Boule",
+            "category": "Bread",
+            "flour_profile": "70% Organic Hard Red Wheat, 20% Stone-Milled Red Fife, 10% Whole Rye",
+            "hydration_percentage": 78,
+            "bulk_fermentation_hours": 5.5,
+            "cold_hours": 24,
+            "bake_schedule": {
+                "bake_start": "02:00",
+                "oven_temp_f": 475,
+                "oven_temp_c": 246,
+                "bake_minutes": 42,
+                "production_block": "Pure / Seedless"
+            },
+            "target_baked_weight_grams": 850,
+            "allergens": ["Wheat", "Rye"],
+            "active_bake_days": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "base_retail_price": 9.50,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 6.25,
+                "tier_2_volume": 5.75
+            },
+            "daily_par_limits": {
+                "weekday": 120,
+                "weekend": 220
+            }
+        },
+        {
+            "sku": "BRD-SR-002",
+            "item_name": "Seeded Dark Rye",
+            "category": "Bread",
+            "flour_profile": "60% Whole Dark Northern Rye, 40% High Gluten Wheat",
+            "hydration_percentage": 84,
+            "bulk_fermentation_hours": 4.0,
+            "cold_hours": 36,
+            "bake_schedule": {
+                "bake_start": "04:00",
+                "oven_temp_f": 450,
+                "oven_temp_c": 232,
+                "bake_minutes": 50,
+                "production_block": "Enriched & Seeded"
+            },
+            "target_baked_weight_grams": 900,
+            "allergens": ["Wheat", "Rye", "Sesame"],
+            "active_bake_days": ["Tuesday", "Thursday", "Saturday", "Sunday"],
+            "base_retail_price": 10.50,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 7.00,
+                "tier_2_volume": 6.50
+            },
+            "daily_par_limits": {
+                "weekday": 45,
+                "weekend": 85
+            }
+        },
+        {
+            "sku": "BRD-SB-003",
+            "item_name": "Spelt Boule",
+            "category": "Bread",
+            "flour_profile": "100% Stone-Milled Whole Spelt",
+            "hydration_percentage": 72,
+            "bulk_fermentation_hours": 4.5,
+            "cold_hours": 24,
+            "bake_schedule": {
+                "bake_start": "02:00",
+                "oven_temp_f": 460,
+                "oven_temp_c": 238,
+                "bake_minutes": 40,
+                "production_block": "Pure / Seedless"
+            },
+            "target_baked_weight_grams": 800,
+            "allergens": ["Wheat (Spelt)"],
+            "active_bake_days": ["Wednesday", "Friday", "Saturday", "Sunday"],
+            "base_retail_price": 11.00,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 7.25,
+                "tier_2_volume": 6.75
+            },
+            "daily_par_limits": {
+                "weekday": 40,
+                "weekend": 70
+            }
+        },
+        {
+            "sku": "BRD-SB-004",
+            "item_name": "Sesame Baguette",
+            "category": "Bread",
+            "flour_profile": "80% Organic Hard Red Wheat, 20% Stone-Milled Red Fife",
+            "hydration_percentage": 74,
+            "bulk_fermentation_hours": 4.0,
+            "cold_hours": 24,
+            "bake_schedule": {
+                "bake_start": "04:00",
+                "oven_temp_f": 475,
+                "oven_temp_c": 246,
+                "bake_minutes": 24,
+                "production_block": "Enriched & Seeded"
+            },
+            "target_baked_weight_grams": 320,
+            "allergens": ["Wheat", "Sesame"],
+            "active_bake_days": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "base_retail_price": 5.50,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 3.50,
+                "tier_2_volume": 3.25
+            },
+            "daily_par_limits": {
+                "weekday": 90,
+                "weekend": 140
+            }
+        },
+        {
+            "sku": "BRD-EK-005",
+            "item_name": "Einkorn Honey Loaf",
+            "category": "Bread",
+            "flour_profile": "70% Stone-Milled Einkorn, 30% Organic Hard Red Wheat",
+            "hydration_percentage": 70,
+            "bulk_fermentation_hours": 5.0,
+            "cold_hours": 30,
+            "bake_schedule": {
+                "bake_start": "02:00",
+                "oven_temp_f": 450,
+                "oven_temp_c": 232,
+                "bake_minutes": 38,
+                "production_block": "Pure / Seedless"
+            },
+            "target_baked_weight_grams": 700,
+            "allergens": ["Wheat (Einkorn)"],
+            "active_bake_days": ["Thursday", "Saturday", "Sunday"],
+            "base_retail_price": 12.00,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 8.00,
+                "tier_2_volume": 7.50
+            },
+            "daily_par_limits": {
+                "weekday": 30,
+                "weekend": 50
+            }
+        },
+        {
+            "sku": "PST-WC-101",
+            "item_name": "Walnut & Cherry Sourdough Loaf",
+            "category": "Bread",
+            "flour_profile": "60% Organic Hard Red Wheat, 25% Stone-Milled Red Fife, 15% Whole Rye",
+            "hydration_percentage": 76,
+            "bulk_fermentation_hours": 5.0,
+            "cold_hours": 28,
+            "bake_schedule": {
+                "bake_start": "04:00",
+                "oven_temp_f": 460,
+                "oven_temp_c": 238,
+                "bake_minutes": 45,
+                "production_block": "Enriched & Seeded"
+            },
+            "target_baked_weight_grams": 820,
+            "allergens": ["Wheat", "Rye", "Tree Nuts (Walnut)"],
+            "active_bake_days": ["Friday", "Saturday", "Sunday"],
+            "base_retail_price": 12.50,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 8.25,
+                "tier_2_volume": 7.75
+            },
+            "daily_par_limits": {
+                "weekday": 35,
+                "weekend": 60
+            }
+        },
+        {
+            "sku": "PST-CR-102",
+            "item_name": "Sourdough Croissant",
+            "category": "Pastry",
+            "flour_profile": "85% Organic Hard Red Wheat, 15% Stone-Milled Red Fife",
+            "hydration_percentage": 58,
+            "bulk_fermentation_hours": 3.0,
+            "cold_hours": 18,
+            "bake_schedule": {
+                "bake_start": "04:00",
+                "oven_temp_f": 400,
+                "oven_temp_c": 204,
+                "bake_minutes": 22,
+                "production_block": "Enriched & Seeded"
+            },
+            "target_baked_weight_grams": 95,
+            "allergens": ["Wheat", "Dairy", "Eggs"],
+            "active_bake_days": ["Wednesday", "Friday", "Saturday", "Sunday"],
+            "base_retail_price": 4.75,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 3.10,
+                "tier_2_volume": 2.85
+            },
+            "daily_par_limits": {
+                "weekday": 60,
+                "weekend": 120
+            }
+        },
+        {
+            "sku": "PST-AL-103",
+            "item_name": "Almond Frangipane Danish",
+            "category": "Pastry",
+            "flour_profile": "90% Organic Hard Red Wheat, 10% Stone-Milled Spelt",
+            "hydration_percentage": 56,
+            "bulk_fermentation_hours": 3.0,
+            "cold_hours": 18,
+            "bake_schedule": {
+                "bake_start": "04:00",
+                "oven_temp_f": 375,
+                "oven_temp_c": 190,
+                "bake_minutes": 25,
+                "production_block": "Enriched & Seeded"
+            },
+            "target_baked_weight_grams": 120,
+            "allergens": ["Wheat", "Dairy", "Eggs", "Tree Nuts (Almond)"],
+            "active_bake_days": ["Friday", "Saturday", "Sunday"],
+            "base_retail_price": 5.50,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 3.60,
+                "tier_2_volume": 3.35
+            },
+            "daily_par_limits": {
+                "weekday": 36,
+                "weekend": 72
+            }
+        },
+        {
+            "sku": "PST-RS-104",
+            "item_name": "Rye Cinnamon Morning Bun",
+            "category": "Pastry",
+            "flour_profile": "70% Organic Hard Red Wheat, 30% Stone-Milled Whole Rye",
+            "hydration_percentage": 62,
+            "bulk_fermentation_hours": 3.5,
+            "cold_hours": 20,
+            "bake_schedule": {
+                "bake_start": "04:00",
+                "oven_temp_f": 375,
+                "oven_temp_c": 190,
+                "bake_minutes": 28,
+                "production_block": "Enriched & Seeded"
+            },
+            "target_baked_weight_grams": 135,
+            "allergens": ["Wheat", "Rye", "Dairy", "Eggs"],
+            "active_bake_days": ["Saturday", "Sunday"],
+            "base_retail_price": 5.25,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 3.40,
+                "tier_2_volume": 3.15
+            },
+            "daily_par_limits": {
+                "weekday": 0,
+                "weekend": 80
+            }
+        },
+        {
+            "sku": "PST-CK-105",
+            "item_name": "Brown Butter Oat Cookie",
+            "category": "Pastry",
+            "flour_profile": "60% Stone-Milled Red Fife, 40% Rolled Oats",
+            "hydration_percentage": 35,
+            "bulk_fermentation_hours": 2.0,
+            "cold_hours": 12,
+            "bake_schedule": {
+                "bake_start": "12:30",
+                "oven_temp_f": 350,
+                "oven_temp_c": 177,
+                "bake_minutes": 14,
+                "production_block": "Post Mid-Day Sanitation"
+            },
+            "target_baked_weight_grams": 85,
+            "allergens": ["Wheat", "Dairy", "Eggs"],
+            "active_bake_days": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "base_retail_price": 3.75,
+            "wholesale_price_tiers": {
+                "tier_1_standard": 2.40,
+                "tier_2_volume": 2.20
+            },
+            "daily_par_limits": {
+                "weekday": 80,
+                "weekend": 140
+            }
+        }
+    ]
+}
