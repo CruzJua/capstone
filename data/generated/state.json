@@ -1,0 +1,22 @@
+{
+  "caches": {},
+  "runs": {
+    "pilot_test": {
+      "model": "gemini-3.8-flash",
+      "per_business": 10,
+      "tickets_per_request": 1,
+      "dry_run": true,
+      "requests_file": "/home/jucruz/MySchoolWork/year3/FallQuarter/PRO390/data/generated/pilot_test/requests.jsonl",
+      "prepared": "2026-10-15T06:48:30+00:00",
+      "businesses": [
+        "cinder_and_salt",
+        "harbor_view",
+        "iron_and_oak",
+        "kettle_and_loom",
+        "northstar_auto"
+      ],
+      "include_reference": false,
+      "cache_hours": 24
+    }
+  }
+}

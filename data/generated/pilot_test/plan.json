@@ -1,0 +1,552 @@
+{
+  "cinder_and_salt-0000": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "multi_turn",
+        "focus_doc": "CATERING_AND_CUSTOM_CAKES.md",
+        "persona": "angry but reasonable",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "cinder_and_salt-0001": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "BREAD_STORAGE_AND_REVIVAL.md",
+        "persona": "formal and precise",
+        "length": "one short line"
+      }
+    ]
+  },
+  "cinder_and_salt-0002": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "escalation",
+        "focus_doc": "daily_bake_matrix.json",
+        "persona": "frustrated and terse",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "cinder_and_salt-0003": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "ALLERGEN_SAFETY_PROTOCOL.md",
+        "persona": "anxious and over-explains",
+        "length": "one short line"
+      }
+    ]
+  },
+  "cinder_and_salt-0004": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "WHOLESALE_ORDERING_GUIDE.md",
+        "persona": "casual with typos and no punctuation",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "cinder_and_salt-0005": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "faq_support_knowledgebase.json",
+        "persona": "detail-oriented, quotes specific numbers",
+        "length": "one short line"
+      }
+    ]
+  },
+  "cinder_and_salt-0006": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "inference",
+        "focus_doc": "CATERING_AND_CUSTOM_CAKES.md",
+        "persona": "repeat customer who assumes you know their history",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "cinder_and_salt-0007": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "BREAD_STORAGE_AND_REVIVAL.md",
+        "persona": "frustrated and terse",
+        "length": "one short line"
+      }
+    ]
+  },
+  "cinder_and_salt-0008": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "daily_bake_matrix.json",
+        "persona": "casual with typos and no punctuation",
+        "length": "one short line"
+      }
+    ]
+  },
+  "cinder_and_salt-0009": {
+    "business": "cinder_and_salt",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "ALLERGEN_SAFETY_PROTOCOL.md",
+        "persona": "busy professional writing from a phone",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "harbor_view-0000": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "escalation",
+        "focus_doc": "PHARMACY_AND_REFILL_SOP.md",
+        "persona": "angry but reasonable",
+        "length": "one short line"
+      }
+    ]
+  },
+  "harbor_view-0001": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "PATIENT_REGISTRATION_INTAKE.md",
+        "persona": "formal and precise",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "harbor_view-0002": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "POST_OP_CARE_GUIDE.md",
+        "persona": "friendly and chatty",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "harbor_view-0003": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "preventive_care_matrix.json",
+        "persona": "detail-oriented, quotes specific numbers",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "harbor_view-0004": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "EMERGENCY_TRIAGE_PROTOCOL.md",
+        "persona": "formal and precise",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "harbor_view-0005": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "multi_turn",
+        "focus_doc": "faq_support_knowledgebase.json",
+        "persona": "angry but reasonable",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "harbor_view-0006": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "PHARMACY_AND_REFILL_SOP.md",
+        "persona": "repeat customer who assumes you know their history",
+        "length": "one short line"
+      }
+    ]
+  },
+  "harbor_view-0007": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "PATIENT_REGISTRATION_INTAKE.md",
+        "persona": "casual with typos and no punctuation",
+        "length": "one short line"
+      }
+    ]
+  },
+  "harbor_view-0008": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "POST_OP_CARE_GUIDE.md",
+        "persona": "frustrated and terse",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "harbor_view-0009": {
+    "business": "harbor_view",
+    "specs": [
+      {
+        "interaction_type": "inference",
+        "focus_doc": "preventive_care_matrix.json",
+        "persona": "repeat customer who assumes you know their history",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "iron_and_oak-0000": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "CARE_GUIDE.md",
+        "persona": "casual with typos and no punctuation",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "iron_and_oak-0001": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "faq_support_knowledgebase.json",
+        "persona": "confused first-time customer",
+        "length": "one short line"
+      }
+    ]
+  },
+  "iron_and_oak-0002": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "inference",
+        "focus_doc": "REPAIR_POLICY.md",
+        "persona": "elderly customer, unfamiliar with jargon",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "iron_and_oak-0003": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "escalation",
+        "focus_doc": "RETURNS_AND_EXCHANGES.md",
+        "persona": "busy professional writing from a phone",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "iron_and_oak-0004": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "sizing_specs.json",
+        "persona": "friendly and chatty",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "iron_and_oak-0005": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "multi_turn",
+        "focus_doc": "WHOLESALE_SOP.md",
+        "persona": "confused first-time customer",
+        "length": "one short line"
+      }
+    ]
+  },
+  "iron_and_oak-0006": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "CARE_GUIDE.md",
+        "persona": "detail-oriented, quotes specific numbers",
+        "length": "one short line"
+      }
+    ]
+  },
+  "iron_and_oak-0007": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "faq_support_knowledgebase.json",
+        "persona": "confused first-time customer",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "iron_and_oak-0008": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "REPAIR_POLICY.md",
+        "persona": "anxious and over-explains",
+        "length": "one short line"
+      }
+    ]
+  },
+  "iron_and_oak-0009": {
+    "business": "iron_and_oak",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "RETURNS_AND_EXCHANGES.md",
+        "persona": "anxious and over-explains",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "kettle_and_loom-0000": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "POST_CONSTRUCTION_REMEDIATION_GUIDE.md",
+        "persona": "angry but reasonable",
+        "length": "one short line"
+      }
+    ]
+  },
+  "kettle_and_loom-0001": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "CHEMICAL_SAFETY_AND_SDS_GUIDE.md",
+        "persona": "anxious and over-explains",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "kettle_and_loom-0002": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "inference",
+        "focus_doc": "service_scope_matrix.json",
+        "persona": "angry but reasonable",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "kettle_and_loom-0003": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "escalation",
+        "focus_doc": "PROPERTY_ACCESS_AND_CANCELLATION_POLICY.md",
+        "persona": "anxious and over-explains",
+        "length": "one short line"
+      }
+    ]
+  },
+  "kettle_and_loom-0004": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "faq_support_knowledgebase.json",
+        "persona": "anxious and over-explains",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "kettle_and_loom-0005": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "WALKTHROUGH_AND_INTAKE_SOP.md",
+        "persona": "casual with typos and no punctuation",
+        "length": "one short line"
+      }
+    ]
+  },
+  "kettle_and_loom-0006": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "POST_CONSTRUCTION_REMEDIATION_GUIDE.md",
+        "persona": "confused first-time customer",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "kettle_and_loom-0007": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "CHEMICAL_SAFETY_AND_SDS_GUIDE.md",
+        "persona": "frustrated and terse",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "kettle_and_loom-0008": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "multi_turn",
+        "focus_doc": "service_scope_matrix.json",
+        "persona": "elderly customer, unfamiliar with jargon",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "kettle_and_loom-0009": {
+    "business": "kettle_and_loom",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "PROPERTY_ACCESS_AND_CANCELLATION_POLICY.md",
+        "persona": "confused first-time customer",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0000": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "faq_support_knowledgebase.json",
+        "persona": "elderly customer, unfamiliar with jargon",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0001": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "multi_turn",
+        "focus_doc": "ESTIMATE_AND_AUTHORIZATION_POLICY.md",
+        "persona": "frustrated and terse",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0002": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "inference",
+        "focus_doc": "service_intervals_matrix.json",
+        "persona": "anxious and over-explains",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "northstar_auto-0003": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "unanswerable",
+        "focus_doc": "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md",
+        "persona": "friendly and chatty",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0004": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "WARRANTY_AND_REPAIR_POLICY.md",
+        "persona": "busy professional writing from a phone",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0005": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "FLEET_SERVICE_SOP.md",
+        "persona": "detail-oriented, quotes specific numbers",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0006": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "faq_support_knowledgebase.json",
+        "persona": "busy professional writing from a phone",
+        "length": "two or three sentences"
+      }
+    ]
+  },
+  "northstar_auto-0007": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "ESTIMATE_AND_AUTHORIZATION_POLICY.md",
+        "persona": "casual with typos and no punctuation",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0008": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "escalation",
+        "focus_doc": "service_intervals_matrix.json",
+        "persona": "frustrated and terse",
+        "length": "a detailed paragraph with specifics"
+      }
+    ]
+  },
+  "northstar_auto-0009": {
+    "business": "northstar_auto",
+    "specs": [
+      {
+        "interaction_type": "single_qa",
+        "focus_doc": "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md",
+        "persona": "formal and precise",
+        "length": "two or three sentences"
+      }
+    ]
+  }
+}
