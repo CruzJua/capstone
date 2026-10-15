@@ -3,3 +3,6 @@ docs/
 node_modules/
 .env
 !.env.example
+.vscode
+__pycache__/
+*.pyc

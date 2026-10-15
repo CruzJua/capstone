@@ -181,10 +181,11 @@ def die(msg: str) -> None:
     sys.exit(1)
 
 def get_client() -> genai.Client:
-    load_dotenv(ROOT / ".env")
-    if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")):
+    load_dotenv(ROOT / ".env", override=True)
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
         die("GEMINI_API_KEY is not set.")
-    return genai.Client()
+    return genai.Client(api_key=api_key)
 
 # ---------- Loading Business ----------
 
