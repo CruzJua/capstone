@@ -1,0 +1,41 @@
+{
+  "caches": {},
+  "runs": {
+    "pilot_test": {
+      "model": "gemini-3.8-flash",
+      "per_business": 10,
+      "tickets_per_request": 1,
+      "dry_run": true,
+      "requests_file": "/home/jucruz/MySchoolWork/year3/FallQuarter/PRO390/data/generated/pilot_test/requests.jsonl",
+      "prepared": "2026-10-15T06:48:30+00:00",
+      "businesses": [
+        "cinder_and_salt",
+        "harbor_view",
+        "iron_and_oak",
+        "kettle_and_loom",
+        "northstar_auto"
+      ],
+      "include_reference": false,
+      "cache_hours": 24
+    },
+    "run_v1": {
+      "model": "gemini-3.8-flash",
+      "per_business": 1000,
+      "tickets_per_request": 3,
+      "dry_run": false,
+      "requests_file": "/home/jucruz/MySchoolWork/year3/FallQuarter/PRO390/data/generated/run_v1/requests.jsonl",
+      "prepared": "2026-10-15T19:44:33+00:00",
+      "businesses": [
+        "cinder_and_salt",
+        "harbor_view",
+        "iron_and_oak",
+        "kettle_and_loom",
+        "northstar_auto"
+      ],
+      "include_reference": false,
+      "cache_hours": 24,
+      "batch_job": "batches/1p72g3d9ehitnsh7cpvoiiyseerf6sq0pdh3",
+      "submitted": "2026-10-15T19:45:15+00:00"
+    }
+  }
+}
