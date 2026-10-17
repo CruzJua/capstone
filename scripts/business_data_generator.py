@@ -114,15 +114,15 @@ customer message must not contain the answer.
 Answer only what the evidence supports. If the documents flag a situation for a human or urgent \
 contact, say so.
 5. Fields:
-   - action: "answer" if the documents let you fully resolve the message, otherwise "escalate".
-   - escalation_reason: "none" | "docs_require_human" (documents say a human/urgent contact is \
+    - action: "answer" if the documents let you fully resolve the message, otherwise "escalate".
+    - escalation_reason: "none" | "docs_require_human" (documents say a human/urgent contact is \
 needed) | "not_in_docs" (the documents lack the needed fact).
-   - confidence: 0.0-1.0, how fully the evidence supports the answer. Direct match >= 0.85; \
+    - confidence: 0.0-1.0, how fully the evidence supports the answer. Direct match >= 0.85; \
 inference 0.6-0.85; escalation or not_in_docs 0.0-0.4.
-   - rationale: 1-3 sentences linking the evidence to the answer (or explaining the absence).
-   - ticket_summary: for action=escalate, a 2-4 sentence hand-off note for a human agent \
+    - rationale: 1-3 sentences linking the evidence to the answer (or explaining the absence).
+    - ticket_summary: for action=escalate, a 2-4 sentence hand-off note for a human agent \
 (who, what, what was already advised, urgency). Otherwise an empty string.
-   - category: a short snake_case topic label (e.g. post_op_care, refunds, allergens).
+    - category: a short snake_case topic label (e.g. post_op_care, refunds, allergens).
 6. When several examples are requested, make them clearly different from each other: different \
 facts, different documents/sections, different phrasing.
 """
@@ -333,7 +333,7 @@ def build_prompt(business: Business, specs: list[dict]) -> str:
             f"- what it is: {TYPE_BRIEF[spec['interaction_type']]}",
             f"- center it on this document: {spec['focus_doc']}"
             + (" (the question should be in a neighboring topic that this document does NOT settle)"
-               if spec["interaction_type"] == "unanswerable" else ""),
+                if spec["interaction_type"] == "unanswerable" else ""),
             f"- customer style: {spec['persona']}; message length: {spec['length']}",
             "",
         ])
@@ -458,7 +458,7 @@ def cmd_prepare(args) -> None:
 
     for business in businesses:
         cache_name = (f"cachedContents/DRYRUN-{business.key}" if args.dry_run
-                      else ensure_cache(client, state, business, args))
+                        else ensure_cache(client, state, business, args))
 
         for req in build_plan(business, args.per_business, args.tickets_per_request, args.seed):
             prompt = build_prompt(business, req["specs"])
