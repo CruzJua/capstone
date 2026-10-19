@@ -42,22 +42,24 @@ class RAGRetriever:
         query: str,
         tenant_id: str,
         top_k: int = 4,
-        num_candidates: int = 100
+        max_per_doc: Optional[int] = 2,
+        num_candidates: int = 100,
     ) -> List[Dict[str, Any]]:
-        """Returns the top_k chunks for a query, restricted to a single tenant."""
+        """Returns the top_k chunks for a query, restricted to a single tenant with document diversity."""
         if not tenant_id:
             # An empty tenant would silently match nothing at best; refuse rather than risk leakage
             raise ValueError("tenant_id is required for retrieval.")
 
         query_embedding = self.model.encode(query).tolist()
+        fetch_limit = max(top_k * 4, 20) if max_per_doc else top_k
         pipeline = [
             {
                 "$vectorSearch": {
                     "index": self.index_name,
                     "path": "embedding",
                     "queryVector": query_embedding,
-                    "numCandidates": max(num_candidates, top_k),
-                    "limit": top_k,
+                    "numCandidates": max(num_candidates, fetch_limit),
+                    "limit": fetch_limit,
                     "filter": {
                         "tenant_id": {"$eq": tenant_id}
                     }
@@ -75,10 +77,37 @@ class RAGRetriever:
                 }
             }
         ]
-        results = list(self.collection.aggregate(pipeline))
+        raw_results = list(self.collection.aggregate(pipeline))
 
-        # Defense stuff: drop anything that is not this tenant's, even though the index filter should guarantee it
-        return [r for r in results if r.get("tenant_id") == tenant_id]
+        # Defense in depth: drop anything that is not this tenant's
+        filtered_results = [r for r in raw_results if r.get("tenant_id") == tenant_id]
+
+        if not max_per_doc:
+            return filtered_results[:top_k]
+
+        # Enforce document diversity: at most max_per_doc chunks per doc_id
+        doc_counts: Dict[str, int] = {}
+        diverse_results: List[Dict[str, Any]] = []
+        overflow_results: List[Dict[str, Any]] = []
+
+        for r in filtered_results:
+            d_id = r.get("doc_id", "")
+            if doc_counts.get(d_id, 0) < max_per_doc:
+                doc_counts[d_id] = doc_counts.get(d_id, 0) + 1
+                diverse_results.append(r)
+                if len(diverse_results) == top_k:
+                    break
+            else:
+                overflow_results.append(r)
+
+        # Backfill from overflow if diversity leaves us under top_k
+        if len(diverse_results) < top_k:
+            for r in overflow_results:
+                diverse_results.append(r)
+                if len(diverse_results) == top_k:
+                    break
+
+        return diverse_results
 
     @staticmethod
     def format_context(chunks: List[Dict[str, Any]]) -> str:

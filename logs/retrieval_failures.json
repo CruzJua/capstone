@@ -1,0 +1,317 @@
+[
+    {
+        "ticket_id": "cinder_and_salt-0158_t2",
+        "tenant": "cinder_and_salt",
+        "query": "Understood, thank you. What about tree nuts and sesame? How do you keep those separated in the kitchen?",
+        "ground_truth": [
+            "ALLERGEN_SAFETY_PROTOCOL"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-ALG-002",
+                "score": 0.8957405090332031
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-ALG-004",
+                "score": 0.8916593790054321
+            },
+            {
+                "doc_id": "daily_bake_matrix",
+                "section": "production_catalog - None",
+                "score": 0.8708630204200745
+            },
+            {
+                "doc_id": "CATERING_AND_CUSTOM_CAKES",
+                "section": "6. Allergen Transparency for Events",
+                "score": 0.8664963841438293
+            },
+            {
+                "doc_id": "BREAD_STORAGE_AND_REVIVAL",
+                "section": "4. Allergen Reminder",
+                "score": 0.8609203100204468
+            }
+        ]
+    },
+    {
+        "ticket_id": "harbor_view-0311_t0",
+        "tenant": "harbor_view",
+        "query": "What would put a pet into the Red category?",
+        "ground_truth": [
+            "EMERGENCY_TRIAGE_PROTOCOL"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-INT-001",
+                "score": 0.8229324817657471
+            },
+            {
+                "doc_id": "PATIENT_REGISTRATION_INTAKE",
+                "section": "1. Medical History & Record Transfer Requirements",
+                "score": 0.8058016300201416
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-INT-003",
+                "score": 0.8048516511917114
+            },
+            {
+                "doc_id": "preventive_care_matrix",
+                "section": "canine_protocols",
+                "score": 0.8046269416809082
+            },
+            {
+                "doc_id": "preventive_care_matrix",
+                "section": "feline_protocols",
+                "score": 0.8040988445281982
+            }
+        ]
+    },
+    {
+        "ticket_id": "harbor_view-0235_t0",
+        "tenant": "harbor_view",
+        "query": "what if he has to stay overnight, do you keep dogs there?",
+        "ground_truth": [
+            "EMERGENCY_TRIAGE_PROTOCOL"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-EMG-003",
+                "score": 0.8365399837493896
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-INT-001",
+                "score": 0.8347722291946411
+            },
+            {
+                "doc_id": "PATIENT_REGISTRATION_INTAKE",
+                "section": "3. Fear-Free Arrival Protocols",
+                "score": 0.8288379907608032
+            },
+            {
+                "doc_id": "PATIENT_REGISTRATION_INTAKE",
+                "section": "5. Aggressive or Fearful Patients",
+                "score": 0.8227035999298096
+            },
+            {
+                "doc_id": "POST_OP_CARE_GUIDE",
+                "section": "3. Post-Surgical Activity Restriction",
+                "score": 0.8169199228286743
+            }
+        ]
+    },
+    {
+        "ticket_id": "harbor_view-0103_t0",
+        "tenant": "harbor_view",
+        "query": "I came in with my limping dog and you made us wait while taking in another pet who arrived way after us! Why am I being pushed aside when I arrived first? Explain how you decide who gets treated.",
+        "ground_truth": [
+            "EMERGENCY_TRIAGE_PROTOCOL"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-INT-003",
+                "score": 0.8900109529495239
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-INT-001",
+                "score": 0.8781087398529053
+            },
+            {
+                "doc_id": "PATIENT_REGISTRATION_INTAKE",
+                "section": "3. Fear-Free Arrival Protocols",
+                "score": 0.85344398021698
+            },
+            {
+                "doc_id": "PATIENT_REGISTRATION_INTAKE",
+                "section": "5. Aggressive or Fearful Patients",
+                "score": 0.8517574667930603
+            },
+            {
+                "doc_id": "POST_OP_CARE_GUIDE",
+                "section": "3. Post-Surgical Activity Restriction",
+                "score": 0.8298462629318237
+            }
+        ]
+    },
+    {
+        "ticket_id": "kettle_and_loom-0261_t0",
+        "tenant": "kettle_and_loom",
+        "query": "Hello dear, my grandson mentioned your collective for cleaning my small home. Could you tell me what your hourly rate is per cleaner? Also, I have a very heavy oak dresser\u2014are your cleaners able to shift heavy furniture around?",
+        "ground_truth": [
+            "service_scope_matrix"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-SCP-005",
+                "score": 0.8996304273605347
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-SCP-003",
+                "score": 0.8971771001815796
+            },
+            {
+                "doc_id": "WALKTHROUGH_AND_INTAKE_SOP",
+                "section": "2. Mandatory Initial Deep-Clean Requirement",
+                "score": 0.8634054064750671
+            },
+            {
+                "doc_id": "POST_CONSTRUCTION_REMEDIATION_GUIDE",
+                "section": "Phase Details",
+                "score": 0.8606058359146118
+            },
+            {
+                "doc_id": "WALKTHROUGH_AND_INTAKE_SOP",
+                "section": "3. Walkthrough Checklist",
+                "score": 0.8570265769958496
+            }
+        ]
+    },
+    {
+        "ticket_id": "kettle_and_loom-0243_t1",
+        "tenant": "kettle_and_loom",
+        "query": "I am so worried\u2014the cleaners just left an hour ago and I noticed a deep scratch along the side of my mahogany dining credenza that definitely was not there this morning! I took several clear photos right away showing the scratch. What do I need to do to get this resolved and covered by your insurance?",
+        "ground_truth": [
+            "PROPERTY_ACCESS_AND_CANCELLATION_POLICY"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-ACC-005",
+                "score": 0.8950827717781067
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-SCP-001",
+                "score": 0.8524523973464966
+            },
+            {
+                "doc_id": "service_scope_matrix",
+                "section": "service_tiers - None",
+                "score": 0.8348290920257568
+            },
+            {
+                "doc_id": "WALKTHROUGH_AND_INTAKE_SOP",
+                "section": "2. Mandatory Initial Deep-Clean Requirement",
+                "score": 0.8287782669067383
+            },
+            {
+                "doc_id": "WALKTHROUGH_AND_INTAKE_SOP",
+                "section": "1. 5-Step Property Walkthrough Intake Protocol",
+                "score": 0.8285424709320068
+            }
+        ]
+    },
+    {
+        "ticket_id": "northstar_auto-0026_t2",
+        "tenant": "northstar_auto",
+        "query": "I already bought brand-new OEM Bosch brake pads and rotors online, and I expect you to put them on my car. Why are your staff telling me I can't bring my own parts when I'm paying you for the labor?",
+        "ground_truth": [
+            "WARRANTY_AND_REPAIR_POLICY"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-DIAG-006",
+                "score": 0.9107080698013306
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-DIAG-005",
+                "score": 0.9102944731712341
+            },
+            {
+                "doc_id": "service_intervals_matrix",
+                "section": "standalone_flat_rate_labor_hours - None",
+                "score": 0.8874288201332092
+            },
+            {
+                "doc_id": "service_intervals_matrix",
+                "section": "standalone_flat_rate_labor_hours - None",
+                "score": 0.8840042352676392
+            },
+            {
+                "doc_id": "ESTIMATE_AND_AUTHORIZATION_POLICY",
+                "section": "3. Customer Part Inspection Rights",
+                "score": 0.8728101253509521
+            }
+        ]
+    },
+    {
+        "ticket_id": "northstar_auto-0264_t1",
+        "tenant": "northstar_auto",
+        "query": "can u at least check my brakes if i bring them in",
+        "ground_truth": [
+            "WARRANTY_AND_REPAIR_POLICY"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "service_intervals_matrix",
+                "section": "service_intervals - None",
+                "score": 0.870046854019165
+            },
+            {
+                "doc_id": "service_intervals_matrix",
+                "section": "standalone_flat_rate_labor_hours - None",
+                "score": 0.8675400614738464
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-APPT-004",
+                "score": 0.8582062721252441
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-WAR-003",
+                "score": 0.8562885522842407
+            },
+            {
+                "doc_id": "ESTIMATE_AND_AUTHORIZATION_POLICY",
+                "section": "1. Digital Vehicle Inspection (DVI) Color Grading",
+                "score": 0.8552709221839905
+            }
+        ]
+    },
+    {
+        "ticket_id": "northstar_auto-0236_t2",
+        "tenant": "northstar_auto",
+        "query": "Does that roll into the repair labor if I have you guys do the fix?",
+        "ground_truth": [
+            "WARRANTY_AND_REPAIR_POLICY"
+        ],
+        "retrieved": [
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-WAR-002",
+                "score": 0.8628299236297607
+            },
+            {
+                "doc_id": "faq_support_knowledgebase",
+                "section": "faqs - FAQ-DIAG-006",
+                "score": 0.8495365381240845
+            },
+            {
+                "doc_id": "service_intervals_matrix",
+                "section": "standalone_flat_rate_labor_hours - None",
+                "score": 0.842490553855896
+            },
+            {
+                "doc_id": "service_intervals_matrix",
+                "section": "standalone_flat_rate_labor_hours - None",
+                "score": 0.8328976631164551
+            },
+            {
+                "doc_id": "ESTIMATE_AND_AUTHORIZATION_POLICY",
+                "section": "3. Customer Part Inspection Rights",
+                "score": 0.8311550617218018
+            }
+        ]
+    }
+]

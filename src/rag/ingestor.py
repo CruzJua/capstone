@@ -1,13 +1,14 @@
 import os
 import json
 import re
-from typing import List, Dict, Any, Generator, Optional
+from typing import List, Dict, Any, Optional
 from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
 from datetime import datetime, timezone
 from pymongo import MongoClient
 from pymongo.operations import SearchIndexModel
 from sentence_transformers import SentenceTransformer
+from src.rag.table_parser import MarkdownTableParser
 
 class RAGDocumentIngestor:
     def __init__(
@@ -118,7 +119,9 @@ class RAGDocumentIngestor:
         doc_id = file_path.stem
         
         if file_path.suffix == ".md":
-            content = file_path.read_text(encoding="utf-8")
+            raw_content = file_path.read_text(encoding="utf-8")
+            # Linearize markdown tables to augment raw tables with semantic summaries
+            content = MarkdownTableParser.linearize_tables(raw_content, mode="augment")
             # Split sections by markdown headers (H1-H3)
             sections = re.split(r"(^#{1,3}\s+.*$)", content, flags=re.MULTILINE)
             current_header = "Overview"
@@ -158,12 +161,22 @@ class RAGDocumentIngestor:
                     })
             elif isinstance(data, dict):
                 for key, val in data.items():
-                    text_representation = f"{key}:\n{json.dumps(val, indent=2)}"
-                    results.append({
+                    if isinstance(val, list):
+                        for i, item in enumerate(val):
+                            item_id = item.get("id") or item.get("name") if isinstance(item, dict) else i
+                            section_name = f"{key} - {item_id}"
+                            results.append({
+                                "doc_id": doc_id,
+                                "section": section_name,
+                                "text": json.dumps(item, indent=4) if isinstance(item, (dict, list)) else str(item)
+                            })
+                    else:
+                        text_representation = f"{key}:\n{json.dumps(val, indent=4)}"
+                        results.append({
                         "doc_id": doc_id,
                         "section": key,
                         "text": text_representation
-                    })
+                        })
         return results
 
     def ingest_tenant_directory(self, tenant_id: str, tenant_dir: Path) -> int:
