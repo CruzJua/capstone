@@ -56,10 +56,11 @@ def main():
     parser.add_argument("--sample-size", type=int, default=50, help="Answerable tickets per tenant (default: 50)")
     parser.add_argument("--k-values", type=int, nargs="+", default=[1, 3, 5])
     parser.add_argument("--seed", type=int, default=42, help="Sampling seed for reproducible runs")
+    parser.add_argument("--max-per-doc", type=int, default=2, help="Max chunks per document for diversity (default: 2)")
     parser.add_argument(
         "--failures-out",
-        default=str(project_root / "logs/retrieval_failures.jsonl"),
-        help="Where to write queries with no relevant chunk in the top max(k) results",
+        default=str(project_root / "logs/retrieval_failures.json"),
+        help="Where to write queries with no relevant chunk in the top max(k) results (JSON format)",
     )
     args = parser.parse_args()
 
@@ -90,7 +91,12 @@ def main():
 
         for _, ticket in sample.iterrows():
             start = time.perf_counter()
-            results = retriever.retrieve(query=ticket["customer_query"], tenant_id=tenant, top_k=max_k)
+            results = retriever.retrieve(
+                query=ticket["customer_query"],
+                tenant_id=tenant,
+                top_k=max_k,
+                max_per_doc=args.max_per_doc,
+            )
             latencies.append((time.perf_counter() - start) * 1000)
 
             leaked = [r for r in results if r.get("tenant_id") != tenant]
@@ -152,8 +158,7 @@ def main():
         out_path = Path(args.failures_out)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         with out_path.open("w", encoding="utf-8") as f:
-            for failure in failures:
-                f.write(json.dumps(failure) + "\n")
+            json.dump(failures, f, indent=4)
         print(f"Failure cases written to {out_path}")
         for failure in failures[:5]:
             got = ", ".join(r["doc_id"] for r in failure["retrieved"]) or "(none)"
