@@ -4,6 +4,7 @@ import re
 from typing import List, Dict, Any, Generator, Optional
 from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
+from datetime import datetime, timezone
 from pymongo import MongoClient
 from pymongo.operations import SearchIndexModel
 from sentence_transformers import SentenceTransformer
@@ -184,6 +185,7 @@ class RAGDocumentIngestor:
         texts = [c["text"] for c in raw_chunks]
         embeddings = self.model.encode(texts, batch_size=32, show_progress_bar=False)
 
+        now_iso = datetime.now(timezone.utc).isoformat()
         documents = []
         for i, chunk in enumerate(raw_chunks):
             documents.append({
@@ -192,7 +194,8 @@ class RAGDocumentIngestor:
                 "section": chunk["section"],
                 "chunk_index": i,
                 "text": chunk["text"],
-                "embedding": embeddings[i].tolist()
+                "embedding": embeddings[i].tolist(),
+                "created_at": now_iso
             })
 
         # Purge prior embeddings for this tenant to allow clean re-indexing
