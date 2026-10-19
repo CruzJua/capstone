@@ -1,0 +1,30 @@
+# GBNF grammar for the customer support response schema.
+# Usage: llama-cli -m model.gguf --grammar-file src/inference/grammars/support_response.gbnf ...
+#
+# Keys are emitted in a fixed order (answer -> cited_sources -> confidence -> action)
+# so the model reasons in its answer before committing to a confidence and action.
+
+# Multi-line rule bodies must be parenthesized; a bare newline ends a GBNF rule
+root ::= (
+         "{" ws
+         "\"answer\"" ws ":" ws string ws "," ws
+         "\"cited_sources\"" ws ":" ws sources ws "," ws
+         "\"confidence\"" ws ":" ws confidence ws "," ws
+         "\"action\"" ws ":" ws action ws
+         "}" ws
+         )
+
+# Exact document names, e.g. ["REPAIR_POLICY.md", "service_scope_matrix.json"]; [] when escalating
+sources ::= "[" ws ( string ( ws "," ws string )* ws )? "]"
+
+# Float in [0.0, 1.0] with up to 4 decimal places
+confidence ::= "0" ( "." [0-9]{1,4} )? | "1" ( "." "0"{1,4} )?
+
+action ::= "\"answer\"" | "\"escalate\""
+
+# JSON string: any char except raw quotes, backslashes, and control chars; escapes allowed
+string ::= "\"" char* "\""
+char ::= [^"\\\x7F\x00-\x1F] | "\\" ( ["\\/bfnrt] | "u" [0-9a-fA-F]{4} )
+
+# Bounded whitespace so the sampler cannot loop on blank space indefinitely
+ws ::= | " " | "\n" [ \t]{0,20}
