@@ -35,7 +35,7 @@ class RAGRetriever:
         self.db = self.client[resolved_db]
         self.collection = self.db[resolved_collection]
         self.index_name = os.getenv("MONGODB_VECTOR_INDEX_NAME", "vector_index")
-        self.model = SentenceTransformer(resolved_model)
+        self.model = SentenceTransformer(resolved_model, token=os.getenv("HF_TOKEN") or None)
 
     def retrieve(
         self,
@@ -73,6 +73,12 @@ class RAGRetriever:
                     "doc_id": 1,
                     "section": 1,
                     "chunk_index": 1,
+                    "source_id": 1,
+                    "source_sha256": 1,
+                    "source_locator": 1,
+                    "source_context": 1,
+                    "source_block_index": 1,
+                    "parser_version": 1,
                     "score": {"$meta": "vectorSearchScore"}
                 }
             }

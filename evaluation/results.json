@@ -1,0 +1,1485 @@
+{
+    "schema_version": 1,
+    "recorded_date": "2026-10-27",
+    "artifact_kind": "compact_snapshot_of_completed_experiments_not_a_new_run",
+    "benchmark": {
+        "file": "data/evaluation/held_out_benchmark.json",
+        "sha256": "656bd369b60b6db973078f2674f771ce75132d46a77938bcb5648ac7b1e9d261"
+    },
+    "training_csv_sha256": "a025d7005aa4ec88f1a537f8e666ab6ac1a2c182d0f0db2e8faed1a3c992fe79",
+    "training_runs": [
+        {
+            "origin": "kaggle_full01",
+            "configuration": {
+                "model_name": "unsloth/Llama-3.2-3B-Instruct-bnb-4bit",
+                "run_name": "llama32_3b_best_full_01",
+                "run_mode": "full",
+                "data_sha256": "a025d7005aa4ec88f1a537f8e666ab6ac1a2c182d0f0db2e8faed1a3c992fe79",
+                "held_out_tenant": "harbor_view",
+                "seed": 42,
+                "validation_fraction": 0.1,
+                "task_mode": "label_and_rationale",
+                "include_serving_labels": true,
+                "max_seq_length": 2048,
+                "lora_rank": 16,
+                "lora_alpha": 16,
+                "learning_rate": 0.0002,
+                "num_train_epochs": 1,
+                "optimizer": "adamw_8bit",
+                "weight_decay": 0.01,
+                "warmup_ratio": 0.03,
+                "train_batch_size": 1,
+                "gradient_accumulation_steps": 8,
+                "eval_save_steps": 200,
+                "max_steps": -1,
+                "train_examples": 10770,
+                "validation_examples": 1215
+            },
+            "summary": {
+                "run_mode": "full",
+                "optimizer_steps": 1347,
+                "training_wall_seconds_this_session": 9796.963258779,
+                "peak_gpu_memory_gib": 2.97039794921875,
+                "baseline_validation_loss": 1.7018996477127075,
+                "selected_validation_loss": 0.625266969203949,
+                "all_recorded_losses_finite": true,
+                "evaluation_points": 6,
+                "selected_checkpoint": "checkpoint-1200"
+            },
+            "loss_curve": {
+                "file": "evaluation/training/kaggle_full01_loss.png",
+                "sha256": "c2218ad41000bfc00e2a4bc407e9564df4baf6cfffcbc84a195e9c787069b73f"
+            },
+            "source_config_sha256": "39ee6cb01090e01431319ac132270e4f05a2da123372362fff58bcdf99005f99",
+            "source_summary_sha256": "bd23936bb61ef850ed87dde43b24644bb02431503499a88887fb2d68a1f8ec16"
+        },
+        {
+            "origin": "colab_full01",
+            "configuration": {
+                "model_name": "unsloth/Llama-3.2-3B-Instruct-bnb-4bit",
+                "run_name": "llama32_3b_full_01",
+                "run_mode": "full",
+                "data_sha256": "a025d7005aa4ec88f1a537f8e666ab6ac1a2c182d0f0db2e8faed1a3c992fe79",
+                "held_out_tenant": "harbor_view",
+                "seed": 42,
+                "validation_fraction": 0.1,
+                "task_mode": "label_and_rationale",
+                "include_serving_labels": true,
+                "max_seq_length": 2048,
+                "lora_rank": 16,
+                "lora_alpha": 16,
+                "learning_rate": 0.0002,
+                "num_train_epochs": 1,
+                "train_batch_size": 1,
+                "gradient_accumulation_steps": 8,
+                "eval_save_steps": 50,
+                "max_steps": -1,
+                "train_examples": 10770,
+                "validation_examples": 1215
+            },
+            "summary": {
+                "run_mode": "full",
+                "optimizer_steps": 1347,
+                "training_wall_seconds_this_session": 16135.738308671002,
+                "peak_gpu_memory_gib": 5.341118812561035,
+                "baseline_validation_loss": 1.7018996477127075,
+                "selected_validation_loss": 0.6208609342575073,
+                "all_recorded_losses_finite": true,
+                "evaluation_points": 26,
+                "selected_checkpoint": "checkpoint-1300"
+            },
+            "loss_curve": {
+                "file": "evaluation/training/colab_full01_loss.png",
+                "sha256": "6547a1a7fa2f8651bc2e63f288d9686f9d022197fe0b9412081cb53deaec217f"
+            },
+            "source_config_sha256": "1d6280b4afc9203d1bc472baef3a1028fbf7478d4b26eaa1d0cb34058712ff02",
+            "source_summary_sha256": "1db167c18dfd1787821ecf380e4cbba22b81300ce6c11865334c9d695f268f63"
+        }
+    ],
+    "kaggle_quantization_runs": [
+        {
+            "model": "llama3.2:3b-qlora-kaggle-full01-q4",
+            "context_mode": "ground_truth",
+            "responses": 100,
+            "action_accuracy": 0.89,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 1.0,
+            "escalation_recall": 0.7963,
+            "absent_answer_action_proxy": 0.14,
+            "generation_latency_ms": {
+                "p50_ms": 1303.43,
+                "p90_ms": 1706.3,
+                "p95_ms": 1800.76,
+                "mean_ms": 1444.22,
+                "min_ms": 1023.32,
+                "max_ms": 9117.0,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 1306.26,
+                "p90_ms": 1708.84,
+                "p95_ms": 1803.83,
+                "mean_ms": 1447.46,
+                "min_ms": 1027.12,
+                "max_ms": 9120.57,
+                "sample_count": 100
+            },
+            "resident_vram_snapshot_bytes": 2554708622,
+            "judge_reviewers": "Gemma",
+            "strict_rubric_passes": 82,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 89,
+                    "inappropriate": 11
+                },
+                "correctness": {
+                    "correct": 40,
+                    "partially_correct": 8,
+                    "incorrect": 9,
+                    "not_applicable": 43
+                },
+                "groundedness": {
+                    "fully_grounded": 83,
+                    "minor_unsupported": 7,
+                    "major_unsupported": 10
+                },
+                "citation_support": {
+                    "supported": 47,
+                    "partially_supported": 3,
+                    "unsupported": 7,
+                    "not_applicable": 43
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 42,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 43,
+                            "inappropriate": 7
+                        },
+                        "correctness": {
+                            "correct": 0,
+                            "partially_correct": 0,
+                            "incorrect": 7,
+                            "not_applicable": 43
+                        },
+                        "groundedness": {
+                            "fully_grounded": 42,
+                            "minor_unsupported": 0,
+                            "major_unsupported": 8
+                        },
+                        "citation_support": {
+                            "supported": 0,
+                            "partially_supported": 0,
+                            "unsupported": 7,
+                            "not_applicable": 43
+                        }
+                    }
+                },
+                "answer_present": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 40,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 46,
+                            "inappropriate": 4
+                        },
+                        "correctness": {
+                            "correct": 40,
+                            "partially_correct": 8,
+                            "incorrect": 2,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 41,
+                            "minor_unsupported": 7,
+                            "major_unsupported": 2
+                        },
+                        "citation_support": {
+                            "supported": 47,
+                            "partially_supported": 3,
+                            "unsupported": 0,
+                            "not_applicable": 0
+                        }
+                    }
+                }
+            },
+            "source_generation": {
+                "file": "baseline_eval_llama3.2_3b-qlora-kaggle-full01-q4_ground_truth_20261026_231057.json",
+                "sha256": "4ecc91ad6f60e68ad866195ea19595aeb2313e329737b3734311f8b2f643603f"
+            },
+            "source_corrected_judge": {
+                "file": "q4_ground_truth_gemma4_nothink_ctx8192.json",
+                "sha256": "434d740561a0005ee02403ec5c83defd1cc87aee07200aba95f09c8ef70ba805"
+            }
+        },
+        {
+            "model": "llama3.2:3b-qlora-kaggle-full01-q4",
+            "context_mode": "retriever",
+            "responses": 100,
+            "action_accuracy": 0.46,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.0,
+            "escalation_recall": 0.0,
+            "absent_answer_action_proxy": 1.0,
+            "generation_latency_ms": {
+                "p50_ms": 1958.53,
+                "p90_ms": 2318.38,
+                "p95_ms": 2479.0,
+                "mean_ms": 1996.88,
+                "min_ms": 1329.39,
+                "max_ms": 3416.22,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 2060.01,
+                "p90_ms": 2426.75,
+                "p95_ms": 2554.42,
+                "mean_ms": 2094.29,
+                "min_ms": 1410.12,
+                "max_ms": 3500.25,
+                "sample_count": 100
+            },
+            "resident_vram_snapshot_bytes": 2554708622,
+            "judge_reviewers": "Gemma",
+            "strict_rubric_passes": 18,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 40,
+                    "inappropriate": 60
+                },
+                "correctness": {
+                    "correct": 27,
+                    "partially_correct": 19,
+                    "incorrect": 54,
+                    "not_applicable": 0
+                },
+                "groundedness": {
+                    "fully_grounded": 27,
+                    "minor_unsupported": 16,
+                    "major_unsupported": 57
+                },
+                "citation_support": {
+                    "supported": 18,
+                    "partially_supported": 38,
+                    "unsupported": 44,
+                    "not_applicable": 0
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 0,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 0,
+                            "inappropriate": 50
+                        },
+                        "correctness": {
+                            "correct": 0,
+                            "partially_correct": 4,
+                            "incorrect": 46,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 0,
+                            "minor_unsupported": 4,
+                            "major_unsupported": 46
+                        },
+                        "citation_support": {
+                            "supported": 0,
+                            "partially_supported": 16,
+                            "unsupported": 34,
+                            "not_applicable": 0
+                        }
+                    }
+                },
+                "answer_present": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 18,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 40,
+                            "inappropriate": 10
+                        },
+                        "correctness": {
+                            "correct": 27,
+                            "partially_correct": 15,
+                            "incorrect": 8,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 27,
+                            "minor_unsupported": 12,
+                            "major_unsupported": 11
+                        },
+                        "citation_support": {
+                            "supported": 18,
+                            "partially_supported": 22,
+                            "unsupported": 10,
+                            "not_applicable": 0
+                        }
+                    }
+                }
+            },
+            "source_generation": {
+                "file": "baseline_eval_llama3.2_3b-qlora-kaggle-full01-q4_retriever_20261026_231436.json",
+                "sha256": "ddc16af270790c0da7cfbd2853cb8698d100c35bd4a079a7922c94d2d7ed2ece"
+            },
+            "source_corrected_judge": {
+                "file": "q4_retriever_gemma4_nothink_ctx8192.json",
+                "sha256": "4208186bbd36a40f5cad48011896643ee4dcdaa130367e75a42d49b0a655225f"
+            }
+        },
+        {
+            "model": "llama3.2:3b-qlora-kaggle-full01-q5",
+            "context_mode": "ground_truth",
+            "responses": 100,
+            "action_accuracy": 0.71,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 1.0,
+            "escalation_recall": 0.463,
+            "absent_answer_action_proxy": 0.5,
+            "generation_latency_ms": {
+                "p50_ms": 1520.8,
+                "p90_ms": 2056.82,
+                "p95_ms": 2100.05,
+                "mean_ms": 1639.45,
+                "min_ms": 1143.41,
+                "max_ms": 7324.26,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 1523.96,
+                "p90_ms": 2060.43,
+                "p95_ms": 2104.03,
+                "mean_ms": 1642.92,
+                "min_ms": 1146.48,
+                "max_ms": 7326.96,
+                "sample_count": 100
+            },
+            "resident_vram_snapshot_bytes": 2857484942,
+            "judge_reviewers": "Gemma",
+            "strict_rubric_passes": 59,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 71,
+                    "inappropriate": 29
+                },
+                "correctness": {
+                    "correct": 34,
+                    "partially_correct": 13,
+                    "incorrect": 28,
+                    "not_applicable": 25
+                },
+                "groundedness": {
+                    "fully_grounded": 60,
+                    "minor_unsupported": 12,
+                    "major_unsupported": 28
+                },
+                "citation_support": {
+                    "supported": 42,
+                    "partially_supported": 8,
+                    "unsupported": 25,
+                    "not_applicable": 25
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 25,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 25,
+                            "inappropriate": 25
+                        },
+                        "correctness": {
+                            "correct": 0,
+                            "partially_correct": 0,
+                            "incorrect": 25,
+                            "not_applicable": 25
+                        },
+                        "groundedness": {
+                            "fully_grounded": 25,
+                            "minor_unsupported": 0,
+                            "major_unsupported": 25
+                        },
+                        "citation_support": {
+                            "supported": 0,
+                            "partially_supported": 0,
+                            "unsupported": 25,
+                            "not_applicable": 25
+                        }
+                    }
+                },
+                "answer_present": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 34,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 46,
+                            "inappropriate": 4
+                        },
+                        "correctness": {
+                            "correct": 34,
+                            "partially_correct": 13,
+                            "incorrect": 3,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 35,
+                            "minor_unsupported": 12,
+                            "major_unsupported": 3
+                        },
+                        "citation_support": {
+                            "supported": 42,
+                            "partially_supported": 8,
+                            "unsupported": 0,
+                            "not_applicable": 0
+                        }
+                    }
+                }
+            },
+            "source_generation": {
+                "file": "baseline_eval_llama3.2_3b-qlora-kaggle-full01-q5_ground_truth_20261026_231721.json",
+                "sha256": "a2df41c0e7f90fa7ab9fe7d1560f95e66ca9531649a24303d1dab92783d483be"
+            },
+            "source_corrected_judge": {
+                "file": "q5_ground_truth_gemma4_nothink_ctx8192.json",
+                "sha256": "045796b13e3d2e6d864a941da6dc8856d9e9ba0cddd8f5d7d2ff1d1b9505b1be"
+            }
+        },
+        {
+            "model": "llama3.2:3b-qlora-kaggle-full01-q5",
+            "context_mode": "retriever",
+            "responses": 100,
+            "action_accuracy": 0.46,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.0,
+            "escalation_recall": 0.0,
+            "absent_answer_action_proxy": 1.0,
+            "generation_latency_ms": {
+                "p50_ms": 2340.82,
+                "p90_ms": 3003.85,
+                "p95_ms": 3364.15,
+                "mean_ms": 2435.72,
+                "min_ms": 1479.65,
+                "max_ms": 3947.46,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 2423.4,
+                "p90_ms": 3143.0,
+                "p95_ms": 3435.35,
+                "mean_ms": 2529.58,
+                "min_ms": 1556.3,
+                "max_ms": 4032.57,
+                "sample_count": 100
+            },
+            "resident_vram_snapshot_bytes": 2857484942,
+            "judge_reviewers": "Gemma + one separate secondary assessment",
+            "strict_rubric_passes": 19,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 42,
+                    "inappropriate": 58
+                },
+                "correctness": {
+                    "correct": 32,
+                    "partially_correct": 17,
+                    "incorrect": 51,
+                    "not_applicable": 0
+                },
+                "groundedness": {
+                    "fully_grounded": 34,
+                    "minor_unsupported": 14,
+                    "major_unsupported": 52
+                },
+                "citation_support": {
+                    "supported": 21,
+                    "partially_supported": 40,
+                    "unsupported": 39,
+                    "not_applicable": 0
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 0,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 0,
+                            "inappropriate": 50
+                        },
+                        "correctness": {
+                            "correct": 1,
+                            "partially_correct": 3,
+                            "incorrect": 46,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 3,
+                            "minor_unsupported": 3,
+                            "major_unsupported": 44
+                        },
+                        "citation_support": {
+                            "supported": 1,
+                            "partially_supported": 17,
+                            "unsupported": 32,
+                            "not_applicable": 0
+                        }
+                    }
+                },
+                "answer_present": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 19,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 42,
+                            "inappropriate": 8
+                        },
+                        "correctness": {
+                            "correct": 31,
+                            "partially_correct": 14,
+                            "incorrect": 5,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 31,
+                            "minor_unsupported": 11,
+                            "major_unsupported": 8
+                        },
+                        "citation_support": {
+                            "supported": 20,
+                            "partially_supported": 23,
+                            "unsupported": 7,
+                            "not_applicable": 0
+                        }
+                    }
+                }
+            },
+            "source_generation": {
+                "file": "baseline_eval_llama3.2_3b-qlora-kaggle-full01-q5_retriever_20261026_232137.json",
+                "sha256": "d189586c7ff8abe1a3363a3930157855c98cc768a3747809b1381306340de98e"
+            },
+            "source_corrected_judge": {
+                "file": "q5_retriever_gemma4_nothink_ctx8192.json",
+                "sha256": "5feb38e550ecd402657b11f706b691c216e37bf9f2c8f7b1154e15ed3d9266d6"
+            }
+        },
+        {
+            "model": "llama3.2:3b-qlora-kaggle-full01-q8",
+            "context_mode": "ground_truth",
+            "responses": 100,
+            "action_accuracy": 0.91,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 1.0,
+            "escalation_recall": 0.8333,
+            "absent_answer_action_proxy": 0.1,
+            "generation_latency_ms": {
+                "p50_ms": 2535.58,
+                "p90_ms": 3390.2,
+                "p95_ms": 3610.06,
+                "mean_ms": 2641.56,
+                "min_ms": 1789.6,
+                "max_ms": 6013.77,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 2538.07,
+                "p90_ms": 3391.66,
+                "p95_ms": 3611.96,
+                "mean_ms": 2643.77,
+                "min_ms": 1791.0,
+                "max_ms": 6015.71,
+                "sample_count": 100
+            },
+            "resident_vram_snapshot_bytes": 3601743216,
+            "judge_reviewers": "Gemma",
+            "strict_rubric_passes": 85,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 91,
+                    "inappropriate": 9
+                },
+                "correctness": {
+                    "correct": 41,
+                    "partially_correct": 9,
+                    "incorrect": 5,
+                    "not_applicable": 45
+                },
+                "groundedness": {
+                    "fully_grounded": 87,
+                    "minor_unsupported": 7,
+                    "major_unsupported": 6
+                },
+                "citation_support": {
+                    "supported": 45,
+                    "partially_supported": 5,
+                    "unsupported": 5,
+                    "not_applicable": 45
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 44,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 45,
+                            "inappropriate": 5
+                        },
+                        "correctness": {
+                            "correct": 0,
+                            "partially_correct": 0,
+                            "incorrect": 5,
+                            "not_applicable": 45
+                        },
+                        "groundedness": {
+                            "fully_grounded": 44,
+                            "minor_unsupported": 0,
+                            "major_unsupported": 6
+                        },
+                        "citation_support": {
+                            "supported": 0,
+                            "partially_supported": 0,
+                            "unsupported": 5,
+                            "not_applicable": 45
+                        }
+                    }
+                },
+                "answer_present": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 41,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 46,
+                            "inappropriate": 4
+                        },
+                        "correctness": {
+                            "correct": 41,
+                            "partially_correct": 9,
+                            "incorrect": 0,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 43,
+                            "minor_unsupported": 7,
+                            "major_unsupported": 0
+                        },
+                        "citation_support": {
+                            "supported": 45,
+                            "partially_supported": 5,
+                            "unsupported": 0,
+                            "not_applicable": 0
+                        }
+                    }
+                }
+            },
+            "source_generation": {
+                "file": "baseline_eval_llama3.2_3b-qlora-kaggle-full01-q8_ground_truth_20261026_232601.json",
+                "sha256": "adac079821b276d3d5b1e927f669884aa88e2731959f5bd58035fdaa9f31234a"
+            },
+            "source_corrected_judge": {
+                "file": "q8_ground_truth_gemma4_nothink_ctx8192.json",
+                "sha256": "15a64adf3ef66b7c745480364277aa61b3c8d518c3269c703a4f2c379e692477"
+            }
+        },
+        {
+            "model": "llama3.2:3b-qlora-kaggle-full01-q8",
+            "context_mode": "retriever",
+            "responses": 100,
+            "action_accuracy": 0.46,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.0,
+            "escalation_recall": 0.0,
+            "absent_answer_action_proxy": 1.0,
+            "generation_latency_ms": {
+                "p50_ms": 3840.37,
+                "p90_ms": 4722.31,
+                "p95_ms": 5005.99,
+                "mean_ms": 3913.9,
+                "min_ms": 2313.65,
+                "max_ms": 5631.03,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 3902.4,
+                "p90_ms": 4859.04,
+                "p95_ms": 5079.42,
+                "mean_ms": 3993.14,
+                "min_ms": 2386.13,
+                "max_ms": 5704.31,
+                "sample_count": 100
+            },
+            "resident_vram_snapshot_bytes": 3601743216,
+            "judge_reviewers": "Gemma",
+            "strict_rubric_passes": 21,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 41,
+                    "inappropriate": 59
+                },
+                "correctness": {
+                    "correct": 35,
+                    "partially_correct": 13,
+                    "incorrect": 52,
+                    "not_applicable": 0
+                },
+                "groundedness": {
+                    "fully_grounded": 37,
+                    "minor_unsupported": 10,
+                    "major_unsupported": 53
+                },
+                "citation_support": {
+                    "supported": 22,
+                    "partially_supported": 41,
+                    "unsupported": 37,
+                    "not_applicable": 0
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 0,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 0,
+                            "inappropriate": 50
+                        },
+                        "correctness": {
+                            "correct": 0,
+                            "partially_correct": 4,
+                            "incorrect": 46,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 2,
+                            "minor_unsupported": 4,
+                            "major_unsupported": 44
+                        },
+                        "citation_support": {
+                            "supported": 0,
+                            "partially_supported": 20,
+                            "unsupported": 30,
+                            "not_applicable": 0
+                        }
+                    }
+                },
+                "answer_present": {
+                    "records": 50,
+                    "assessed": 50,
+                    "strict_rubric_passes": 21,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 41,
+                            "inappropriate": 9
+                        },
+                        "correctness": {
+                            "correct": 35,
+                            "partially_correct": 9,
+                            "incorrect": 6,
+                            "not_applicable": 0
+                        },
+                        "groundedness": {
+                            "fully_grounded": 35,
+                            "minor_unsupported": 6,
+                            "major_unsupported": 9
+                        },
+                        "citation_support": {
+                            "supported": 22,
+                            "partially_supported": 21,
+                            "unsupported": 7,
+                            "not_applicable": 0
+                        }
+                    }
+                }
+            },
+            "source_generation": {
+                "file": "baseline_eval_llama3.2_3b-qlora-kaggle-full01-q8_retriever_20261026_233243.json",
+                "sha256": "2428aa73a5164cf93c36d9353adb4a8ad1e24cc9d8f8294cd67b11c856f1d3e5"
+            },
+            "source_corrected_judge": {
+                "file": "q8_retriever_gemma4_nothink_ctx8192.json",
+                "sha256": "38b028d890e7d9b801679d975abb9bdee8f879faeea17c18d4b49e1e59049e8a"
+            }
+        }
+    ],
+    "assessment_coverage": {
+        "responses": 600,
+        "gemma_scored": 599,
+        "mechanical_decision_corrections": 57,
+        "strict_passes": 284,
+        "unassessed_after_overlay": 0,
+        "separate_secondary_assessments": 1,
+        "scope": "kaggle_student_responses_only"
+    },
+    "retrieval": {
+        "questions": 50,
+        "settings": {
+            "tenant_arg": "harbor_view",
+            "sample_size_per_tenant": 50,
+            "k_values": [
+                1,
+                3,
+                4,
+                5
+            ],
+            "seed": 42,
+            "max_per_doc": 2,
+            "index_name": "vector_index"
+        },
+        "metrics": {
+            "n": 50,
+            "single_doc_count": 44,
+            "multi_doc_count": 6,
+            "hit_rate": {
+                "1": 0.32,
+                "3": 0.88,
+                "4": 0.9,
+                "5": 0.94
+            },
+            "doc_recall": {
+                "1": 0.25666666666666665,
+                "3": 0.8633333333333333,
+                "4": 0.9,
+                "5": 0.94
+            },
+            "mrr": {
+                "1": 0.32,
+                "3": 0.54,
+                "4": 0.545,
+                "5": 0.5529999999999999
+            },
+            "evidence_measurable_count": 50,
+            "evidence_hit_rate": {
+                "1": 0.28,
+                "3": 0.6,
+                "4": 0.66,
+                "5": 0.68
+            },
+            "evidence_span_coverage": {
+                "1": 0.19333333333333333,
+                "3": 0.38833333333333336,
+                "4": 0.47,
+                "5": 0.485
+            },
+            "multi_doc_metrics": {
+                "count": 6,
+                "hit_rate": {
+                    "1": 1.0,
+                    "3": 1.0,
+                    "4": 1.0,
+                    "5": 1.0
+                },
+                "doc_recall": {
+                    "1": 0.47222222222222227,
+                    "3": 0.8611111111111112,
+                    "4": 1.0,
+                    "5": 1.0
+                }
+            },
+            "avg_latency_ms": 79.89060098188929
+        },
+        "source_sha256": "658b56f922b2996c569e6becd013aed10000a70c73b6eb4d2d05df095bbc2ab6"
+    },
+    "provenance": {
+        "assessment_summary_sha256": "32192685c747e7d17c8a9e2010c94e4a64566510adc82c93294ec58e55bbae44",
+        "artifact_validation_sha256": "521491e951ebf8837c3abddc33e6591c5151922e9b18d40d82f497369f86d662",
+        "raw_outputs": "Original full generation/judge/training logs remain local under ignored logs/ or external artifact storage. This compact snapshot does not include per-response audit material."
+    },
+    "status": {
+        "teacher_comparison": "completed_descriptive_comparison_with_documented_configuration_and_judge_limitations",
+        "revised_dataset_training": "explicitly_deferred_until_after_sprint_4",
+        "local_index_migration": "not_executed; parser and provenance are opt-in",
+        "controlled_teacher_recovery": "withheld_due_to_generation_settings_mismatch"
+    },
+    "limitations": [
+        "Kaggle quantization runs are from one Kaggle adapter; Colab training is historical and separate.",
+        "599 Gemma assessments plus one explicitly separate secondary assessment; 57 mechanical corrections changed decision only.",
+        "Rubric judgments are assessments, not verified factual truth or a human-agreement study.",
+        "Absent-answer action proxy is not a factual hallucination rate.",
+        "Resident VRAM snapshots are not peak memory; earlier smoke-run Q8 snapshot differs from the full-run snapshots retained here.",
+        "All three Kaggle retriever students answered all100cases, including50absent and4human-required; escalation recall is zero.",
+        "Revised-data training was not executed, and frozen benchmark results are not development-selection evidence.",
+        "Teacher rubric coverage is 198 valid Gemma judgments plus two separate secondary AI assessments; retrieval has 86 raw Gemma strict passes and 87 passes after separate assessments. This is not 200 homogeneous Gemma judgments.",
+        "Teacher and student generation settings differ. The harness withholds formal controlled teacher-recovery and gap-closed metrics; raw side-by-side results describe deployed configurations.",
+        "Historical base serving identity is unrecorded; its older/incomplete rubric assessments are excluded from the quality comparison.",
+        "Nine targeted secondary AI spot checks include suspected Gemma citation/reference-answer errors. Valid raw Gemma scores remain unchanged; no human agreement study or factual certification is claimed.",
+        "Teacher cost is a dated price-catalog estimate including thinking tokens; provider invoices were not inspected and local zero API token cost excludes hardware, energy and hosting."
+    ],
+    "teacher": {
+        "model": "gemini-3.8-flash",
+        "generation_state_sha256": "62d7f68736d7eebd1a4f230e2bf2abf4720a52b632525603dc8c698aa798b53f",
+        "comparison_completed": true,
+        "limitation": "Teacher identity is retained; private cache/file/job resource identifiers remain in local ignored state.",
+        "comparison_kind": "descriptive_matched_input_deployed_configurations",
+        "api": "interactions",
+        "api_key_source": ".env",
+        "evaluation_responses": 200,
+        "valid_gemma_assessments": 198,
+        "separate_secondary_AI_assessments": 2,
+        "unassessed_after_separate_assessments": 0,
+        "estimated_total_generation_cost_usd": 0.43866900000000003,
+        "cost_scope": "Dated catalog estimate for the 200 completed teacher requests, including thinking; provider invoice not verified.",
+        "comparison_summary": {
+            "file": "logs/teacher_comparison_20261027/comparison_summary.json",
+            "sha256": "f23d50e8a8370e535bb6ff0fe0ddfc2d7bd140ffc8c1be82a942bf8e012a7f03"
+        }
+    },
+    "screening_search": {
+        "objective": "serving_label_completion_loss",
+        "data_sha256": "a025d7005aa4ec88f1a537f8e666ab6ac1a2c182d0f0db2e8faed1a3c992fe79",
+        "held_out_tenant": "harbor_view",
+        "train_tickets": 256,
+        "validation_tickets": 64,
+        "max_steps_per_trial": 60,
+        "best_trial_id": "trial_003",
+        "promoted_hyperparameters": {
+            "learning_rate": 0.0002,
+            "optimizer": "adamw_8bit",
+            "lora_rank": 16,
+            "lora_alpha": 16,
+            "weight_decay": 0.01,
+            "warmup_ratio": 0.03
+        },
+        "trials": [
+            {
+                "trial_id": "trial_001",
+                "status": "completed",
+                "optimizer_steps": 60,
+                "hyperparameters": {
+                    "learning_rate": 0.0001,
+                    "optimizer": "adamw_8bit",
+                    "lora_rank": 16,
+                    "lora_alpha": 16,
+                    "weight_decay": 0.01,
+                    "warmup_ratio": 0.03
+                },
+                "validation_loss": 0.736171305179596,
+                "baseline_validation_loss": 1.3865954875946045
+            },
+            {
+                "trial_id": "trial_002",
+                "status": "completed",
+                "optimizer_steps": 60,
+                "hyperparameters": {
+                    "learning_rate": 0.0001,
+                    "optimizer": "adamw_torch",
+                    "lora_rank": 16,
+                    "lora_alpha": 16,
+                    "weight_decay": 0.01,
+                    "warmup_ratio": 0.03
+                },
+                "validation_loss": 0.736275315284729,
+                "baseline_validation_loss": 1.3865954875946045
+            },
+            {
+                "trial_id": "trial_003",
+                "status": "completed",
+                "optimizer_steps": 60,
+                "hyperparameters": {
+                    "learning_rate": 0.0002,
+                    "optimizer": "adamw_8bit",
+                    "lora_rank": 16,
+                    "lora_alpha": 16,
+                    "weight_decay": 0.01,
+                    "warmup_ratio": 0.03
+                },
+                "validation_loss": 0.6864392757415771,
+                "baseline_validation_loss": 1.3865954875946045
+            },
+            {
+                "trial_id": "trial_004",
+                "status": "completed",
+                "optimizer_steps": 60,
+                "hyperparameters": {
+                    "learning_rate": 0.0002,
+                    "optimizer": "adamw_torch",
+                    "lora_rank": 16,
+                    "lora_alpha": 16,
+                    "weight_decay": 0.01,
+                    "warmup_ratio": 0.03
+                },
+                "validation_loss": 0.6865572929382324,
+                "baseline_validation_loss": 1.3865954875946045
+            }
+        ],
+        "source_sha256": {
+            "search_results.json": "826e67146cf13942a8d3a46c69aa0844e72b81e53cb3ad200fb47734eb936527",
+            "search_plan.json": "af653cd294d29a9d72d7fa0aa270f4dcd04c7e29f81d66d4f0fbf4bcecc06616",
+            "best_hyperparameters.json": "3b824f4d995da3842860b427be379cbaa705fb444ba174790a921a8466c8376b"
+        },
+        "counting": "Four short screening trials plus two full runs on the same original data; not six full-data cycles. Smoke and GGUF quantizations are not extra training runs."
+    },
+    "teacher_runs": [
+        {
+            "model": "gemini-3.8-flash",
+            "context_mode": "ground_truth",
+            "responses": 100,
+            "action_accuracy": 0.95,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.9298245614035088,
+            "escalation_recall": 0.9814814814814815,
+            "escalation_f1": 0.954954954954955,
+            "absent_answer_action_proxy": 0.0,
+            "generation_latency_ms": {
+                "p50_ms": 3486.93,
+                "p90_ms": 5772.3,
+                "p95_ms": 7302.15,
+                "mean_ms": 4259.1,
+                "min_ms": 2044.26,
+                "max_ms": 25168.81,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 3486.99,
+                "p90_ms": 5772.37,
+                "p95_ms": 7302.23,
+                "mean_ms": 4259.17,
+                "min_ms": 2044.32,
+                "max_ms": 25168.88,
+                "sample_count": 100
+            },
+            "token_cost_metrics": {
+                "total_prompt_tokens": 25796,
+                "total_completion_tokens": 35249,
+                "total_tokens": 61045,
+                "avg_prompt_tokens": 257.96,
+                "avg_completion_tokens": 352.49,
+                "avg_total_tokens": 610.45,
+                "cost_per_1k_queries": 1.515308,
+                "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.8-flash ; Standard paid tier, text input and output including thinking; introductory rates through December 31, 2026; list-price estimate excludes cache discounts and taxes",
+                "pricing_date": "2026-10-27",
+                "is_local": false
+            },
+            "judge_reviewers": "Gemma",
+            "gemma_assessments": 100,
+            "separate_secondary_AI_assessments": 0,
+            "raw_gemma_strict_passes": 95,
+            "strict_rubric_passes": 95,
+            "strict_rubric_pass_rate": 0.95,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 95,
+                    "inappropriate": 5
+                },
+                "correctness": {
+                    "correct": 42,
+                    "partially_correct": 1,
+                    "incorrect": 0,
+                    "not_applicable": 57
+                },
+                "groundedness": {
+                    "fully_grounded": 99,
+                    "minor_unsupported": 1,
+                    "major_unsupported": 0
+                },
+                "citation_support": {
+                    "supported": 43,
+                    "partially_supported": 0,
+                    "unsupported": 0,
+                    "not_applicable": 57
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "judged": 50,
+                    "failed_judgments": 0,
+                    "skipped_invalid_response": 0,
+                    "pending": 0,
+                    "judged_coverage": 1.0,
+                    "passed": 50,
+                    "judged_pass_rate": 1.0,
+                    "strict_pass_rate": 1.0,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 50,
+                            "inappropriate": 0
+                        },
+                        "correctness": {
+                            "correct": 0,
+                            "partially_correct": 0,
+                            "incorrect": 0,
+                            "not_applicable": 50
+                        },
+                        "groundedness": {
+                            "fully_grounded": 50,
+                            "minor_unsupported": 0,
+                            "major_unsupported": 0
+                        },
+                        "citation_support": {
+                            "supported": 0,
+                            "partially_supported": 0,
+                            "unsupported": 0,
+                            "not_applicable": 50
+                        }
+                    },
+                    "decision_appropriate_rate": 1.0,
+                    "evidence_insufficient": 50,
+                    "escalation_responses_judged": 50,
+                    "escalations_with_unsupported_claims": 0,
+                    "escalation_unsupported_claim_rate": 0.0,
+                    "answer_responses_judged": 0,
+                    "answers_with_unsupported_claims": 0,
+                    "answer_unsupported_claim_rate": null,
+                    "judged_with_citations_missing_from_evidence": 0,
+                    "decision_vs_action_correct_disagreements": 0
+                },
+                "answer_present": {
+                    "records": 50,
+                    "judged": 50,
+                    "failed_judgments": 0,
+                    "skipped_invalid_response": 0,
+                    "pending": 0,
+                    "judged_coverage": 1.0,
+                    "passed": 45,
+                    "judged_pass_rate": 0.9,
+                    "strict_pass_rate": 0.9,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 45,
+                            "inappropriate": 5
+                        },
+                        "correctness": {
+                            "correct": 42,
+                            "partially_correct": 1,
+                            "incorrect": 0,
+                            "not_applicable": 7
+                        },
+                        "groundedness": {
+                            "fully_grounded": 49,
+                            "minor_unsupported": 1,
+                            "major_unsupported": 0
+                        },
+                        "citation_support": {
+                            "supported": 43,
+                            "partially_supported": 0,
+                            "unsupported": 0,
+                            "not_applicable": 7
+                        }
+                    },
+                    "decision_appropriate_rate": 0.9,
+                    "evidence_insufficient": 0,
+                    "escalation_responses_judged": 7,
+                    "escalations_with_unsupported_claims": 1,
+                    "escalation_unsupported_claim_rate": 0.14285714285714285,
+                    "answer_responses_judged": 43,
+                    "answers_with_unsupported_claims": 0,
+                    "answer_unsupported_claim_rate": 0.0,
+                    "judged_with_citations_missing_from_evidence": 0,
+                    "decision_vs_action_correct_disagreements": 0
+                }
+            },
+            "source_generation": {
+                "file": "logs/teacher_interactions_baselines/baseline_eval_gemini-3.8-flash_ground_truth_20261028_035851.json",
+                "sha256": "fccdbeb3ad6705a5393c62944cf58fcf61cbfb17238336f82f270c1093a46b46"
+            },
+            "source_gemma_judge": {
+                "file": "logs/teacher_comparison_20261027/judged/ground_truth_gemma4_nothink_ctx8192.json",
+                "sha256": "c50213956386f262e948680f2cbb52aedf7988583cf86a83b9f1b552796d9697"
+            },
+            "judge_identity": {
+                "provider": "ollama",
+                "model": "gemma4:latest",
+                "endpoint_host": "localhost:11434",
+                "temperature": 0.0,
+                "think": false,
+                "num_ctx": 8192,
+                "num_predict": 512
+            },
+            "rubric": {
+                "version": "1.0",
+                "sha256": "b43bfd9b9da696254f0206303c3cb3c96a22615bc4843ff4e9eb621084e30d31"
+            }
+        },
+        {
+            "model": "gemini-3.8-flash",
+            "context_mode": "retriever",
+            "responses": 100,
+            "action_accuracy": 0.92,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.8833333333333333,
+            "escalation_recall": 0.9814814814814815,
+            "escalation_f1": 0.9298245614035088,
+            "absent_answer_action_proxy": 0.02,
+            "generation_latency_ms": {
+                "p50_ms": 4497.2,
+                "p90_ms": 7095.85,
+                "p95_ms": 8027.93,
+                "mean_ms": 5339.5,
+                "min_ms": 2346.71,
+                "max_ms": 33809.32,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 4710.44,
+                "p90_ms": 7313.61,
+                "p95_ms": 8244.78,
+                "mean_ms": 5596.11,
+                "min_ms": 2556.35,
+                "max_ms": 33997.19,
+                "sample_count": 100
+            },
+            "token_cost_metrics": {
+                "total_prompt_tokens": 128771,
+                "total_completion_tokens": 50816,
+                "total_tokens": 179587,
+                "avg_prompt_tokens": 1287.71,
+                "avg_completion_tokens": 508.16,
+                "avg_total_tokens": 1795.87,
+                "cost_per_1k_queries": 2.871383,
+                "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.8-flash ; Standard paid tier, text input and output including thinking; introductory rates through December 31, 2026; list-price estimate excludes cache discounts and taxes",
+                "pricing_date": "2026-10-27",
+                "is_local": false
+            },
+            "judge_reviewers": "Gemma plus two separate secondary AI assessments",
+            "gemma_assessments": 98,
+            "separate_secondary_AI_assessments": 2,
+            "raw_gemma_strict_passes": 86,
+            "strict_rubric_passes": 87,
+            "strict_rubric_pass_rate": 0.87,
+            "judge_dimensions": {
+                "decision": {
+                    "appropriate": 97,
+                    "inappropriate": 3
+                },
+                "correctness": {
+                    "correct": 39,
+                    "partially_correct": 0,
+                    "incorrect": 1,
+                    "not_applicable": 60
+                },
+                "groundedness": {
+                    "fully_grounded": 96,
+                    "minor_unsupported": 3,
+                    "major_unsupported": 1
+                },
+                "citation_support": {
+                    "supported": 31,
+                    "partially_supported": 9,
+                    "unsupported": 0,
+                    "not_applicable": 60
+                }
+            },
+            "answer_presence_assessments": {
+                "answer_absent": {
+                    "records": 50,
+                    "judged": 50,
+                    "failed_judgments": 0,
+                    "skipped_invalid_response": 0,
+                    "pending": 0,
+                    "judged_coverage": 1.0,
+                    "passed": 49,
+                    "judged_pass_rate": 0.98,
+                    "strict_pass_rate": 0.98,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 49,
+                            "inappropriate": 1
+                        },
+                        "correctness": {
+                            "correct": 0,
+                            "partially_correct": 0,
+                            "incorrect": 1,
+                            "not_applicable": 49
+                        },
+                        "groundedness": {
+                            "fully_grounded": 49,
+                            "minor_unsupported": 0,
+                            "major_unsupported": 1
+                        },
+                        "citation_support": {
+                            "supported": 0,
+                            "partially_supported": 1,
+                            "unsupported": 0,
+                            "not_applicable": 49
+                        }
+                    },
+                    "decision_appropriate_rate": 0.98,
+                    "evidence_insufficient": 50,
+                    "escalation_responses_judged": 49,
+                    "escalations_with_unsupported_claims": 0,
+                    "escalation_unsupported_claim_rate": 0.0,
+                    "answer_responses_judged": 1,
+                    "answers_with_unsupported_claims": 1,
+                    "answer_unsupported_claim_rate": 1.0,
+                    "judged_with_citations_missing_from_evidence": 0,
+                    "decision_vs_action_correct_disagreements": 0
+                },
+                "answer_present": {
+                    "records": 50,
+                    "judged": 50,
+                    "failed_judgments": 0,
+                    "skipped_invalid_response": 0,
+                    "pending": 0,
+                    "judged_coverage": 1.0,
+                    "passed": 38,
+                    "judged_pass_rate": 0.76,
+                    "strict_pass_rate": 0.76,
+                    "dimensions": {
+                        "decision": {
+                            "appropriate": 48,
+                            "inappropriate": 2
+                        },
+                        "correctness": {
+                            "correct": 39,
+                            "partially_correct": 0,
+                            "incorrect": 0,
+                            "not_applicable": 11
+                        },
+                        "groundedness": {
+                            "fully_grounded": 47,
+                            "minor_unsupported": 3,
+                            "major_unsupported": 0
+                        },
+                        "citation_support": {
+                            "supported": 31,
+                            "partially_supported": 8,
+                            "unsupported": 0,
+                            "not_applicable": 11
+                        }
+                    },
+                    "decision_appropriate_rate": 0.96,
+                    "evidence_insufficient": 5,
+                    "escalation_responses_judged": 11,
+                    "escalations_with_unsupported_claims": 3,
+                    "escalation_unsupported_claim_rate": 0.2727272727272727,
+                    "answer_responses_judged": 39,
+                    "answers_with_unsupported_claims": 0,
+                    "answer_unsupported_claim_rate": 0.0,
+                    "judged_with_citations_missing_from_evidence": 0,
+                    "decision_vs_action_correct_disagreements": 5
+                }
+            },
+            "source_generation": {
+                "file": "logs/teacher_interactions_baselines/baseline_eval_gemini-3.8-flash_retriever_20261028_040820.json",
+                "sha256": "8bf60575407d79992a10a0989c1a11d28d1034765e977e35a9c039b45224f6cc"
+            },
+            "source_gemma_judge": {
+                "file": "logs/teacher_comparison_20261027/judged/retriever_gemma4_nothink_ctx8192.json",
+                "sha256": "c4db6eb4dfa196b0b3110700d63204f67cd9576fdc99d40cf5f5c97fb6596e1a"
+            },
+            "judge_identity": {
+                "provider": "ollama",
+                "model": "gemma4:latest",
+                "endpoint_host": "localhost:11434",
+                "temperature": 0.0,
+                "think": false,
+                "num_ctx": 8192,
+                "num_predict": 512
+            },
+            "rubric": {
+                "version": "1.0",
+                "sha256": "b43bfd9b9da696254f0206303c3cb3c96a22615bc4843ff4e9eb621084e30d31"
+            },
+            "source_secondary_assessments": {
+                "file": "logs/teacher_comparison_20261027/secondary_assessments.json",
+                "sha256": "bb1fe4db832780e96c35b4d6ae2ff813a1be989cc973fe8d981b00fe816ca3b5"
+            }
+        }
+    ],
+    "legacy_base_runs": [
+        {
+            "model": "llama3.2:3b",
+            "context_mode": "ground_truth",
+            "responses": 100,
+            "action_accuracy": 0.91,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.8571428571428571,
+            "escalation_recall": 1.0,
+            "escalation_f1": 0.923076923076923,
+            "absent_answer_action_proxy": 0.0,
+            "generation_latency_ms": {
+                "p50_ms": 1241.95,
+                "p90_ms": 1739.1,
+                "p95_ms": 2140.69,
+                "mean_ms": 1336.83,
+                "min_ms": 679.75,
+                "max_ms": 3815.25,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 1244.1,
+                "p90_ms": 1741.65,
+                "p95_ms": 2142.46,
+                "mean_ms": 1339.29,
+                "min_ms": 681.06,
+                "max_ms": 3818.51,
+                "sample_count": 100
+            },
+            "source_generation": {
+                "file": "logs/base_before_download/baseline_eval_llama3.2_3b_ground_truth_20261026_050617.json",
+                "sha256": "191865d96e25208ad4880486dd297e9c3720981ba96f5dee0774ca307fcd2d55"
+            },
+            "limitation": "Historical base numerical reference. Its older/incomplete judge assessments are excluded because settings or coverage differ and serving identity is not recorded."
+        },
+        {
+            "model": "llama3.2:3b",
+            "context_mode": "retriever",
+            "responses": 100,
+            "action_accuracy": 0.77,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.918918918918919,
+            "escalation_recall": 0.6296296296296297,
+            "escalation_f1": 0.7472527472527473,
+            "absent_answer_action_proxy": 0.38,
+            "generation_latency_ms": {
+                "p50_ms": 2399.77,
+                "p90_ms": 3261.46,
+                "p95_ms": 3682.82,
+                "mean_ms": 2462.84,
+                "min_ms": 1017.86,
+                "max_ms": 7271.12,
+                "sample_count": 100
+            },
+            "e2e_latency_ms": {
+                "p50_ms": 3091.2,
+                "p90_ms": 4831.14,
+                "p95_ms": 6019.8,
+                "mean_ms": 3331.51,
+                "min_ms": 1376.94,
+                "max_ms": 9078.85,
+                "sample_count": 100
+            },
+            "source_generation": {
+                "file": "logs/base_before_download/baseline_eval_llama3.2_3b_retriever_20261026_051202.json",
+                "sha256": "bd9651293ea4477e65268013b528ee9b9318dc2e4629aa524f5cec06da72eb22"
+            },
+            "limitation": "Historical base numerical reference. Its older/incomplete judge assessments are excluded because settings or coverage differ and serving identity is not recorded."
+        }
+    ],
+    "teacher_comparison": {
+        "scope": "Teacher, three Kaggle quantizations and historical base numerical reference. Colab fine-tuned runs remain separate.",
+        "identical_questions_targets_and_supplied_contexts_within_each_mode": true,
+        "teacher_modes_and_student_modes_compared_separately": true,
+        "controlled_comparison_compatible": false,
+        "controlled_recovery_available": false,
+        "reason": "Gemini thinking, API and temperature settings differ from local Ollama settings; the existing harness retains a generation_settings compatibility ERROR and withholds formal recovery/gap-closed calculations.",
+        "input_validation": {
+            "file": "logs/teacher_comparison_20261027/input_validation.json",
+            "sha256": "6f8617aa81cc950835bc03401d22debe499ae7e848cda1987e9afa8830781efb"
+        },
+        "spot_checks": {
+            "file": "logs/teacher_comparison_20261027/spot_check_notes.json",
+            "sha256": "055e5d6aceacd93b35a16fe201eec5d3d22665472fe2c433cb5df074d3da6dd8",
+            "human_agreement_study": false,
+            "valid_gemma_verdicts_modified": false
+        },
+        "observed_retrieval_finding": "Teacher action accuracy 92%; all three Kaggle students 46% with zero escalation recall despite identical supplied contexts. This supports a student abstention/decision weakness in addition to any retrieval gaps; it does not isolate a causal training or embedding defect."
+    }
+}

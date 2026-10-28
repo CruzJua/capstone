@@ -1,7 +1,7 @@
 [project]
 name = "pro390"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local customer support with QLoRA training, tenant-filtered RAG, and structured-output evaluation."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

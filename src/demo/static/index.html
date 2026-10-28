@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A local Llama support agent with a live view of retrieved evidence.">
+  <title>Groundwork — RAG support demo</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/assets/app.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Groundwork home"><span class="brand-mark">g<span>·</span></span><span>groundwork<span class="brand-subtitle">SUPPORT LAB</span></span></a>
+    <div class="topbar-right"><span class="local-tag"><span class="dot"></span> LOCAL DEMO</span><button id="refresh" class="quiet-button" type="button">↻ <span>Check connections</span></button></div>
+  </header>
+  <main>
+    <section class="intro">
+      <div><div class="eyebrow">YOUR KNOWLEDGE. YOUR MODEL.</div><h1>Support, with receipts.</h1><p>Ask a question. See the answer and the evidence behind it.</p></div>
+      <div class="model-card"><span class="model-icon" aria-hidden="true">◈</span><div><span class="eyebrow">RUNNING ON OLLAMA</span><strong id="model-name">Connecting to your model…</strong><span id="connection-status" class="connection-label">Checking model & knowledge base</span></div></div>
+    </section>
+    <div id="warnings" class="warnings" role="status" hidden></div>
+    <section class="workspace" aria-label="RAG chat workspace">
+      <div class="chat-panel">
+        <div class="panel-toolbar"><div class="business-control"><span class="field-label">KNOWLEDGE BASE</span><label class="sr-only" for="tenant">Business</label><select id="tenant" disabled><option>Loading businesses…</option></select></div><button id="new-chat" type="button" class="quiet-button">＋ New chat</button></div>
+        <div id="messages" class="messages" role="log" aria-live="polite" aria-label="Conversation">
+          <div id="welcome" class="welcome"><div class="welcome-symbol" aria-hidden="true">✳</div><span class="eyebrow">LET’S FIND AN ANSWER</span><h2>A little context goes a long way.</h2><p>Choose a business above, then ask about its policies, services, or procedures. The agent will search that business’s documents before responding.</p><div class="suggestions"><button type="button" data-question="What should I know before my first visit?">Before my first visit <span>↗</span></button><button type="button" data-question="What is your cancellation policy?">Cancellation policy <span>↗</span></button><button type="button" data-question="Do you offer a student discount?">An undocumented detail <span>↗</span></button></div></div>
+        </div>
+        <form id="chat-form" class="composer"><label for="question" class="sr-only">Your question</label><div class="composer-input"><textarea id="question" rows="2" maxlength="4000" placeholder="Ask your support agent…" required disabled></textarea><button id="send" class="send-button" type="submit" aria-label="Send question" disabled>↑</button></div><div class="composer-footer"><span><span class="dot"></span> Answers grounded in retrieved documents</span><span>Enter to send · Shift + Enter for a new line</span></div></form>
+      </div>
+      <aside class="evidence-panel" aria-label="Retrieved evidence">
+        <div class="evidence-heading"><div><span class="eyebrow">BEHIND THE ANSWER</span><h2>Retrieved context <span id="source-count" class="count">0</span></h2></div><span class="live-label"><span class="dot"></span> LIVE RAG</span></div>
+        <div class="retrieval-controls"><label for="top-k">Passages to retrieve</label><select id="top-k"><option value="2">2 passages</option><option value="4" selected>4 passages</option><option value="6">6 passages</option><option value="8">8 passages</option></select></div>
+        <div id="retrieval-meta" class="retrieval-meta">Tenant-filtered vector search · MongoDB Atlas</div>
+        <div id="sources" class="sources"><div class="evidence-empty"><span class="document-icon" aria-hidden="true">≡</span><h3>The evidence will appear here.</h3><p>Every fetched passage is shown in full, with its document, section, and similarity score.</p><div class="pipeline"><span>Your question</span><span>↓</span><span>Find relevant passages</span><span>↓</span><span>Llama writes a response</span></div></div></div>
+        <details id="raw-context" class="raw-context" hidden><summary>View exact context sent to the model</summary><pre id="context-text"></pre></details>
+        <p class="evidence-footnote">A similarity score measures retrieval relevance. It does not guarantee that a passage answers your question.</p>
+      </aside>
+    </section>
+    <footer class="page-footer"><span>Built for grounded conversations.</span><span>Llama + tenant-filtered RAG <span class="footer-dot">·</span> Local inference</span></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1308 @@
+{
+    "metadata": {
+        "created_at": "2026-10-25T00:18:35.151763+00:00",
+        "held_out_tenant": "harbor_view",
+        "seed": 42,
+        "total_questions": 100,
+        "answer_present_count": 50,
+        "provably_absent_count": 50
+    },
+    "questions": [
+        {
+            "ticket_id": "harbor_view-0160_t0",
+            "tenant": "harbor_view",
+            "category": "pricing_and_fees",
+            "customer_query": "I paid the $65.00 deposit online for my new puppy's first visit next Tuesday. Could you please tell me the exact cost of the comprehensive initial physical exam itself so I know how much remaining balance to expect at checkout? I want to make sure my credit card budget is set.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "While the $65 deposit is applied directly toward your puppy's exam fee, our documents do not list the specific total cost of the initial physical exam. I cannot confirm the exact remaining balance, but I would be glad to connect you with our front desk team so they can provide the current exam fee.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0142_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_shipping",
+            "customer_query": "Can you mail my dog's medication to my house, and how much is the home delivery fee?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we offer home delivery or what a mailing fee would cost, as our policies do not cover shipping options. I will connect you with our clinic team so they can assist you with your refill options.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0001_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_care",
+            "customer_query": "What is the exact exam fee for a RED triage critical emergency walk-in?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact exam fee for a critical emergency triage visit, as our materials do not state that pricing. I can connect you with our front desk team right now to get an estimate.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0215_t1",
+            "tenant": "harbor_view",
+            "category": "canine_wellness",
+            "customer_query": "Hello there! My golden retriever turned eight this year, and I was wondering how often older dogs should be coming in for their checkups now? We also want to make sure we stay on top of any routine testing he might need.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "For senior dogs over seven years of age, wellness exams are recommended every 6 months, along with annual bloodwork and urinalysis.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"seniors_over_7_years\\\": \\\"Every 6 months, with annual bloodwork and urinalysis\\\"\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0245_t1",
+            "tenant": "harbor_view",
+            "category": "preventive_care",
+            "customer_query": "Hello dear, my little cat Barnaby just turned 11 years old this week, how often do I need to bring him in for checkups now?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Happy 11th birthday to Barnaby! Because cats over 10 years old are considered seniors, he should come in for a wellness exam every 6 months. These senior visits also include annual bloodwork, urinalysis, and blood pressure monitoring.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"seniors_over_10_years\\\": \\\"Every 6 months, with annual bloodwork, urinalysis, and blood pressure\\\"\"}, {\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"adults_1_to_10_years\\\": \\\"Every 12 months\\\"\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0307_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "Sending this quickly between meetings from my phone—my male cat Leo has made four trips to his litter box in the past 20 minutes, crying out in pain, crouching, and nothing is coming out. He is now licking himself down there non-stop and hiding behind the sofa. Can this wait until after work this evening or do I need to bring him into Harbor View right away?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Please do not wait—this is a life-threatening medical emergency. Straining without producing urine can indicate a blocked urethra, which can cause heart rhythm abnormalities and kidney failure within 24 to 48 hours. If we are open, please bring Leo in immediately and call us at (555) 438-2323 from your car on the way. If we are closed, go directly to the Regional Animal Specialty & Emergency Center (24/7 ER) at (555) 948-3700. Do not give any home remedies or wait until after work.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"This is a life-threatening emergency. Potassium builds up in the blood, which can cause heart rhythm abnormalities and kidney failure within 24 to 48 hours.\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Never wait overnight to see whether it passes. Do not give any home remedies or human medication.\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"If we are open: Come immediately and call from the car. The cat is triaged YELLOW at minimum and RED if he is weak, cold, vomiting, or collapsed.\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"If we are closed: Go directly to the Regional Animal Specialty & Emergency Center (24/7 ER), (555) 948-3700.\"}]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0256_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_refills",
+            "customer_query": "How long will that paper prescription stay valid once I get it?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Written prescriptions are valid for 12 months, or less where state law specifies.",
+            "evidence_json": "[{\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"Written prescriptions are valid for 12 months, or less where state law specifies.\"}]",
+            "cited_sources": [
+                "PHARMACY_AND_REFILL_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0020_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "You made me come get a paper prescription for Chewy, so how much does your clinic charge for home delivery if you ship it yourselves?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our clinic's home delivery options or shipping fees, as that information is not available in our current documents. I would be glad to hand this over to our clinic staff to check those details for you.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0026_t1",
+            "tenant": "harbor_view",
+            "category": "third_party_pharmacy",
+            "customer_query": "Fine. If I have to come by to pick up this paper prescription myself, how long will the physical script actually be good for before you make me come in for another exam and bloodwork?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Written prescriptions are valid for 12 months, or less where state law specifies.",
+            "evidence_json": "[{\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"Written prescriptions are valid for 12 months, or less where state law specifies.\"}]",
+            "cited_sources": [
+                "PHARMACY_AND_REFILL_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0286_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "hey my dog had a procedure done exactly 9 days ago and hes feeling totally fine now super energetic and wanting to run around the yard plus he rolled in mud today so i was wondering if i can give him a bath in the tub and also maybe take the cone off his head since it has been over a week",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Please keep the E-collar on and hold off on bathing. The collar must stay on 24/7 for 10 to 14 days until cleared by a veterinarian at the recheck visit. Additionally, no baths are allowed for 14 days following surgery because moisture can carry bacteria into the suture tracks. If your dog is dirty from the mud, you may gently spot-clean around the area with a dry cloth, keeping away from the incision.",
+            "evidence_json": "[{\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"\\\"The E-collar must stay on 24/7 for 10 to 14 days, including while your pet sleeps and eats. Even 30 seconds of licking can introduce bacteria or open the incision. Remove it only when a veterinarian has cleared the incision at the recheck visit.\\\"\"}, {\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"\\\"No bathing, swimming, or moisture exposure for 14 days, because moisture can carry bacteria into the suture tracks. If your pet is dirty, spot-clean away from the incision with a dry cloth, and call us if you have concerns.\\\"\"}]",
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0251_t1",
+            "tenant": "harbor_view",
+            "category": "feline_preventive_care",
+            "customer_query": "Good morning! We just welcomed the sweetest new kitten into our home, and I want to make sure I get her wellness schedule on my calendar right away. How often do kittens need checkups until they reach 16 weeks, and what does the FVRCP vaccine schedule look like for her?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Congratulations on your new kitten! Kittens should come in for wellness exams every 3 to 4 weeks until they reach 16 weeks of age. For the core FVRCP vaccine, the initial series is administered at 8, 12, and 16 weeks, followed by her first booster 12 months after the final kitten dose.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"vaccine_name\\\": \\\"FVRCP\\\",\\n                \\\"initial_series_weeks\\\": [8, 12, 16],\\n                \\\"booster_cadence_years\\\": 3,\\n                \\\"first_booster\\\": \\\"12 months after final kitten dose\\\"\"}, {\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"kittens\\\": \\\"Every 3 to 4 weeks until 16 weeks\\\"\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0089_t1",
+            "tenant": "harbor_view",
+            "category": "preventive_care",
+            "customer_query": "Buster is turning 9 this month, so do we need to start coming in twice a year now?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Yes, for senior dogs over 7 years old, the wellness exam cadence shifts to every 6 months, which includes annual bloodwork and urinalysis.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"seniors_over_7_years\\\": \\\"Every 6 months, with annual bloodwork and urinalysis\\\"\"}, {\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"adults_1_to_7_years\\\": \\\"Every 12 months\\\"\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0309_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_referral_fees",
+            "customer_query": "I see that your triage protocol mentions transferring overnight critical cases to the Regional Animal Specialty & Emergency Center at (555) 948-3700. What is their baseline emergency intake fee or deposit amount when arriving after hours? I want to make sure I have enough set aside on my credit card.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact intake fee or deposit required by Regional Animal Specialty & Emergency Center, as their fee schedule is not listed in our records. I can connect you with our team, or you may reach the emergency hospital directly at (555) 948-3700 to verify their current payment requirements.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0157_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_complication",
+            "customer_query": "I am so worried—Daisy slipped out of her cone while I was getting a glass of water and was licking her spay incision for about five minutes! I looked at the area and it's looking pretty red and swollen now. Can you tell me what I should do right away?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Please put Daisy's E-collar back on immediately to prevent any further licking. Canine saliva carries heavy bacteria that can cause deep wound infections or dissolve sutures. Please call our triage team at (555) 438-2323 so we can examine the incision and determine next steps. I am escalating this to our veterinary staff now.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Even 30 seconds of licking can introduce oral bacteria or cause suture dehiscence (the incision opening).\"}, {\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"Immediately put the E-collar back on. Canine saliva contains heavy oral bacteria that can cause deep wound infections and dissolve absorbable sutures. Inspect the incision for redness, swelling, or opening of the wound. Contact our triage team at (555) 438-2323 to schedule an incision check or receive antibiotic ointment guidance.\"}]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0209_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Quick question between meetings—my rescue dog had an orthopedic procedure (femoral head ostectomy) at your clinic 5 days ago, and I need to know when we are allowed to start formal physical therapy and hydrotherapy underwater treadmill sessions. We have him strictly crated as instructed on his sheet, but the recovery guide doesn't list the timeline for physical rehab exercises.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the timeline for starting physical therapy or hydrotherapy, as our post-op guide covers general soft tissue recovery and does not outline orthopedic rehabilitation schedules. I will pass your message directly to your surgical team so they can review your dog's chart and advise you.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0026_t2",
+            "tenant": "harbor_view",
+            "category": "cat_vaccinations",
+            "customer_query": "I am reviewing your intake forms and you are insisting on a rabies vaccine and FVRCP for my cat. She is 100% strictly indoors on the third floor of an apartment complex and never steps foot outside. There is zero risk of her meeting a stray animal, so explain why you expect me to vaccinate an indoor cat.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Rabies vaccination is legally required by state law even for indoor-only pets because bats and wild vectors can enter homes. We also strongly recommend the FVRCP vaccine because the viruses it protects against (rhinotracheitis, calicivirus, and panleukopenia) are airborne and can easily be carried indoors on human shoes and clothing.",
+            "evidence_json": "[{\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"Rabies vaccination is legally required by state law even for strictly indoor pets, as bats and wild vectors can enter homes. We also strongly recommend the FVRCP vaccine (feline viral rhinotracheitis, calicivirus, and panleukopenia) because these airborne and fomite-spread viruses can easily be brought indoors on human shoes and clothing.\"}]",
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0314_t2",
+            "tenant": "harbor_view",
+            "category": "urgent_care_fees",
+            "customer_query": "What is the exact exam fee for a GREEN category same-day work-in appointment?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact price of an exam for a GREEN category same-day work-in appointment, as our documents do not list specific urgent care exam fees. I can transfer your inquiry to our reception team so they can provide an itemized quote.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0064_t2",
+            "tenant": "harbor_view",
+            "category": "vaccine_pricing",
+            "customer_query": "hey there my cat milo is due for his 3 year rabies shot and i think his fvrcp booster too since its been a while and i wanted to know how much those two shots actually cost together before i bring him in next week thanks",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I can confirm that Rabies and FVRCP are core vaccines recommended for cats, but our documentation does not list the specific fees for individual vaccinations. I cannot confirm the pricing for those shots, so let me connect you with our front desk team to provide an accurate estimate.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0261_t1",
+            "tenant": "harbor_view",
+            "category": "parasite_prevention",
+            "customer_query": "Nobody told me I'd have to pay for a test just to get heartworm pills! Why are you forcing me to get a blood test for my dog before refilling his prevention? He takes it every month.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "We require an annual canine antigen test before refilling preventive because giving heartworm medication to an infected dog can be dangerous. The test ensures your dog remains heartworm-negative so the preventive can be safely administered.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"Annual canine antigen SNAP test required prior to refilling preventative\"}, {\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"An annual antigen test confirms your dog is heartworm-negative before we refill preventive. Giving preventive to an infected dog can be dangerous.\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json",
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0031_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_temperature",
+            "customer_query": "My dog had surgery two days ago and is acting warm. I just checked his rectal temperature with a digital thermometer and it read 103.4°F. What does this reading mean, and what do I need to do right now?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "A reading of 103.4°F indicates a mild fever and a possible infection, as normal rectal temperature for dogs is 100.5°F to 102.5°F. Please call our clinic at (555) 438-2323 today so our team can evaluate his condition.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Normal rectal temperature for dogs and cats is **100.5°F–102.5°F (38.1°C–39.2°C)**.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"| 103.0–103.9°F (39.4–39.9°C) | Mild fever, possible infection | Call us the same day |\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0319_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_services",
+            "customer_query": "Hello dear, do you have an ambulance service that could come pick up my sick dog at my house?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I'm sorry, but I cannot confirm whether we provide a home pet ambulance service. Let me connect you directly with our clinic team so they can assist you right away. If your pet is experiencing an urgent emergency, please call us immediately at (555) 438-2323.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0268_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_delivery",
+            "customer_query": "Hey team! Do you offer home courier or mail delivery for prescription refills, and what is the shipping fee?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our mail delivery options or shipping fees from our records, and I want to make sure you get accurate information without any guessing. I would be happy to connect you with our clinic team to verify prescription delivery services for you.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0107_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "Hi there, you guys treated my golden retriever Buster last fall for an ear infection. He broke a toenail earlier today running around the backyard, but it isn't bleeding like an open vein or anything, just bothers him a bit when he steps down and walks. We want to bring him in, but I know you do triage. How will his case be prioritized, and does he get an immediate exam slot or what should we plan for?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "A broken toenail without arterial bleeding is categorized as GREEN (Stable Outpatient) under our triage system. Cases in this category are scheduled into a same-day work-in appointment slot rather than receiving immediate exam bay placement. Wait times can vary depending on urgent cases in the clinic, but we will keep you updated on what to expect when you arrive.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"GREEN (Stable Outpatient) | Mild ear infection, chronic skin itching, broken toenail without arterial bleed, limping with bearing weight | Scheduled same-day work-in appointment slot\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Wait times for GREEN patients can be long on busy days. We will tell you honestly what to expect, and you may go to another hospital at any time.\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0073_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Thank you for clarifying that. In terms of his surgical wound, could you specify the exact signs that would indicate an abnormal healing complication requiring immediate contact with your clinic, as well as the expected timeframe for having any skin sutures or staples removed?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "You should call the clinic immediately if you notice any of these abnormal symptoms: active dripping of fresh blood, thick yellow or green discharge, a foul odor, a gap in the tissue margins, visible suture material or protruding tissue, swelling that continues to enlarge, or extreme heat around the site. If your dog has external skin sutures or staples, they will be evaluated and removed at a recheck visit scheduled between day 10 and day 14.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Abnormal Symptoms (Call the Clinic Immediately): Active dripping of fresh blood, thick yellow or green discharge, foul odor, a gap in the tissue margins, visible suture material or tissue protruding, a swelling that grows larger, or extreme heat.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"If your pet has skin sutures or staples, they are removed at a recheck visit at day 10 to 14.\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0050_t2",
+            "tenant": "harbor_view",
+            "category": "spay_pricing",
+            "customer_query": "hey there my cat needs to get spayed pretty soon shes about 6 months old and doing great just wondering exactly how much the spay surgery package costs with the bloodwork and anesthesia included so i can budget for next week",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact cost for a cat spay surgery package, as specific surgical pricing is not listed in our documentation. I will gladly pass your details to our reception team so they can provide you with an itemized estimate.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0163_t1",
+            "tenant": "harbor_view",
+            "category": "vaccine_schedule",
+            "customer_query": "Quick question on puppy vaccines. What is the initial series schedule for DHPP, and how often is the booster after that?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "The initial DHPP series for puppies is given at 8, 12, and 16 weeks of age. The first booster is given 12 months after the final puppy dose, and subsequent boosters are scheduled every 3 years.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"initial_series_weeks\\\": [8, 12, 16]\"}, {\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"booster_cadence_years\\\": 3\"}, {\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"first_booster\\\": \\\"12 months after final puppy dose\\\"\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0058_t0",
+            "tenant": "harbor_view",
+            "category": "appointments_and_intake",
+            "customer_query": "I saw there is a $65.00 deposit required to book our first appointment. If something comes up and I need to change the day, what is the exact policy on keeping that deposit? Does it have to be at least 48 hours in advance?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Yes, that is correct. Your $65 deposit is transferable to a rescheduled date as long as you provide notice at least 48 hours prior to the appointment. Cancellations made with less than 48 hours notice forfeit the deposit, but otherwise, the full deposit is credited directly toward your exam fee.",
+            "evidence_json": "[{\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Deposits are transferable to a rescheduled date if notice is provided at least 48 hours prior to the appointment. Cancellations under 48 hours forfeit the deposit.\"}, {\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"The deposit is a credit toward the visit and is never an extra charge.\"}]",
+            "cited_sources": [
+                "PATIENT_REGISTRATION_INTAKE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0295_t1",
+            "tenant": "harbor_view",
+            "category": "parasite_prevention",
+            "customer_query": "Hi, how much does the annual canine heartworm SNAP test cost at your clinic?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact price of the annual canine heartworm SNAP test from our available records. I would be happy to connect you with our front desk team so they can provide you with current pricing.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0187_t1",
+            "tenant": "harbor_view",
+            "category": "preventive_care",
+            "customer_query": "My cat just turned 11 years old—how often does she need a wellness exam now, and what tests are included?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "For senior cats over 10 years old, wellness examinations are recommended every 6 months. In addition to the exam, your cat will receive annual bloodwork, urinalysis, and blood pressure monitoring.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"Every 6 months, with annual bloodwork, urinalysis, and blood pressure\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0221_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_services",
+            "customer_query": "Hi, what time does your urgent care clinic close this evening?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our specific closing time for today from our records. Please contact our front desk directly at (555) 438-2323 so we can assist you right away.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0117_t1",
+            "tenant": "harbor_view",
+            "category": "canine_vaccine_schedule",
+            "customer_query": "Hello, I am reviewing the preventive health timeline for my 8-week-old puppy. I know he is due for his first core shots now, but could you specify the exact week intervals for his initial DHPP and Rabies puppy series, when their subsequent booster shots are due, and what the wellness exam frequency should be until he reaches 16 weeks of age?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "For puppies, the DHPP initial series is administered at 8, 12, and 16 weeks, with the first booster due 12 months after the final puppy dose (and every 3 years thereafter). The Rabies vaccine is given at 16 weeks, with its first booster due 12 months after that initial dose (and every 3 years thereafter). During this period, puppy wellness exams are scheduled every 3 to 4 weeks until 16 weeks of age.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"vaccine_name\\\": \\\"DHPP / DA2PP\\\",\\n                \\\"initial_series_weeks\\\": [8, 12, 16],\\n                \\\"booster_cadence_years\\\": 3,\\n                \\\"first_booster\\\": \\\"12 months after final puppy dose\\\"\"}, {\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"vaccine_name\\\": \\\"Rabies (1-Year / 3-Year)\\\",\\n                \\\"initial_series_weeks\\\": [16],\\n                \\\"booster_cadence_years\\\": 3,\\n                \\\"first_booster\\\": \\\"12 months after initial dose\\\"\"}, {\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"puppies\\\": \\\"Every 3 to 4 weeks until 16 weeks\\\"\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0246_t0",
+            "tenant": "harbor_view",
+            "category": "appointments_and_intake",
+            "customer_query": "Hey there, you know how nervous Buster gets coming in—we always have to be so careful in the lobby around other dogs because of his reactivity. We have our checkup coming up this Thursday, and I just wanted to make sure of the exact protocol for checking in from the parking lot so he doesn't have to face any other dogs in the waiting area. Do I just sit tight in the car and ring you guys when we park?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Yes, exactly! When you arrive, please call reception from your vehicle at (555) 438-2323. Remain in your car until a team member confirms the exam room is ready, and we will usher you directly into the room so you can bypass the lobby entirely.",
+            "evidence_json": "[{\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Guardians of anxious or dog-reactive pets may call reception from their vehicle at (555) 438-2323 to be ushered directly into an exam room, bypassing the lobby. Please remain in your car until a team member confirms the room is ready.\"}]",
+            "cited_sources": [
+                "PATIENT_REGISTRATION_INTAKE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0001_t1",
+            "tenant": "harbor_view",
+            "category": "vaccinations",
+            "customer_query": "Hey there, you guys gave Max his first rattlesnake vaccine last spring before we went camping. Are you guys currently stocking the rattlesnake booster for this season, or should I order it ahead of time?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we currently carry or stock the rattlesnake vaccine, as our preventive care records do not list this vaccine. Let me connect you with our staff to check our pharmacy inventory.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0308_t2",
+            "tenant": "harbor_view",
+            "category": "vaccinations_and_wellness",
+            "customer_query": "Why are you insisting that my cat needs a rabies vaccine when she never steps one foot outdoors?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Rabies vaccination is legally required by state law even for strictly indoor pets. This is because bats and other wild vectors can occasionally enter homes and pose an exposure risk.",
+            "evidence_json": "[{\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"Rabies vaccination is legally required by state law even for strictly indoor pets, as bats and wild vectors can enter homes.\"}]",
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0148_t2",
+            "tenant": "harbor_view",
+            "category": "appointments_and_intake",
+            "customer_query": "I need to know how much you charge for a standard annual wellness exam for my adult dog. Nobody listed the actual examination price anywhere. Can you give me the exact dollar amount?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I apologize, but I do not have the exact price for an adult wellness exam in our documentation. I would be glad to have a member of our team contact you directly with an itemized estimate.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0256_t0",
+            "tenant": "harbor_view",
+            "category": "patient_registration",
+            "customer_query": "ok that makes sense but what do i actually need to bring with me on the day of the visit and when do you guys need his old records from his shelter before we come in",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Please have Buster's prior medical records submitted at least 24 hours prior to his visit. For the appointment itself, bring a fresh fecal sample (under 12 hours old), a list of any current medications and supplements, and your pet insurance information. Please also ensure Buster is secured on a non-retractable 6-foot nylon leash.",
+            "evidence_json": "[{\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Prior medical charts, surgical notes, and vaccination certificates must be received at least 24 hours prior to the initial consultation.\"}, {\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"What to Bring: A fresh fecal sample (under 12 hours old), a list of current medications and supplements, and any pet insurance information.\"}, {\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Canine Patients: Must remain secured on a non-retractable 6-foot nylon leash at all times.\"}]",
+            "cited_sources": [
+                "PATIENT_REGISTRATION_INTAKE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0296_t2",
+            "tenant": "harbor_view",
+            "category": "vaccinations_and_wellness",
+            "customer_query": "Hi, I am reviewing my schedule and need to know the price for the 3-year Rabies booster and the Bordetella vaccine for my golden retriever. Also, does your clinic offer multi-pet bundle discounts if I bring my two rescue cats in on the same afternoon for their wellness visits? Sending this quickly between meetings, please let me know.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I apologize, but I do not have access to specific vaccine pricing or multi-pet discount information in our records. I have forwarded your request to our reception team so they can provide you with an exact estimate and check schedule availability for your pets.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0064_t0",
+            "tenant": "harbor_view",
+            "category": "intake_policies",
+            "customer_query": "Hi there, I am trying to register my new rescue pup for his first visit next Tuesday, but I am really worried about payment options since money is super tight right now. Does Harbor View accept CareCredit or Scratchpay specifically for the new client deposit and exam? I just want to make sure ahead of time so I am not caught off guard at checkout.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "We accept major credit and debit cards and can help review third-party financing options, but our records do not specify whether CareCredit or Scratchpay is accepted for deposits or exams. I cannot confirm this directly, so I would be glad to connect you with our front desk team to verify our accepted financing partners.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0009_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Hi, this is my first time caring for a dog after surgery. I just checked her belly and there is thick yellow fluid coming out of the incision, and the area feels really hot to touch. Is that just part of normal healing or should I be doing something?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Thick yellow discharge and extreme heat around the incision are abnormal symptoms rather than normal healing. Please do not apply any creams, peroxide, or alcohol to the site. Call us immediately at (555) 438-2323 so our medical team can examine her. If our clinic is closed, please go directly to the Regional Animal Specialty & Emergency Center (24/7 ER) at (555) 948-3700. I am escalating this to our veterinary staff right away.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Abnormal Symptoms (Call the Clinic Immediately): Active dripping of fresh blood, thick yellow or green discharge, foul odor, a gap in the tissue margins, visible suture material or tissue protruding, a swelling that grows larger, or extreme heat.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Do not apply creams, peroxide, or alcohol unless a veterinarian instructs you to.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Call (555) 438-2323 during clinic hours. If we are closed, go to the Regional Animal Specialty & Emergency Center (24/7 ER), (555) 948-3700\"}]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0101_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "My male cat has been crying and straining in his litter box all morning, and he just threw up, so should I bring him in right away and what triage level will he be?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Yes, please bring him in immediately. Straining to urinate in a male cat is a life-threatening emergency. Because he is also vomiting, he will be triaged as RED (our highest priority) and moved directly to treatment upon arrival. Please call us at (555) 438-2323 from your car while on your way.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Male cats can develop a urethral obstruction. Signs include repeated trips to the litter box, crying, straining with little or no urine, licking the genital area, hiding, or vomiting.\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"The cat is triaged YELLOW at minimum and RED if he is weak, cold, vomiting, or collapsed.\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"If we are open: Come immediately and call from the car.\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0218_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "its day 5 after my dogs surgery and he smells terrible can i give him a quick bath",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "No, your dog cannot have a bath. Bathing, swimming, and moisture exposure are strictly prohibited for 14 days after surgery because moisture can introduce bacteria into the suture tracks. If he is dirty, you may spot-clean him away from the incision using a dry cloth. Also inspect the surgical site, as a foul odor coming directly from the incision is abnormal and should be checked by our team.",
+            "evidence_json": "[{\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"No bathing, swimming, or moisture exposure for 14 days, because moisture can carry bacteria into the suture tracks. If your pet is dirty, spot-clean away from the incision with a dry cloth, and call us if you have concerns.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"No bathing, swimming, or outdoor moisture exposure for 14 days. Moisture carries bacteria into the sub-dermal suture tracks. Do not apply creams, peroxide, or alcohol unless a veterinarian instructs you to.\"}]",
+            "cited_sources": [
+                "faq_support_knowledgebase.json",
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0016_t0",
+            "tenant": "harbor_view",
+            "category": "appointments_and_intake",
+            "customer_query": "Got it. What if my schedule changes and I have to cancel or move it?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Your deposit is transferable to a new date as long as you give us at least 48 hours notice prior to the appointment. If you cancel with less than 48 hours notice, the deposit is forfeited.",
+            "evidence_json": "[{\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Deposits are transferable to a rescheduled date if notice is provided at least 48 hours prior to the appointment. Cancellations under 48 hours forfeit the deposit.\"}]",
+            "cited_sources": [
+                "PATIENT_REGISTRATION_INTAKE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0200_t2",
+            "tenant": "harbor_view",
+            "category": "urgent_triage",
+            "customer_query": "Hi there, I am a brand new pet parent and I've never had to deal with urgent vet visits before. I was reading that you don't take walk-ins strictly in the order people show up, and I'm a bit confused about how that works. If I have to bring my pet in for urgent care, how do you decide who gets seen first?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "We prioritize urgent care visits based on medical need rather than arrival order. Patients are triaged into three categories:\n\n- RED cases (such as respiratory distress, collapse, seizures, or a bloated abdomen) go immediately to the treatment bay.\n- YELLOW cases (such as suspected blocked cats, toxin ingestion, eye injuries, or deep wounds) are examined within 30 minutes.\n- GREEN cases (such as mild ear infections, itching, or limping while bearing weight) are scheduled into a same-day work-in slot.",
+            "evidence_json": "[{\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"We triage by medical need. RED cases (respiratory distress, collapse, seizures, bloated abdomen) go straight to treatment. YELLOW cases (suspected blocked cat, toxin ingestion, eye injury, deep wounds) are examined within 30 minutes. GREEN cases (mild ear infection, itching, limping while bearing weight) are seen in a same-day work-in slot.\"}]",
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0309_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Could you please tell me how much a post-operative surgical onesie costs to purchase at the clinic?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the availability or price of post-operative surgical onesies, as our materials do not list retail merchandise pricing. I would be glad to connect you with our front desk team to check our current stock and prices.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0262_t0",
+            "tenant": "harbor_view",
+            "category": "appointments_and_intake",
+            "customer_query": "Okay, that makes sense regarding the deposit! What else do I actually need to submit or bring with me for that first visit? I want to make sure I don't forget anything important.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Please submit your puppy's prior medical charts and vaccination records at least 24 hours prior to the appointment. When you arrive, please bring a fresh fecal sample (under 12 hours old), a list of current medications or supplements, and any pet insurance details. Also, make sure your puppy is secured on a non-retractable 6-foot nylon leash at all times.",
+            "evidence_json": "[{\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Prior medical charts, surgical notes, and vaccination certificates must be received at least 24 hours prior to the initial consultation.\"}, {\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"What to Bring: A fresh fecal sample (under 12 hours old), a list of current medications and supplements, and any pet insurance information.\"}, {\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Canine Patients: Must remain secured on a non-retractable 6-foot nylon leash at all times.\"}]",
+            "cited_sources": [
+                "PATIENT_REGISTRATION_INTAKE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0215_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Good morning dear. My little dog Daisy had a small procedure to remove a growth a few days ago, and she is wearing that plastic lampshade around her neck. She keeps bumping into our side tables, and I feel so terrible watching her try to eat her kibble and nap. Can I please take that plastic cone off of her while she takes a little snooze, or even for just a few minutes while she eats her dinner?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Please keep the collar on 24/7 for the full 10 to 14 days, even while Daisy eats or sleeps. Even 30 seconds of licking can introduce bacteria or cause the incision to open. To help her eat and move around more easily, you can raise her food and water bowls and temporarily move low furniture out of her way.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"The E-collar must remain securely fastened 24/7 for 10 to 14 days. Even 30 seconds of licking can introduce oral bacteria or cause suture dehiscence (the incision opening).\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Pets may bump into furniture for the first day or two. Move low objects out of the way, and raise food and water bowls.\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0072_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "I need to pick up my dog's written prescription today, but what time does the clinic pharmacy counter close? Also, can you mail the physical paper script directly to my home address?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our pharmacy counter's closing hours or whether physical prescriptions can be mailed to your home address, as those details are not in our records. I have forwarded your request to our clinic staff so they can assist you directly.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0012_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "Good morning. I would like to request a routine refill for my dog's medication, but I usually order through an online pharmacy such as Chewy. Could you tell me how much turnaround time you require for standard in-house refills, how you handle digital authorization faxes from outside pharmacies, and how long a written paper prescription remains valid once issued?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Standard in-house refills require 48 hours (2 business days) notice for clinical review, technician calculation, and doctor authorization. Regarding online pharmacies like Chewy, we do not approve external third-party digital faxes directly. Instead, you may pick up a complimentary written physical prescription to submit to the pharmacy of your choice. Once issued, a written prescription is valid for 12 months, or less where state law specifies, provided your pet's exam is up to date.",
+            "evidence_json": "[{\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"Standard In-House Refills: Require 48 hours (2 business days) notice for clinical review, technician calculation, and doctor authorization.\"}, {\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"To prevent medication counterfeit risks and improper storage, Harbor View does not approve external third-party digital faxes directly. Clients may pick up a complimentary written physical prescription to submit directly to their pharmacy of choice.\"}, {\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"Written prescriptions are valid for 12 months, or less where state law specifies.\"}]",
+            "cited_sources": [
+                "PHARMACY_AND_REFILL_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0233_t1",
+            "tenant": "harbor_view",
+            "category": "preventive_care",
+            "customer_query": "Hello, I am reviewing my senior dog's preventive care plan for his upcoming annual visit next month. According to your guidelines, senior dogs receive bloodwork and urinalysis every six months, but I also wanted to check your specific protocol and exact pricing for an annual abdominal ultrasound screening or senior cancer screening package. Could you provide the details and cost for that comprehensive imaging package?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "While our protocols outline semi-annual exams with annual bloodwork and urinalysis for senior dogs, our documentation does not specify protocols or pricing for an annual abdominal ultrasound or senior cancer screening package. I cannot confirm these details, but I would be glad to connect you with our clinic team to provide accurate pricing and recommendations.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0027_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_referral",
+            "customer_query": "I'm panicking because my dog might need overnight oxygen or continuous fluids and I don't know if you guys keep pets overnight or where we'd have to go!",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Harbor View is a day practice and does not offer overnight intensive care monitoring. Patients requiring overnight oxygen therapy or continuous IV fluids are stabilized here and transferred to our designated regional referral partner, the Regional Animal Specialty & Emergency Center (24/7 ER), reachable at (555) 948-3700.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Harbor View is a day practice and does not offer overnight intensive care monitoring:\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Patients requiring continuous IV fluid titration, arterial blood gas audits, blood transfusions, or overnight oxygen therapy are stabilized and transferred.\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Designated Regional Referral Partner: Regional Animal Specialty & Emergency Center (24/7 ER) — Phone: (555) 948-3700.\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0147_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "im confused can my dog stay overnight at your clinic if he gets really sick?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "No, we are a day practice and do not offer overnight intensive care monitoring. If a pet requires continuous overnight care or monitoring, we stabilize them and transfer them to our 24/7 referral partner, Regional Animal Specialty & Emergency Center, at (555) 948-3700.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Harbor View is a day practice and does not offer overnight intensive care monitoring:\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Designated Regional Referral Partner: Regional Animal Specialty & Emergency Center (24/7 ER) — Phone: (555) 948-3700.\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0218_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "Can you approve my dog's prescription fax directly from Chewy?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "We do not approve third-party digital faxes directly to prevent counterfeit risks and improper storage. You are welcome to pick up a complimentary written physical prescription at our clinic to submit directly to Chewy, provided your pet has an up-to-date exam.",
+            "evidence_json": "[{\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"To prevent medication counterfeit risks and improper storage, Harbor View does not approve external third-party digital faxes directly. Clients may pick up a complimentary written physical prescription to submit directly to their pharmacy of choice.\"}]",
+            "cited_sources": [
+                "PHARMACY_AND_REFILL_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0155_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "can i wash my dog he got dirty outside after his surgery",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "No bathing, swimming, or outdoor moisture exposure is allowed for 14 days after surgery, as moisture can carry bacteria into the suture tracks. If your dog is dirty, you may spot-clean areas away from the incision with a dry cloth.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"No bathing, swimming, or outdoor moisture exposure for 14 days. Moisture carries bacteria into the sub-dermal suture tracks.\"}, {\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"If your pet is dirty, spot-clean away from the incision with a dry cloth, and call us if you have concerns.\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md",
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0331_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "I am extremely frustrated that nobody was clear about this before we left. My dog had surgery 8 days ago and she is going stir-crazy, so I want to know if I can finally take off this cone, take her for a normal run at the dog park, and give her a bath because she smells terrible. When is her recheck to get these skin sutures taken out?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Your dog must continue wearing the E-collar 24/7 for a full 10 to 14 days, and she cannot be bathed, swim, or be exposed to outdoor moisture for 14 days. Days 8 to 10 are when pets feel well and the risk of overdoing it is highest, so activity must remain strictly restricted to short potty breaks on a 6-foot leash with no running or dog park visits. Her recheck visit for suture removal is scheduled between days 10 and 14, and she can only return to normal activity after the veterinarian clears her.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"The E-collar must remain securely fastened 24/7 for 10 to 14 days.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"No bathing, swimming, or outdoor moisture exposure for 14 days.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Days 8–10 | Feels well, so risk of overdoing it is highest | Restrict firmly, and the E-collar stays on\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"If your pet has skin sutures or staples, they are removed at a recheck visit at day 10 to 14.\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0311_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "What would put a pet into the Red category?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Patients are classified as RED (Critical Emergency) if they show respiratory distress, collapse, active seizures, GDV or a bloated abdomen, unresponsiveness, uncontrolled bleeding, or a rectal temperature at or above 104.0°F (40.0°C) or below 99.0°F (37.2°C) accompanied by weakness.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Respiratory distress, collapse, active seizures, GDV / bloated abdomen, unresponsiveness, uncontrolled bleeding, rectal temperature at or above 104.0°F (40.0°C) or below 99.0°F (37.2°C) with weakness\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0119_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_care",
+            "customer_query": "What is the exact base examination fee for an urgent walk-in arrival during clinic hours?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact base fee for an urgent walk-in examination from our available clinic documents. I would be happy to connect you with our team directly so they can give you accurate pricing details.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0141_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Hello. My dog had surgery 5 days ago and is getting quite dirty from going outside to relieve himself. May I give him a bath, or when is that permitted?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "No, your dog cannot have a bath yet. Bathing, swimming, or outdoor moisture exposure is strictly prohibited for 14 days after surgery to keep bacteria out of the suture tracks. Since he is only on day 5, please wait until after the 14-day mark and once he has been cleared at his recheck visit.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Bathing Prohibition: No bathing, swimming, or outdoor moisture exposure for 14 days. Moisture carries bacteria into the sub-dermal suture tracks.\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"Days 10–14 | Incision closed, recheck visit | Gradual return to normal after the vet clears your pet\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0255_t1",
+            "tenant": "harbor_view",
+            "category": "vaccine_pricing",
+            "customer_query": "How much are you going to charge me for my dog's 3-year rabies booster?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I apologize, but I do not have pricing information for the rabies vaccine in our clinic records. I can connect you directly with a staff member who can provide an exact price quote.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0278_t0",
+            "tenant": "harbor_view",
+            "category": "patient_registration",
+            "customer_query": "Hi there! We just moved to the neighborhood and I would love to register my golden retriever mix, Barnaby, for an initial wellness checkup. I saw there is a booking deposit, so I wanted to ask how much that fee is, whether it goes toward the visit, and how much advance notice you require if we ever need to reschedule without losing that deposit? Thanks so much for your help!",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Welcome to the area! To secure an initial booking slot, a non-refundable $65.00 deposit is required, which is applied directly toward your pet's exam fee rather than being an extra charge. If you ever need to reschedule, your deposit is fully transferable as long as you provide at least 48 hours notice prior to the appointment. Cancellations made with less than 48 hours notice forfeit the deposit.",
+            "evidence_json": "[{\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"A non-refundable $65.00 deposit (applied directly toward the exam fee) is required to secure the initial booking slot.\"}, {\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"Deposits are transferable to a rescheduled date if notice is provided at least 48 hours prior to the appointment. Cancellations under 48 hours forfeit the deposit.\"}, {\"source\": \"PATIENT_REGISTRATION_INTAKE.md\", \"quote\": \"The deposit is a credit toward the visit and is never an extra charge.\"}]",
+            "cited_sources": [
+                "PATIENT_REGISTRATION_INTAKE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0293_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_fees",
+            "customer_query": "What is your base emergency walk-in exam fee if I arrive during normal clinic hours?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our specific emergency walk-in exam fee, as that pricing is not listed in our documents. I would be happy to connect you with our clinic team so they can provide the exact fee and answer any questions.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0314_t0",
+            "tenant": "harbor_view",
+            "category": "intake_paperwork",
+            "customer_query": "Hi there! Can I fill out the new client registration forms online prior to coming in tomorrow morning?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether our new client registration paperwork can be completed online prior to your visit. Let me connect you with our front desk team so they can guide you on the forms before tomorrow morning.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0139_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Hi there! My golden retriever had surgery yesterday and is wearing her cone, but can you recommend which specific brand of recovery suit or onesie you prefer if we want an alternative to the plastic E-collar?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm any recommended brands of surgical recovery suits or onesies, as our documents do not list approved brands or suit alternatives. I would be happy to connect you with our clinical team so a technician or veterinarian can evaluate whether a recovery suit is safe for your pet's specific incision.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0144_t0",
+            "tenant": "harbor_view",
+            "category": "payment_plans",
+            "customer_query": "Hello dear, do you take CareCredit for my appointment payment?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we accept CareCredit, as our documentation does not list specific financing companies. I would be happy to connect you with our front desk team so they can check our accepted payment options for you.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0131_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Can I give my cat a bath or wipe her stitches with rubbing alcohol?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "No. There should be no bathing or moisture exposure for 14 days following surgery, as moisture allows bacteria into the suture tracks. Please do not apply alcohol, hydrogen peroxide, or creams to the incision unless specifically instructed by your veterinarian.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"No bathing, swimming, or outdoor moisture exposure for 14 days. Moisture carries bacteria into the sub-dermal suture tracks. Do not apply creams, peroxide, or alcohol unless a veterinarian instructs you to.\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0091_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "My dog is on day 5 post-op, and her temperature is currently 101.8°F. The guide mentions strict confinement and a short 6-foot leash, but does Harbor View rent out recovery playpens or crates for large dogs? If so, what is the weekly rental fee?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether our clinic provides or rents recovery crates or playpens, nor can I quote any rental pricing, as that information is not available in our records. I will connect you with a member of our clinic staff who can let you know our equipment options.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0264_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "Can you mail Buster's regular monthly pills to our home address this time?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we offer home delivery or postal mailing for prescriptions, as our clinic policies do not outline mail-delivery options. I would be happy to connect you with our pharmacy team so they can assist you with your options.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0174_t2",
+            "tenant": "harbor_view",
+            "category": "feline_vaccinations",
+            "customer_query": "Good morning. My cat never goes outside and lives exclusively in my apartment. Is it still necessary for her to get vaccinated?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Yes, indoor cats still need vaccinations. Rabies vaccination is required by state law even for strictly indoor pets because bats and other wildlife can enter homes. We also strongly recommend the FVRCP vaccine, as airborne and surface viruses can easily be brought inside on shoes and clothing.",
+            "evidence_json": "[{\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"Rabies vaccination is legally required by state law even for strictly indoor pets, as bats and wild vectors can enter homes. We also strongly recommend the FVRCP vaccine (feline viral rhinotracheitis, calicivirus, and panleukopenia) because these airborne and fomite-spread viruses can easily be brought indoors on human shoes and clothing.\"}]",
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0160_t2",
+            "tenant": "harbor_view",
+            "category": "wellness_plans",
+            "customer_query": "Quick question between meetings—I noticed your vaccine schedules for puppies recommend DHPP boosters at 8, 12, and 16 weeks along with rabies at 16 weeks. Does Harbor View offer an annual wellness plan or monthly preventive package that bundles these puppy core vaccines, fecal tests, and deworming together for a monthly subscription fee, and if so, what is the monthly rate?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "While our protocols outline the puppy vaccine series and fecal testing schedule, our documentation does not specify whether we offer monthly subscription wellness plans or what they cost. I cannot confirm package availability, but I can connect you with our administrative team for details on billing options.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0035_t1",
+            "tenant": "harbor_view",
+            "category": "vaccine_pricing",
+            "customer_query": "Good morning. I am reviewing the preventive health schedule for my three-year-old dog, who is due for her Leptospirosis booster and DHPP vaccine. Could you please provide the itemized cost for administering these two specific vaccinations?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the specific pricing for the Leptospirosis booster and DHPP vaccination, as individual vaccine fees are not listed in our published protocols. I would be happy to connect you with our team to provide an exact itemized estimate for your visit.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0024_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "I'm so panicked because our older lab is taking his arthritis meds, but we're going away and I need to know if you can mail his prescription refills directly to our home via USPS priority mail, or do you only allow in-person pickup? We leave this weekend and I'm stressing out trying to get this sorted!",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we are able to mail prescription refills directly to your home, as our policy details standard in-house pickup and physical written prescriptions. Let me connect you directly with our pharmacy staff so they can confirm our mailing options and make sure your lab has his medication before you leave.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0039_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_costs",
+            "customer_query": "I'm terrified my dog is bloated, what does the emergency transfer ambulance to the regional hospital cost?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "If you suspect your dog has a bloated abdomen, please call us immediately at (555) 438-2323 or proceed directly to an emergency hospital, as this is a critical emergency. I cannot confirm the cost or provision of an emergency transfer ambulance, so I am connecting you with our medical team right away.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0103_t0",
+            "tenant": "harbor_view",
+            "category": "urgent_care_triage",
+            "customer_query": "I came in with my limping dog and you made us wait while taking in another pet who arrived way after us! Why am I being pushed aside when I arrived first? Explain how you decide who gets treated.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "We assess incoming urgent cases immediately upon arrival by medical need rather than arrival order. Patients with critical life threats (RED) or urgent conditions (YELLOW) are prioritized for immediate treatment or an exam within 30 minutes, while stable cases like limping where the pet is bearing weight (GREEN) are placed into scheduled same-day work-in slots. We apologize for the wait and are happy to give you an honest update on what to expect.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Incoming urgent cases are assessed immediately upon arrival, by medical need and not by arrival order\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"limping with bearing weight | Scheduled same-day work-in appointment slot\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0226_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "Can you ship my dog's refilled prescriptions directly to my home address?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we provide home delivery or mailing for prescription refills, as our policies do not mention shipping options. Let me connect you with our pharmacy staff to help you with your request.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0249_t1",
+            "tenant": "harbor_view",
+            "category": "feline_wellness",
+            "customer_query": "Hi there! I just adopted a senior cat who is about 11 years old, and this is my very first time caring for an older pet. I'm feeling a bit confused about how often she actually needs to come in for checkups. Could you tell me your recommended wellness exam schedule for older cats and what kind of routine testing is included during the year?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "For senior cats over 10 years old, wellness exams are recommended every 6 months. In addition to regular checkups, their care includes annual bloodwork, urinalysis, and blood pressure screening.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"seniors_over_10_years\\\": \\\"Every 6 months, with annual bloodwork, urinalysis, and blood pressure\\\"\"}]",
+            "cited_sources": [
+                "preventive_care_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0091_t1",
+            "tenant": "harbor_view",
+            "category": "vaccine_pricing",
+            "customer_query": "How much does the annual Leptospirosis booster cost for Buster this year?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact cost of the Leptospirosis booster, as specific vaccine prices are not listed in our documentation. I would be happy to connect you with our team so they can pull up your account and provide an accurate quote for Buster.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0017_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "How much does laser therapy cost for incision healing?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm pricing or availability for post-operative laser therapy, as this is not listed in our materials. I would be happy to have our veterinary team contact you with details and an itemized estimate.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0218_t0",
+            "tenant": "harbor_view",
+            "category": "appointments_and_intake",
+            "customer_query": "You charged me a $65 deposit but what is the actual total price for the new client exam itself?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "While our policy notes that the $65 deposit is applied toward the exam fee, the total cost of the initial exam is not listed in our documentation. I would be glad to connect you with our front desk team so they can provide the exact pricing for your visit.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0237_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Can I give my dog a bath tomorrow since he had surgery three days ago and got dirty outside?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "No, your dog cannot have a bath. We prohibit bathing, swimming, or outdoor moisture exposure for 14 days after surgery because moisture can carry bacteria into the incision. If he has dirty spots, you can spot-clean areas well away from the incision with a dry cloth.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"No bathing, swimming, or outdoor moisture exposure for 14 days. Moisture carries bacteria into the sub-dermal suture tracks.\"}, {\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"If your pet is dirty, spot-clean away from the incision with a dry cloth, and call us if you have concerns.\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md",
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0275_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "My dog is on day 5 post-op taking 44 mg carprofen, but how much does the day 10 to 14 suture removal recheck appointment cost?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "Our documentation explains the day 10 to 14 suture removal and recheck process, but it does not state whether there is a fee or what the cost would be. Let me connect you with our clinic team so they can confirm the pricing for Buster's follow-up visit.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0111_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Hello, my lab mix had a soft tissue mass removed yesterday and is currently on carprofen and gabapentin. I want to buy a surgical recovery suit or onesie to use alongside his cone, but I need to know the specific brand or fabric specifications you recommend to make sure it doesn't trap moisture against the incision.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm which specific brand or fabric specifications are approved for surgical recovery suits, as our recovery guide does not cover onesies or suit brands. I would be glad to have our veterinary care team follow up with you directly to advise on safe options for your dog's incision.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0326_t2",
+            "tenant": "harbor_view",
+            "category": "vaccinations_and_wellness",
+            "customer_query": "hey do u guys do titer tests to check my dogs distemper immunity instead of doing the regular booster shot and if so how much does that run",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether our clinic offers antibody titer testing in place of routine vaccine boosters or what that testing would cost, as that information is not available in our records. I will connect you with a member of our veterinary team who can review your pet's needs and provide pricing.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0293_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_bathing",
+            "customer_query": "Hi there, my dog had surgery a week ago and got pretty muddy outside. I know he cannot have a bath, but can I use dry shampoo powder or waterless foaming wipes on his fur as long as I avoid the incision? I am just confused about what products are safe to use.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether commercial dry shampoo powders or waterless grooming wipes are safe to use during your dog's recovery, as our guide only specifies spot-cleaning away from the incision with a dry cloth. I would be glad to have a veterinary team member follow up with you to advise on safe cleaning options.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0165_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "Hi there, I am really panicking right now because my dog Toby got into a small fight at the dog park and has a pretty deep cut on his shoulder, and he also vomited twice in the car on the way home. We are heading toward your clinic now, but I want to understand how you handle urgent walk-ins like this. Will we be stuck waiting in the lobby behind non-urgent checkups, or how quickly will someone actually be able to examine him?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Incoming urgent cases are assessed immediately upon arrival based on medical need rather than arrival order. Deep lacerations and repeated vomiting place a pet in our YELLOW (Urgent Priority) triage category, which means an exam within 30 minutes, along with pain relief and diagnostic ultrasound triage. Please call us at (555) 438-2323 on your way so our team is ready for Toby.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Incoming urgent cases are assessed immediately upon arrival, by medical need and not by arrival order:\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Male cat straining to urinate (suspected blocked cat), acute toxin ingestion, ocular injuries, deep lacerations, repeated vomiting, rectal temperature of 103.0–103.9°F (39.4–39.9°C)\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Exam within 30 minutes; pain relief & diagnostic ultrasound triage\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Call us at (555) 438-2323 on your way\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0235_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "what if he has to stay overnight, do you keep dogs there?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Harbor View is a day practice and does not offer overnight intensive care monitoring. If your pet requires overnight hospitalization, we stabilize them and transfer them to our designated 24/7 referral partner, Regional Animal Specialty & Emergency Center at (555) 948-3700.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Harbor View is a day practice and does not offer overnight intensive care monitoring\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Designated Regional Referral Partner: Regional Animal Specialty & Emergency Center (24/7 ER) — Phone: (555) 948-3700.\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0275_t0",
+            "tenant": "harbor_view",
+            "category": "urgent_triage",
+            "customer_query": "You guys treated Buster last fall, but now he's got a torn toenail that won't stop limping and he's still walking on it without any blood squirting out. How do your walk-in triage slots work if we bring him over today?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Because Buster is limping while still bearing weight and has a broken toenail without arterial bleeding, he is categorized under our GREEN triage level (stable outpatient). GREEN cases are scheduled into same-day work-in appointment slots, though wait times can be longer on busy days. Please keep in mind that urgent walk-ins are accepted during clinic hours only, and cases arriving less than 30 minutes before closing may be referred to an emergency hospital if they cannot be stabilized and discharged safely.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"| **GREEN (Stable Outpatient)** | Mild ear infection, chronic skin itching, broken toenail without arterial bleed, limping with bearing weight | Scheduled same-day work-in appointment slot |\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Urgent walk-ins are accepted during clinic hours only. Cases arriving less than 30 minutes before closing may be referred to the ER if they cannot be stabilized and discharged safely.\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0121_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_billing",
+            "customer_query": "Good morning. I understand from your triage protocol that cases arriving less than 30 minutes before closing might be referred out to the Regional Animal Specialty & Emergency Center. If my dog needs urgent stabilization at Harbor View first and is then transferred over to the emergency hospital, what is the exact base stabilization exam fee charged by your clinic before transfer? I would appreciate knowing the specific dollar amount so I can prepare payment.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact dollar amount for our emergency stabilization fee, as that specific pricing is not listed in our published protocols. While Harbor View charges only for services rendered here and provides itemized estimates prior to care, I would be happy to connect you with our clinic team to discuss current pricing.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0216_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Does my pet really have to keep wearing the cone 24/7 for the full 10 to 14 days?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Yes. The E-collar must stay on 24/7 for the entire 10 to 14 days, including while eating and sleeping. Even 30 seconds of licking can introduce harmful oral bacteria or cause the incision to open. It should only be removed once your veterinarian has cleared the incision at your recheck visit.",
+            "evidence_json": "[{\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"The E-collar must stay on 24/7 for 10 to 14 days, including while your pet sleeps and eats. Even 30 seconds of licking can introduce bacteria or open the incision. Remove it only when a veterinarian has cleared the incision at the recheck visit.\"}]",
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0025_t1",
+            "tenant": "harbor_view",
+            "category": "urgent_care",
+            "customer_query": "Hi there, you know how sensitive Buster gets after his yearly shots, but this afternoon he is completely burning up and lethargic. I just took his rectal temperature at home and the thermometer read 104.2°F. He won't get up for a treat or water. What should I do right now?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "A rectal temperature of 104.0°F or higher indicates a significant fever and is considered an emergency threshold. Please bring Buster to the clinic immediately. Call us at (555) 438-2323 on your way so our medical team can prepare for your arrival, or go directly to the Regional Animal Specialty & Emergency Center (24/7 ER) at (555) 948-3700 if we are closed. I am alerting our clinical staff right away.",
+            "evidence_json": "[{\"source\": \"preventive_care_matrix.json\", \"quote\": \"\\\"emergency_threshold_f\\\": 104.0\"}, {\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"104.0°F (40.0°C) or higher | Significant fever | Call immediately and come in\"}, {\"source\": \"faq_support_knowledgebase.json\", \"quote\": \"At 104.0°F (40.0°C) or higher, seek immediate care.\"}]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0298_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_and_refills",
+            "customer_query": "I am looking into refilling my dog's medication through Chewy since their pricing is lower. Will your clinic authorize an external electronic fax request from them, and if not, how long would a written paper prescription remain valid for me to submit to them myself?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "We do not approve third-party digital faxes directly to prevent counterfeit risks and improper storage. However, as long as your dog's exam and any required lab work are current, you may pick up a complimentary physical written prescription to submit to Chewy yourself. Written prescriptions are valid for 12 months, or less if specified by state law.",
+            "evidence_json": "[{\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"To prevent medication counterfeit risks and improper storage, Harbor View does not approve external third-party digital faxes directly. Clients may pick up a complimentary written physical prescription to submit directly to their pharmacy of choice.\"}, {\"source\": \"PHARMACY_AND_REFILL_SOP.md\", \"quote\": \"Written prescriptions are valid for 12 months, or less where state law specifies.\"}]",
+            "cited_sources": [
+                "PHARMACY_AND_REFILL_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0321_t1",
+            "tenant": "harbor_view",
+            "category": "vaccinations_wellness",
+            "customer_query": "How much do you charge for the canine influenza vaccine?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I am sorry, but I do not have vaccine pricing information in my documentation. I would be happy to connect you with our clinic staff so they can provide you with an exact price.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0241_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_care",
+            "customer_query": "I am looking at your emergency protocols and I see that you triage and send critical overnight patients to Regional Animal Specialty ER. What I need to know right now is your exact base triage examination fee for urgent walk-ins arriving during clinic hours versus their ER fee, because nobody listed the actual dollar amount for your urgent intake exam anywhere on here.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our specific fee for an urgent triage examination, as pricing for emergency intake visits is not listed in our documentation. I can connect you directly with our front desk team to provide the exact exam cost and discuss your pet's needs.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0163_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Hello dear, my sweet little terrier had surgery two days ago and is recovering in her pen. The paperwork says to give her pain medicine with food, but she is being very fussy with her kibble. I have some low-sodium chicken broth in my cupboard, and I was wondering if it is safe to pour a couple of spoonfuls over her food to help her take the medicine, or if you recommend a specific brand of canned recovery food?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether chicken broth is safe for your dog during post-op recovery, nor do our records specify recommended brands of canned food. I will connect you with our clinical team so they can guide you safely on feeding and administering her medication.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0093_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "Good day dear, my sweet little terrier Barnaby had his neuter surgery yesterday and is resting on his blanket. I was wondering how many days I should wait before taking him back to his regular grooming lady for a haircut, as he has an appointment coming up soon.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "While our post-operative instructions require no bathing or moisture for 14 days, our documents do not state a specific timeframe for professional haircuts or grooming appointments. I cannot confirm when Barnaby can safely go to the groomer, so I will connect you with our veterinary team to review his specific recovery plan.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0065_t1",
+            "tenant": "harbor_view",
+            "category": "preventive_care",
+            "customer_query": "Hi, we are due for Buster's annual visit next week and I wanted to know the price for his Leptospirosis booster. Since you have his records on file, could you also tell me how much the 4-way lepto shot runs compared to doing the Lyme vaccine at the same time?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot provide the exact pricing for the Leptospirosis or Lyme vaccines, as our preventive care schedule does not list individual vaccine fees. I would be happy to have our front desk team review Buster's account and send you a detailed estimate before your visit.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0271_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_triage",
+            "customer_query": "Hi, I just moved here and I'm not really sure how walk-ins work for emergencies. If I bring my dog in because she's limping, will she be seen right away or how do you decide who goes first? I don't want to show up and be totally blindsided by the wait.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Patients are assessed immediately upon arrival and seen based on medical need rather than arrival order. A dog that is limping while bearing weight is categorized as a GREEN (stable outpatient) case and placed in a scheduled same-day work-in slot. On busy days, wait times for GREEN cases can be long, but our team will keep you informed of what to expect when you arrive.",
+            "evidence_json": "[{\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Incoming urgent cases are assessed immediately upon arrival, by medical need and not by arrival order\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"GREEN (Stable Outpatient) | Mild ear infection, chronic skin itching, broken toenail without arterial bleed, limping with bearing weight | Scheduled same-day work-in appointment slot\"}, {\"source\": \"EMERGENCY_TRIAGE_PROTOCOL.md\", \"quote\": \"Wait times for GREEN patients can be long on busy days.\"}]",
+            "cited_sources": [
+                "EMERGENCY_TRIAGE_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0115_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_fees",
+            "customer_query": "I am on my way with my dog and need to know right now what your emergency triage exam fee costs. Nobody mentioned the exact walk-in charge on the phone. How much is the initial urgent care exam?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our specific urgent care exam fee from our clinic records, and I want to avoid giving you inaccurate billing information while you are en route. Please call our front desk directly at (555) 438-2323 so our team can provide the current exam cost and prepare for your arrival.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0004_t1",
+            "tenant": "harbor_view",
+            "category": "pharmacy_delivery_courier",
+            "customer_query": "Hello, I called in Buster's regular monthly medication refill earlier this morning like we normally do. Can you deliver it to my home via courier by 5 PM today, and what is your local delivery courier fee?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we offer local courier home delivery or what a delivery fee would be, as our clinic documents do not cover home delivery services. I will gladly connect you with our pharmacy team so a staff member can check on Buster's refill and discuss your pickup or delivery options.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0133_t2",
+            "tenant": "harbor_view",
+            "category": "post_op_care",
+            "customer_query": "My dog had surgery today, how long does he really have to keep that cone on?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Your dog must wear the E-collar 24/7 for 10 to 14 days, including while sleeping and eating, until your veterinarian clears the incision at their recheck visit.",
+            "evidence_json": "[{\"source\": \"POST_OP_CARE_GUIDE.md\", \"quote\": \"The E-collar must remain securely fastened 24/7 for 10 to 14 days.\"}]",
+            "cited_sources": [
+                "POST_OP_CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "harbor_view-0270_t2",
+            "tenant": "harbor_view",
+            "category": "wellness_costs",
+            "customer_query": "Hello dear, how much does an ordinary rabies shot cost for my little terrier?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the exact price for an individual rabies vaccination from our clinic materials. I would be happy to connect you with our front desk team so they can provide you with an exact quote and help schedule your terrier's visit.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "harbor_view-0063_t0",
+            "tenant": "harbor_view",
+            "category": "emergency_services",
+            "customer_query": "Hello, I am reviewing your emergency triage policy in case an urgent situation ever arises with my dog. I see that for overnight care or specialized emergencies, you stabilize pets and refer them to the Regional Animal Specialty & Emergency Center. Could you please let me know what the baseline emergency exam fee is at Regional Animal Specialty & Emergency Center, and whether they accept pet insurance direct-pay or Scratchpay for overnight hospitalization deposits?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the emergency exam fee or payment options for the Regional Animal Specialty & Emergency Center, as their pricing and financing policies are not listed in our records. I would be happy to have our team connect you directly with their office, or you can reach them at (555) 948-3700.",
+            "evidence_json": "[]",
+            "cited_sources": []
+        }
+    ]
+}
