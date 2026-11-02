@@ -47,10 +47,18 @@ class SupportInferenceClient:
         self.temperature = temperature
 
     @staticmethod
-    def build_user_prompt(query: str, context: str) -> str:
-        return f"Context documents:\n{context or '(no relevant documents found)'}\n\nCustomer question:\n{query}"
+    def build_user_prompt(query: str, context: str, history: Optional[list] = None) -> str:
+        history_text = "\n".join(
+            f"{'Customer' if turn['role'] == 'user' else 'Support'}: {turn['content']}"
+            for turn in (history or [])
+        )
+        history_block = f"\n\nConversation history:\n{history_text}" if history_text else ""
+        return (
+            f"Context documents:\n{context or '(no relevant documents found)'}"
+            f"{history_block}\n\nCustomer question:\n{query}"
+        )
 
-    def generate_raw(self, query: str, context: str) -> tuple[str, Dict[str, float]]:
+    def generate_raw(self, query: str, context: str, history: Optional[list] = None) -> tuple[str, Dict[str, float]]:
         """Runs schema-constrained generation and returns the raw JSON text plus timing metrics.
 
         The JSON schema is enforced at decode time by Ollama, so the text should always parse.
@@ -59,7 +67,7 @@ class SupportInferenceClient:
             model=self.model,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": self.build_user_prompt(query, context)},
+                {"role": "user", "content": self.build_user_prompt(query, context, history)},
             ],
             format=SupportResponse.model_json_schema(),
             options={"temperature": self.temperature},
@@ -69,9 +77,16 @@ class SupportInferenceClient:
         metrics = {
             "latency_ms": (result.total_duration or 0) / 1e6,
             "eval_tokens": eval_tokens,
+            "prompt_tokens": result.prompt_eval_count,
             "tokens_per_second": eval_tokens / eval_seconds if eval_seconds else 0.0,
         }
         return result.message.content, metrics
+
+    def get_serving_metadata(self) -> dict:
+        """Read installed configuration and runtime metadata without generation."""
+        from src.inference.serving_metadata import capture_ollama_settings
+
+        return capture_ollama_settings(self.client, self.model, {"temperature": self.temperature})
 
     def generate(self, query: str, context: str) -> GenerationResult:
         raw, metrics = self.generate_raw(query, context)

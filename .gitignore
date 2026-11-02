@@ -1,9 +1,62 @@
-docs/
-.venv
+# Local environments, credentials, editor and agent state
+/docs/
+/.venv/
 node_modules/
 .env
+.env.*
 !.env.example
-.vscode
+!.env.demo.example
+.docker-demo-config/
+/.vscode/
+/.agents/
+/AGENTS.md
+/.codex/
+*.local
+
+# Python and notebook caches / test outputs
 __pycache__/
-*.pyc
-.agents
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Raw generation, experiment logs and derived training copies stay local.
+# Keep the canonical cleaned dataset and frozen evaluation benchmark versioned.
+/logs/
+/data/generated/
+/data/*/generation_reference/
+/data/cleaned/train_tickets*.csv
+/data/cleaned/train_tickets*.jsonl
+
+# Downloaded models, training state, adapters and export intermediates
+/models/
+/downloads/
+/checkpoints/
+/artifacts/
+/Capstone_Models/
+/GGUF_Exports/
+/.cache/
+wandb/
+unsloth_compiled_cache/
+checkpoint-*/
+adapter/
+adapters/
+*.gguf
+*.safetensors
+pytorch_model*.bin
+adapter_model*.bin
+training_args.bin
+*.ckpt
+model*.pt
+consolidated*.pth
+optimizer.pt
+scheduler.pt
+rng_state*.pth
+
+# Original machine-specific Ollama imports and download verification
+/evaluation/colab_full01/
+/evaluation/kaggle_full01/

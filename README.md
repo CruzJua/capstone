@@ -1,90 +1,179 @@
-<div style="text-align: center; margin-top: 40%; font-family: sans-serif;">
+# Local Customer Support Agent
 
-# Temp README before working on project
+A Python prototype for tenant-filtered MongoDB Atlas retrieval and schema-constrained local support responses through Ollama. It includes a loopback chat demo, QLoRA training/export notebooks, and independent retrieval/generation/judge evaluation tools. The embeddable widget and administration/ticket interface are later application work.
 
-**Project:** Local Customer Support Agent
+The compact [experiment results](evaluation/results.json) retain source hashes, four short Kaggle screenings, two separate full runs, six Kaggle model/context evaluations, rubric assessments, and retrieval measurements. Training curves: [current Kaggle full run](evaluation/training/kaggle_full01_loss.png) and [historical Colab full run](evaluation/training/colab_full01_loss.png). Raw logs and downloaded models stay local and are not included in Git.
 
-**Author:** Juan Cruz
+**Recorded limitations:** all three Kaggle quantizations returned valid JSON but answered all 100 live-RAG cases, including 50 absent-answer cases and four requiring a human. Escalation recall was zero; these are experimental integration candidates. Valid JSON, exact quotations, and passing software tests do not establish grounded answers. The teacher baseline is complete in both modes; measured comparisons and their limits are summarized below. Revised-data retraining is deferred until after Sprint 4.
 
-**Date:** August 9, 2026 (Revised: September 2, 2026)
+## Setup and local demo
 
-</div>
+### Portable Self-Contained Docker Demo (No Atlas Account or Paid API Required)
 
-<div style="page-break-after: always;"></div>
+For a reproducible, self-contained local demonstration of the Management Dashboard (`dashboard/`), Orchestration Gateway (`gateway/`), local MongoDB Vector Search (`mongodb/mongodb-atlas-local:8.0`), and the 5 preset businesses (`cinder_and_salt`, `harbor_view`, `iron_and_oak`, `kettle_and_loom`, `northstar_auto`) from [`data/fixtures/demo_manifest.json`](data/fixtures/demo_manifest.json):
 
-## Project Summary
+```bash
+# 1-command setup: generates .env.demo.local, starts local MongoDB + Vector Search,
+# seeds 5 businesses, 12 sample tickets, 30 source docs (384-dim bge-small-en-v1.5),
+# waits for vector_index READY + $vectorSearch smoke query, and launches Gateway + Dashboard:
+bash scripts/setup_demo.sh
 
-My project is a self hosted AI customer support backend that can be reused for any website. The core AI task would be knowledge distillation, where a major teacher model (Claude or Gemini) generates thousands of synthetic support interactions. These interactions would range general Q&A, multi-turn conversations, escalations, and structured ticket summaries, and they would also span several business types each with its own cache of knowledge. The data would be cleaned to remove duplicates, validate support schema, and filter ungrounded claims. The cleaned dataset would be used to QLoRA fine tune a small open weight student model (Qwen2.5-1.5B/3B or Llama 3.2). The student model will have a support agent skill set consisting of answering strictly from retrieved context, citing sources, classify intent, and refusal or escalation when context does not contain an answer.
+# Lifecycle commands:
+bash scripts/setup_demo.sh status            # Inspect container health, seed counts, and Ollama readiness
+bash scripts/setup_demo.sh restart           # Restart gateway/dashboard while preserving demo MongoDB volumes
+bash scripts/setup_demo.sh stop              # Stop demo containers without deleting volumes
+bash scripts/setup_demo.sh logs              # Inspect container logs
+bash scripts/setup_demo.sh reset             # Tear down ONLY capstone_local_demo containers and demo volumes
+bash scripts/setup_demo.sh reset --rebuild   # Wipe demo volumes and re-seed from scratch
+```
 
-Specific knowledge on each business is handled by a RAG (retrieval augmented generation) pipeline where uploaded documents are placed into chunks, the chunks are embedded and stored in a MongoDB Atlas Vector Search, then they are retrieved using a tenant filter and injected into the prompt at the time of the query. This allows business logic to live with each caller rather than in the model's weights which is the heart of the reusability of the project. The application layer includes quantized local inference (llama.cpp/Ollama) with constrained decoding to enforce structured outputs, an Express gateway with per-tenant API keys and routing, an embeddable React chat widget, and a Next.js admin dashboard with a ticket queue.
+- **Endpoints (bound to loopback `127.0.0.1`):**
+  - **Admin Dashboard (One-Click Demo Login):** [http://localhost:3001/login](http://localhost:3001/login)
+  - **Orchestration Gateway API & Health:** [http://localhost:4001/api/health](http://localhost:4001/api/health)
+  - **Local MongoDB Atlas (Vector Search):** `127.0.0.1:27018` (database `capstone_demo`, isolated from standard `rag_knowledge_base` and `capstone_dev`)
+- **Prerequisites & Disk Expectations:** Docker Engine / Desktop with `docker compose` (~2.5 GB disk for container images and the cached `BAAI/bge-small-en-v1.5` embedding model). If `~/.cache/huggingface` already contains `BAAI/bge-small-en-v1.5`, the seed job copies it into the `demo_hf_cache` volume automatically.
+- **What Works Without vs. With Ollama:** One-click demo authentication, tenant switching, runtime configuration updates, document inventory, raw document viewing, chunk inspection, `.md`/`.json` document uploads with 384-dim vector indexing, ticket review queue actions, and `$vectorSearch` retrieval all work immediately without Ollama. For live LLM generation, start `ollama serve` on the host (and `ollama pull llama3.2:3b` or import your fine-tuned GGUF); `/api/health` and the dashboard sidebar report `ollama_reachable` and `ollama_ready` dynamically.
+- **Dry-Run & Host Seeding CLI:** You can inspect the deterministic fixture manifest and hashes without connecting to any database via `.venv/bin/python scripts/seed_demo.py --dry-run`.
 
-The main technical challenge I'm expecting is how a distilled 1-3B model can handle grounded support from businesses it has yet to see from its training. To diagnose performance accurately, retrieval will be measured separately from generation using recall@k on the held-out tenant to verify whether the retrieved context actually contains the answer span. Generation will be evaluated directly against ground truth in two halves: questions whose answers are present in the documents, and questions whose answers are provably absent, making hallucinations directly countable, alongside precision/recall of escalations. For questions that need the model to stretch and sort of guess a little, responses will be evaluated using an independent LLM judge distinct from the teacher model (e.g., if Gemini is the teacher, Claude or ChatGPT will judge). Instead of framing the comparison as a head-to-head win rate against the teacher, the evaluation will measure recovery: what fraction of teacher-level groundedness and escalation accuracy the student achieves, at what latency, on what hardware, and at what cost per thousand queries. This highly differs from what has been done in prior classes where we used hosted AI APIs, and for this project I plan to build, train, evaluate, and serve the model myself.
+### Python Loopback Chat Demo & Manual Setup
 
----
+From the repository root, install Python 3.14+ and `uv`, then initialize a fresh checkout:
 
-## Personal Motivation
+```bash
+uv sync
+cp .env.example .env
+```
 
-I feel like my coursework at Neumont splits into two halves, a few classes in Python, data collection, and data cleaning, followed by what felt like almost entirely full-stack web development with Node, React, Next.js, Express, and MongoDB. This project deliberately joins those two. It is a Python training pipeline on one side and a production web platform on the other. In previous projects, including a pantry inventory app, I added intelligence by calling hosted APIs but for my capstone I want to prove I can build the intelligence itself. This includes generating a dataset, fine tuning a model, evaluating it, and serving it in an application. Small, locally hosted models matter wherever cost and privacy rule out major companies APIs, and reusable AI infrastructure is exactly the kind of product I hope to build professionally as an AI engineer. The result is both a genuine technical challenge and a strong portfolio piece.
+Configure `.env` with `MONGODB_URI`, `MONGODB_DB_NAME`, `MONGODB_COLLECTION_NAME`, `MONGODB_VECTOR_INDEX_NAME`, `EMBEDDING_MODEL_NAME`, `OLLAMA_HOST`, and `OLLAMA_MODEL`. Keep credentials local. Recorded retrieval used `capstone_dev.doc_vectors`, index `vector_index`, and `BAAI/bge-small-en-v1.5`; the embedding model must match the existing index. Optional `HF_TOKEN` supplies Hugging Face authentication. When embeddings are cached, `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1` prevents downloads.
 
----
+Ollama must be running (`ollama serve` if needed). The repo does not contain or download model weights. To import your downloaded Kaggle GGUF, copy the portable template, edit its `FROM` path to the actual file, then create the local tag:
 
-## Technologies and Research Requirements
+```bash
+cp evaluation/Modelfile.example Modelfile.local
+# Edit FROM in Modelfile.local before running ollama create.
+ollama create llama3.2:3b-qlora-kaggle-full01-q4 -f Modelfile.local
+ollama list
+OLLAMA_MODEL=llama3.2:3b-qlora-kaggle-full01-q4 \
+  .venv/bin/python scripts/run_chat_demo.py --port 8000
+```
 
-- **Python + PyTorch (QLoRA via Unsloth)** – Used to fine-tune the student model. I have Python and data-handling experience from earlier coursework, but parameter efficient fine tuning is new and will require research through Unsloth/Hugging Face documentation and small scale training experiments. I have planned extra time for learning, getting the technology right, and doing preliminary research on unfamiliar tools. Rather than a single training run, I plan to run an iterative loop of 5 to 10 training runs across Weeks 4 and 5 to refine data quality and model performance.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). Select a business and ask a question; the page displays retrieved evidence, context, answer, citations, action, confidence and timing. **Check connections** refreshes readiness. This is an unauthenticated loopback development demo. Run model and embedding jobs sequentially when compute is available. Repeat the import with the correct Q5/Q8 files and matching `...-q5` / `...-q8` tags before evaluating all three formats. Base-model comparisons also require `llama3.2:3b` installed separately.
 
-- **Knowledge distillation and synthetic data generation (Claude or Gemini API as teacher)** – The teacher generates the training corpus consisting of support conversations, escalations, and ticket summaries across several businesses, creating known ground truths for evaluation. I have called LLM APIs before, but designing generation prompts, quality filters, and deduplication is new research territory. I will research the strengths of candidate models to decide which makes the better teacher, while ensuring the model used to judge evaluation outcomes is a different model so the student isn't scored by the model it was trained to imitate.
+## Data, parser and index checks
 
-- **Student model: Qwen2.5-1.5B/3B or Llama 3.2** – The small open-weight model being fine-tuned. New to me so it requires research into model selection, chat templates, and context-window management. From my small amounts of research so far these do seem to be the best options though.
+The versioned `data/cleaned/cleaned_tickets.csv` is the original cleaned synthetic corpus. The frozen [benchmark](data/evaluation/held_out_benchmark.json) contains 100 `harbor_view` cases: 50 answer-present, 50 absent; four present cases require escalation. Keep it unchanged and exclude this tenant from training and development tuning.
 
-- **Hugging Face ecosystem (Transformers, Datasets, Hub)** – Dataset management, training, and model versioning. I have very limited prior knowledge in this. I will learn through official documentation and tutorials.
+A fresh checkout lacks the ignored derived training CSV. If needed, this preparation command recreates that local copy and writes its accompanying sample benchmark under ignored `logs/`, preserving the versioned frozen benchmark. It is unnecessary on the existing workspace when the training CSV is already present:
 
-- **Retrieval-Augmented Generation (RAG)** – Grounds the model in each tenant's uploaded documents. This is entirely new to me, and will require research into chunking strategies, embedding quality, hybrid search, and query rewriting for multi-turn chats. Retrieval quality will also be evaluated independently from generation using recall@k.
+```bash
+.venv/bin/python scripts/prepare_evaluation_dataset.py \
+  --dataset data/cleaned/cleaned_tickets.csv --tenant harbor_view \
+  --samples-per-class 50 --seed 42 \
+  --output-train data/cleaned/train_tickets.csv \
+  --output-benchmark logs/prepared_benchmark.json
+```
 
-- **Embedding model (e.g., bge-small or all-MiniLM)** – Converts document chunks and user queries into vectors for semantic retrieval. I've used this before but I think I did so incorrectly so I will be doing some digging into them.
+Read-only corpus/evidence inspections require no model or database:
 
-- **MongoDB Atlas Vector Search** – Stores tenants, conversations, tickets, document chunks, and embeddings, and performs tenant filtered vector retrieval. I am experienced with MongoDB, but the $vectorSearch aggregation stage and vector index tuning are new grounds to me.
+```bash
+.venv/bin/python scripts/audit_document_provenance.py \
+  --csv data/cleaned/train_tickets.csv
+.venv/bin/python scripts/ingest_rag_docs.py \
+  --document-parser structured --inspect-only
+```
 
-- **llama.cpp / Ollama with GGUF quantization** – Serves the fine-tuned model locally and is completely new to me. It would require research into quantization levels and their quality/latency trade-offs as well as potential cloud hosting. It also provides constrained decoding (using GBNF grammars in llama.cpp or structured output formats in Ollama) to guarantee schema-valid JSON outputs at decode time without needing to train specifically toward JSON validity.
+The shared Markdown/JSON/TXT parser retains source identity, byte hashes, locators, table headers, negation and conditions. Provenance checks flag ambiguity, missing context and attribution problems; they do not rewrite citations or certify target correctness. Generator and ingestor default to `legacy`; structured mode is opt-in. Cleaner screening defaults to `off`; `--provenance-mode report --provenance-audit-only --provenance-report logs/NEW_REPORT.json` reports without exporting a dataset (supply raw inputs via `--files`; see `--help`).
 
-- **Node.js + Express** – API gateway handling authentication, per-tenant routing, retrieval, and prompt assembly. I feel really confident in this part so I'm not expecting much for research.
+The current data and vector index were not migrated. Eighteen JSON blocks exceed the default 500-word structured-ingestion budget; increasing a word budget does not prove tokenizer fit. Structured ingestion separately refuses embedding-token overflow. Actual ingestion requires explicit `--execute` and replaces tenant vectors; inspection does neither. Preserve the current index while collecting matched comparisons.
 
-- **React (embeddable widget) and Next.js (admin dashboard)** – A chat widget any site can load via script tag, plus a dashboard for document upload, tenant configuration, and ticket review. Like node and express I feel good about this, although script tag embedding and style isolation will need light research.
+## Training and GGUF export
 
-- **Evaluation tooling (ground-truth benchmarks, recall@k, and LLM-as-judge)** – Evaluates retrieval separately from generation using recall@k on the held-out tenant to see if retrieved chunks contain the answer span. Evaluates hallucination directly against ground truth in two halves (questions whose answers are present in documents and questions whose answers are provably absent, making hallucinations countable) along with precision/recall of escalations. For answers that require the model to stretch or sort of guess a little, an independent LLM judge (separate from the teacher) will compare student and teacher responses. Rather than a head-to-head win rate, metrics will measure recovery (the fraction of teacher-level groundedness and escalation accuracy achieved by the student, at what latency, on what hardware, and at what cost per thousand queries). JSON validity is dropped as a headline metric since constrained decoding handles it. The harness will be built early (functional by Weeks 2–3, running well by Week 5) so early runs can be evaluated immediately. This is new to me and honestly the main section of research for me in this project.
+Retraining is deferred until after Sprint 4. For a future authorized run, [train_llama_qlora_kaggle.ipynb](notebooks/train_llama_qlora_kaggle.ipynb) supports `smoke`, `search`, and `full` modes. Default search is four 60-update trials on 256 training / 64 validation tickets. A full run uses a new `RUN_NAME`, `RUN_MODE="full"`, `RESUME=False`, and `BEST_PARAMS_FILE="auto"` with exactly one matching attached search output. Set `DATA_CSV` explicitly for a new dataset version: an old search artifact can otherwise supply its cached original CSV. Keep the data-hash guards; never relabel an old selection file with a new data hash. [The Colab notebook](notebooks/train_llama_qlora.ipynb) supports smoke/full training. Checkpoints, retries and quantization formats are not extra full training runs.
 
-- **GPU compute (Google Colab / Kaggle)** – Training environment for fine-tuning runs. I have used notebooks and such to train models, but managing longer training jobs, checkpoints, and experiment tracking is new to me. With QLoRA training on 1.5B/3B models taking hours rather than days, I will take advantage of weekly GPU allocations to run 5 to 10 iterative training cycles starting in Week 4 and leading into Week 5, budgeting buffer time to learn, fail, and iterate on data quality.
+To export an **existing** full-run adapter in a fresh Kaggle session, use [export_gguf_kaggle.ipynb](notebooks/export_gguf_kaggle.ipynb). Attach the full-run reports and complete `adapter/` directory, including tokenizer/template and weights. Select one GPU, enable Internet, set `SOURCE_RUN_DIR` to the attached run or leave it blank to discover exactly one valid run, then run this export-only notebook top to bottom. It exports Q4_K_M, Q5_K_M and Q8_0 sequentially without a trainer; a training CSV is unnecessary. Download the GGUF files, `gguf_export.json`, and `source_provenance.json`. Valid existing exports resume; a fresh background session may repeat conversion. Running only a training notebook's last cell in an empty session is insufficient.
 
----
+Read-only tools accept the actual downloaded paths:
 
-## Minimum Viable Product (MVP)
+```bash
+# Set GGUF_FILE to a downloaded .gguf and RUN_DIR to a downloaded report directory.
+: "${GGUF_FILE:?Set GGUF_FILE}" "${RUN_DIR:?Set RUN_DIR}"
+.venv/bin/python scripts/inspect_gguf.py "$GGUF_FILE"
+.venv/bin/python scripts/summarize_training_runs.py "$RUN_DIR"
+```
 
-- A synthetic data pipeline generates, filters, and stores a validated distillation dataset (several thousand examples) from the teacher model across at least five fictional businesses.
+## Evaluation, judging and comparison
 
-- A single 1–3B parameter student model is fine-tuned on this dataset and produces structured outputs (answer, cited sources, confidence, action) guaranteed via constrained decoding (GBNF grammars / structured outputs in llama.cpp/Ollama).
+The six original Kaggle generation runs are complete; rerun deliberately after relevant model/index changes. Ground-truth context and live retrieval are separate evaluation modes. This command **plans only**; remove `--dry-run` to execute the selected local matrix after all three tags are installed:
 
-- A RAG pipeline ingests tenant documents end-to-end (chunking, embedding, storage in Atlas Vector Search) and retrieves tenant-filtered context at query time.
+```bash
+.venv/bin/python scripts/run_baselines.py \
+  --finetuned-models llama3.2:3b-qlora-kaggle-full01-q4 \
+    llama3.2:3b-qlora-kaggle-full01-q5 \
+    llama3.2:3b-qlora-kaggle-full01-q8 \
+  --teacher-provider none --context-mode both \
+  --output-dir logs/baselines --dry-run
+```
 
-- The same trained model serves at least two demo tenants with different knowledge bases, demonstrating reusability through configuration rather than retraining.
+For one model, supply one tag. Add `--base-model llama3.2:3b` only when evaluating the base too. `--limit 5` is a smoke test, not full coverage. Retrieval alone can be measured on all 50 frozen answer-present cases:
 
-- The model runs locally via llama.cpp/Ollama behind an Express gateway with per-tenant API keys.
+```bash
+.venv/bin/python scripts/benchmark_retrieval.py \
+  --tenant harbor_view --dataset data/evaluation/held_out_benchmark.json \
+  --sample-size 50 --k-values 1 3 4 5 --max-per-doc 2 \
+  --summary-out logs/retrieval_summary.json --failures-out logs/retrieval_failures.json
+```
 
-- An embeddable React chat widget completes the full loop: customer question → retrieval → grounded answer or escalation → ticket visible in the Next.js admin dashboard.
+Use exact generation paths printed by the runner. With `GEN_LOG` set to one completed generation JSON, plan independent local Gemma judging with the retained [versioned rubric](evaluation/judge_rubric.md):
 
-- An evaluation report on a held-out (never-trained-on) tenant that measures retrieval separately via recall@k, evaluates hallucination rate on countable ground-truth splits (present vs. provably absent answers) and escalation precision/recall, and compares the student against the teacher on recovery (fraction of teacher-level groundedness and escalation accuracy achieved, latency, and cost per thousand queries) using an independent LLM judge for questions requiring extrapolation.
+```bash
+: "${GEN_LOG:?Set GEN_LOG to a completed generation JSON}"
+JUDGE_LOG="${GEN_LOG%.json}.judged.json"
+.venv/bin/python scripts/judge_generation.py \
+  --input "$GEN_LOG" --provider ollama --model gemma4:latest \
+  --think false --num-ctx 8192 --num-predict 512 --output "$JUDGE_LOG"
+```
 
----
+Without `--execute`, judging makes no calls or writes. When compute is free, append `--execute --max-calls 200` for a 100-response log. Matching settings resume unfinished records; changed controls require a separate output. Contradictory decision-table scores are rejected, and failed/pending assessments remain visible. Summarize without calls using `scripts/judge_generation.py --summarize "$JUDGE_LOG"`.
 
-## Milestones and Timeline
+Compare two completed logs from the same benchmark, coverage and context mode without inference:
 
-The following timeline reflects my current expectations for completing the project within the 10-week term. The first half of the schedule is dedicated to the AI work (dataset construction, fine-tuning, and evaluation design) and the second half to the application platform, with refinement spanning both.
+```bash
+: "${GEN_LOG_B:?Set GEN_LOG_B to the other matching generation JSON}"
+.venv/bin/python scripts/compare_evaluations.py \
+  --logs "$GEN_LOG" "$GEN_LOG_B" --require-compatible \
+  --format json --output logs/comparison.json
+```
 
-| Phase | Timeframe | Key Activities and Deliverables |
-|---|---|---|
-| Research, Planning, and Documentation | Week 1 (1 week) | Review distillation and RAG literature (Self-Instruct, QLoRA), select student model and chat template, design system architecture and data schemas, set up training environment (Colab/Kaggle) and experiment tracking. |
-| Data Collection and Preparation | Weeks 2–3 (2 weeks) | Design 5–6 fictional businesses and their knowledge bases. Build the teacher-model generation pipeline, generate grounded Q&A, multi-turn conversations, escalations, and ticket summaries. Filter via deduplication, schema validation, and groundedness checks, and reserve one full business as the held-out evaluation tenant. Build RAG ingestion (chunking, embedding, Atlas Vector Search index). Build an initial functional evaluation harness (ground-truth dataset, retrieval recall@k, and two-half hallucination tests) by the end of Week 3 to evaluate data and retrieval early. |
-| Prototyping (Model and Architecture) | Week 4 (1 week) | Start first QLoRA fine-tuning runs (beginning an iterative cycle of 5–10 runs), quantize to GGUF, and verify local inference with constrained decoding via llama.cpp/Ollama. Assemble end-to-end RAG retrieval prototype and evaluate retrieval recall@k. Iterate on training data quality based on early outputs and evaluation. |
-| Core Development — AI | Week 5 (1 week) | Execute subsequent fine-tuning runs across the dataset based on data-iteration feedback. Finalize the evaluation harness so it is running well (held-out tenant benchmark, ground-truth present/absent hallucination testing, separate retrieval recall@k, escalation precision/recall, and independent LLM judge rubric). Run zero-shot student and teacher baselines to measure recovery rate, latency, and cost. |
-| Core Development — Application | Weeks 6–7 (2 weeks) | Express gateway with per-tenant API keys, routing, retrieval, and prompt assembly. Embeddable React chat widget with script-tag loading and style isolation. Next.js admin dashboard with document upload, tenant configuration, and ticket queue. |
-| MVP Complete | Week 8 (1 week) | Integrate all components; stand up two demo tenants with different knowledge bases running the same model. Verify the full loop (question → retrieval → grounded answer or escalation → ticket in dashboard). |
-| Testing, Evaluation, and Refinement | Week 9 (1 week) | Produce the full evaluation report on the held-out tenant (reporting retrieval recall@k separately, ground-truth hallucination rate, escalation metrics, recovery rate vs teacher, latency, and serving cost). Conduct additional fine-tuning runs if metrics warrant. Bug fixes and UX polish. |
-| Final Presentation and Submission | Week 10 (1 week) | Final documentation and README. Prepare and rehearse the demo. Complete the written report. If time warrants finish up some stretch goals. |
+Add `--judged-logs "$JUDGE_LOG" "$OTHER_JUDGE_LOG"` when both matching assessments exist. Source hashes attach judgments to their generation runs. Do not mix smoke/full coverage or ground-truth/retriever modes. Legacy serving settings can be incomplete; preserve compatibility warnings. Absent-answer action rate is not a content-hallucination rate, and resident VRAM snapshots are not peak memory. Kaggle and older Colab results remain separate in `evaluation/results.json`.
+
+## Teacher baseline and measured comparison
+
+The `gemini-3.8-flash` baseline completed with 100 ground-truth-context and 100 retrieval-context responses, all valid JSON. Gemini credentials are resolved from the project `.env` before inherited shell variables; logs record only the credential source.
+
+The adapter uses synchronous `client.interactions.create` with canonical `models/gemini-3.8-flash`, `thinking_level="medium"`, `max_output_tokens=65536`, no temperature override, and stateless requests (`store=false`). The output limit is a ceiling, not a fixed token charge. The local transport timeout does not send `X-Server-Timeout`; the bounded retry budget is tested. Evaluation logs preserve responses, synchronous latency and output plus thinking tokens, so another teacher run is not needed solely for latency.
+
+The compact [measured results](evaluation/results.json) include action accuracy of **95% / 92%** for ground truth / retrieval, mean generation latency of **4.26 / 5.34 seconds**, and catalog estimates of **$1.52 / $2.87 per 1,000 requests**. The 200-response generation run totals an estimated **$0.44**, not a verified provider invoice. Rubric coverage is **198 valid local Gemma judgments plus two separate secondary AI assessments**: 95 ground-truth strict passes and 87 retrieval strict passes. The raw retrieval Gemma file has 86 strict passes and two unscored records; secondary assessments stay in a separate artifact. Prior Kaggle coverage remains 599 Gemma judgments plus one separate assessment and 57 documented decision-table corrections.
+
+Questions, targets and supplied contexts match the teacher and students within each mode. Gemini and Ollama generation settings differ, so the harness retains its compatibility error and withholds formal controlled recovery/gap-closed metrics. Historical base numerical results have missing serving identity; their older/incomplete rubric assessments are excluded. Targeted spot checks flagged suspected judge citation/reference-answer errors without changing valid Gemma verdicts. These are model assessments, not a human agreement study. Raw comparison and assessment artifacts remain local under `logs/teacher_comparison_20261027/`; revised-dataset retraining remains deferred until after Sprint 4.
+
+For a new access check after configuration changes, use the two-question structured baseline before committing to a full run. The completed baseline above does not need repeating. This example is **plan-only**:
+
+```bash
+.venv/bin/python scripts/run_baselines.py --models none \
+  --teacher-provider gemini --teacher-model gemini-3.8-flash \
+  --teacher-timeout 180 --teacher-max-attempts 1 --limit 2 \
+  --context-mode ground_truth --pricing-file evaluation/pricing_gemini_20261027.json \
+  --output-dir logs/teacher_interactions_access_check --dry-run
+```
+
+For an authorized full run after both access-check responses complete with valid JSON, omit `--limit 2`, use `--context-mode both`, and choose `--output-dir logs/teacher_interactions_baselines`; actual paid execution additionally requires `--allow-paid-api` and removal of `--dry-run`. An action `MISS` is a quality finding, not an access failure. Both modes total 200 questions, and this same synchronous run records latency. The [dated pricing file](evaluation/pricing_gemini_20261027.json) is a historical estimate configuration; verify it before future billing estimates. Thinking and visible output are both billed at the output rate. Unknown usage remains unmeasured, and provider billing is authoritative. API/thinking/temperature settings differ from the local students; retain comparison warnings rather than claiming identical serving conditions. Local $0 API token cost excludes hardware, energy and hosting.
+
+## Software checks and repository artifacts
+
+```bash
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES='' \
+  HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+  .venv/bin/python -m unittest discover -s tests -v
+```
+
+These checks cover software and mocked services, not new training or live quality experiments. Two full-dataset checks skip when the local derived training CSV is absent; the optional fresh-checkout preparation above enables them. Keep source, tests, notebooks, tenant source documents, the canonical cleaned CSV, frozen benchmark, rubric and compact evidence in Git. `.gitignore` excludes credentials, raw generation/state files, local logs, derived training copies, model weights, adapters, checkpoints and `Modelfile.local`.

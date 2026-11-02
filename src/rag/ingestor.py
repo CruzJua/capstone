@@ -20,7 +20,11 @@ class RAGDocumentIngestor:
         chunk_size: int = 500,
         chunk_overlap: int = 75,
         env_file: Optional[Path | str] = None,
+        document_parser: str = "legacy",
     ):
+        if document_parser not in {"legacy", "structured"}:
+            raise ValueError("document_parser must be legacy or structured")
+        self.document_parser = document_parser
         # Load environment variables
         if env_file:
             load_dotenv(dotenv_path=env_file, override=False)
@@ -43,7 +47,7 @@ class RAGDocumentIngestor:
         self.collection = self.db[resolved_collection]
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
-        self.model = SentenceTransformer(resolved_model)
+        self.model = SentenceTransformer(resolved_model, token=os.getenv("HF_TOKEN") or None)
         self.num_dimensions = (
             self.model.get_embedding_dimension()
             if hasattr(self.model, "get_embedding_dimension")
@@ -114,7 +118,11 @@ class RAGDocumentIngestor:
             i += step
         return chunks
 
-    def _parse_file(self, file_path: Path) -> List[Dict[str, Any]]:
+    def _parse_file(self, file_path: Path, source_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        if getattr(self, "document_parser", "legacy") == "structured":
+            from src.documents.parser import parse_document
+            from src.documents.integration import document_chunks
+            return document_chunks(parse_document(file_path, source_id=source_id), self.chunk_size)
         results = []
         doc_id = file_path.stem
         
@@ -184,24 +192,41 @@ class RAGDocumentIngestor:
         raw_chunks = []
         
         # Traverse markdown and json files
-        for file_path in tenant_dir.glob("*.*"):
-            if file_path.suffix not in [".md", ".json"]:
+        structured = getattr(self, "document_parser", "legacy") == "structured"
+        if structured:
+            from src.documents.integration import discover_document_paths
+            tenant_dir = Path(tenant_dir).resolve()
+            candidates = discover_document_paths(tenant_dir)
+        else:
+            candidates = tenant_dir.glob("*.*")
+        for file_path in candidates:
+            if not file_path.is_file() or file_path.suffix.lower() not in ([".md", ".json", ".txt"] if structured else [".md", ".json"]):
                 continue
-            if "generation_reference" in str(file_path):
+            if not structured and "generation_reference" in str(file_path):
                 continue
-            raw_chunks.extend(self._parse_file(file_path))
+            raw_chunks.extend(self._parse_file(file_path, file_path.relative_to(tenant_dir).as_posix())
+                              if structured else self._parse_file(file_path))
 
         if not raw_chunks:
             return 0
 
         # Batch embed the chunk strings
         texts = [c["text"] for c in raw_chunks]
+        if structured:
+            tokenizer = getattr(self.model, "tokenizer", None)
+            limit = getattr(self.model, "max_seq_length", None)
+            if tokenizer is None or type(limit) is not int or limit < 1:
+                raise ValueError("Structured ingestion requires a tokenizer and a known embedding token limit")
+            for index, text in enumerate(texts):
+                token_ids = tokenizer(text, truncation=False, add_special_tokens=True)["input_ids"]
+                if len(token_ids) > limit:
+                    raise ValueError(f"Atomic block {index} exceeds the embedding token limit; no text was truncated or indexed")
         embeddings = self.model.encode(texts, batch_size=32, show_progress_bar=False)
 
         now_iso = datetime.now(timezone.utc).isoformat()
         documents = []
         for i, chunk in enumerate(raw_chunks):
-            documents.append({
+            document = {
                 "tenant_id": tenant_id,
                 "doc_id": chunk["doc_id"],
                 "section": chunk["section"],
@@ -209,7 +234,11 @@ class RAGDocumentIngestor:
                 "text": chunk["text"],
                 "embedding": embeddings[i].tolist(),
                 "created_at": now_iso
-            })
+            }
+            if structured:
+                for key in ("source_id", "source_sha256", "source_locator", "source_context", "source_block_index", "parser_version"):
+                    document[key] = chunk[key]
+            documents.append(document)
 
         # Purge prior embeddings for this tenant to allow clean re-indexing
         self.collection.delete_many({"tenant_id": tenant_id})

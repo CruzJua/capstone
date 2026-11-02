@@ -32,6 +32,8 @@ from google.genai._transformers import t_schema
 from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 DEFAULT_DATA_DIR = ROOT / "data"
 DEFAULT_OUT_DIR = DEFAULT_DATA_DIR / "generated"
 DEFAULT_MODEL = "gemini-3.8-flash"
@@ -192,13 +194,21 @@ def get_client() -> genai.Client:
 class Business:
     """Encapsulates documentation and prompts for a single business tenant."""
 
-    def __init__(self, key: str, path: Path, include_reference: bool):
+    def __init__(self, key: str, path: Path, include_reference: bool, document_parser: str = "legacy"):
+        if document_parser not in {"legacy", "structured"}:
+            raise ValueError("document_parser must be legacy or structured")
+        self.document_parser = document_parser
         self.key = key
         self.path = path
         self.docs: dict[str, str] = {}
+        self.parsed_docs = {}
+        if document_parser == "structured":
+            from src.documents.integration import load_documents
+            self.parsed_docs = load_documents(path, include_reference)
+            self.docs = {source: document.raw_text for source, document in self.parsed_docs.items()}
 
         # Read markdown, JSON, and text documentation files
-        for file_path in sorted(path.rglob("*")):
+        for file_path in ([] if document_parser == "structured" else sorted(path.rglob("*"))):
             if not file_path.is_file() or file_path.suffix.lower() not in {".md", ".json", ".txt"}:
                 continue
             relative_path = file_path.relative_to(path).as_posix()
@@ -228,11 +238,23 @@ class Business:
         """Concatenate all documents into a labeled context block."""
         parts = [f"Business: {self.name}\n"]
         for filename, content in self.docs.items():
+            if self.document_parser == "structured":
+                from src.documents.integration import render_generation_document
+                content = render_generation_document(self.parsed_docs[filename])
             parts.append(f"=== DOCUMENT: {filename} ===\n{content.strip()}\n=== END DOCUMENT: {filename} ===\n")
         return "\n".join(parts)
 
     def system_prompt(self) -> str:
-        return SYSTEM_PROMPT.format(business_name=self.name)
+        prompt = SYSTEM_PROMPT.format(business_name=self.name)
+        if self.document_parser == "structured":
+            prompt = prompt.replace("15-300 characters each", "preferably 15-300 characters each; retain a longer complete passage when needed to preserve its conditions")
+            prompt += ("\nShared structured-document rules: copy evidence spans exactly from the supplied "
+                       "parsed block text and cite its DOCUMENT filename. Keep table headers with values, "
+                       "including prohibitions; preserve row identity, negation, conditions, quantities, "
+                       "units and qualifications. Never quote block metadata as business policy. "
+                       "Do not stitch unrelated passages or remove a limiting qualifier to shorten a quote. "
+                       "An exact quotation verifies provenance, not that your answer is correct.")
+        return prompt
 
     def fingerprint(self, model: str) -> str:
         """Compute a hash fingerprint to detect changes in corpus or prompt."""
@@ -265,7 +287,8 @@ def load_businesses(args) -> list[Business]:
             continue
         if selected and entry.name not in selected:
             continue
-        businesses.append(Business(entry.name, entry, args.include_reference))
+        businesses.append(Business(entry.name, entry, args.include_reference,
+                                   getattr(args, "document_parser", "legacy")))
 
     if selected:
         missing = selected - {b.key for b in businesses}
@@ -481,6 +504,7 @@ def cmd_prepare(args) -> None:
         "prepared": now_iso(),
         "businesses": [b.key for b in businesses],
         "include_reference": args.include_reference,
+        "document_parser": getattr(args, "document_parser", "legacy"),
         "cache_hours": args.cache_ttl_hours,
     }
     save_state(out_dir, state)
@@ -685,6 +709,8 @@ def build_parser() -> argparse.ArgumentParser:
         subp.add_argument("--model", default=DEFAULT_MODEL, help="Gemini teacher model name")
         subp.add_argument("--include-reference", action="store_true",
                         help="include generation_reference/ files in cache context (default: False)")
+        subp.add_argument("--document-parser", choices=["legacy", "structured"], default="legacy",
+                        help="Use shared source-traceable document blocks for future generation; default preserves historical cache/prompt behaviour.")
         if is_run:
             subp.add_argument("--run-name", default="pilot", help="identifier for this generation run")
 

@@ -405,6 +405,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Suppress summary printout to console.",
     )
+    parser.add_argument("--provenance-mode", choices=["off", "report", "quarantine"], default="off",
+                        help="Uniform source evidence screening; never repairs individual rows.")
+    parser.add_argument("--data-root", type=Path, default=ROOT / "data",
+                        help="Root of tenant source-document directories for provenance screening.")
+    parser.add_argument("--provenance-report", type=Path,
+                        help="New JSON report path, required when provenance screening is enabled.")
+    parser.add_argument("--provenance-audit-only", action="store_true",
+                        help="Screen loaded raw records without exporting a cleaned dataset.")
 
     return parser
 
@@ -412,6 +420,22 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
+    if args.provenance_audit_only and args.provenance_mode == "off":
+        parser.error("--provenance-audit-only requires --provenance-mode report or quarantine")
+    if args.provenance_mode != "off":
+        if args.provenance_report is None:
+            parser.error("--provenance-report is required when provenance screening is enabled")
+        corpus_root = args.data_root.resolve()
+        if corpus_root == args.provenance_report.resolve() or corpus_root in args.provenance_report.resolve().parents:
+            parser.error("Provenance report must be outside the source data root")
+        outputs = [args.provenance_report]
+        if not args.provenance_audit_only:
+            outputs += [args.output_csv] + ([args.output_jsonl] if args.output_jsonl else [])
+        if len({path.resolve() for path in outputs}) != len(outputs):
+            parser.error("Provenance report and dataset output paths must differ")
+        for path in outputs:
+            if path.exists() or path.is_symlink():
+                parser.error(f"Provenance-enabled output must be a new path: {path}")
 
     print(f"Loading raw ticket data from: {args.files}...")
     df_raw = load_results_to_dataframe(
@@ -419,6 +443,19 @@ def main() -> None:
         validate_schema=not args.skip_validation,
         strict_schema=args.strict_schema,
     )
+    if args.provenance_mode != "off":
+        from src.documents.quality import screen_records
+        screened, report = screen_records(df_raw.to_dict(orient="records"), args.data_root,
+                                         args.provenance_mode)
+        args.provenance_report.parent.mkdir(parents=True, exist_ok=True)
+        with args.provenance_report.open("x", encoding="utf-8") as handle:
+            json.dump(report, handle, indent=4, ensure_ascii=False)
+            handle.write("\n")
+        print(f"Provenance report: {args.provenance_report}; "
+              f"{report['rows_requiring_review']}/{report['input_rows']} rows require review")
+        if args.provenance_audit_only:
+            return
+        df_raw = pd.DataFrame(screened, columns=df_raw.columns)
 
     print(f"Cleaning {len(df_raw):,} records (dedupe by: '{args.dedupe_by}')...")
     df_cleaned, stats = clean_dataset(

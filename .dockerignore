@@ -1,0 +1,33 @@
+# Secrets and environment files
+.env
+.env.*
+!.env.demo.example
+.docker-demo-config
+
+# Version control and IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Heavy local environments and caches
+.venv
+**/__pycache__
+**/*.pyc
+**/node_modules
+**/.next
+logs
+models
+**/*.gguf
+**/*.bin
+**/*.safetensors
+
+# Training, evaluation, and non-runtime artifacts
+data/cleaned
+data/generated
+data/evaluation
+evaluation
+notebooks
+docs
+tests
+
