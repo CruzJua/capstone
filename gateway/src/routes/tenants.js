@@ -1,5 +1,8 @@
 const express = require("express");
 const { getBusinessesCollection } = require("../db/mongo");
+const { getAppMode } = require("../config/mode");
+const { PRESET_TENANT_IDS, isPresetTenantId } = require("../config/presets");
+const { authorizeTenantAccess } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -16,7 +19,10 @@ function validateAndBuildUpdate(body) {
     }
 
     if (body.contact_email !== undefined) {
-        if (typeof body.contact_email !== "string" || !body.contact_email.trim()) {
+        if (
+            typeof body.contact_email !== "string" ||
+            !body.contact_email.trim()
+        ) {
             errors.push("contact_email must be a non-empty string.");
         } else {
             setFields.contact_email = body.contact_email.trim();
@@ -50,16 +56,27 @@ function validateAndBuildUpdate(body) {
             const ac = body.agent_config;
 
             if (ac.system_prompt !== undefined) {
-                if (typeof ac.system_prompt !== "string" || !ac.system_prompt.trim()) {
-                    errors.push("agent_config.system_prompt must be a non-empty string.");
+                if (
+                    typeof ac.system_prompt !== "string" ||
+                    !ac.system_prompt.trim()
+                ) {
+                    errors.push(
+                        "agent_config.system_prompt must be a non-empty string."
+                    );
                 } else {
-                    setFields["agent_config.system_prompt"] = ac.system_prompt.trim();
+                    setFields["agent_config.system_prompt"] =
+                        ac.system_prompt.trim();
                 }
             }
 
             if (ac.agent_tone !== undefined) {
-                if (typeof ac.agent_tone !== "string" || !ac.agent_tone.trim()) {
-                    errors.push("agent_config.agent_tone must be a non-empty string.");
+                if (
+                    typeof ac.agent_tone !== "string" ||
+                    !ac.agent_tone.trim()
+                ) {
+                    errors.push(
+                        "agent_config.agent_tone must be a non-empty string."
+                    );
                 } else {
                     setFields["agent_config.agent_tone"] = ac.agent_tone.trim();
                 }
@@ -68,9 +85,13 @@ function validateAndBuildUpdate(body) {
             if (ac.temperature !== undefined) {
                 const temp = Number(ac.temperature);
                 if (Number.isNaN(temp) || temp < 0.0 || temp > 1.0) {
-                    errors.push("agent_config.temperature must be a number between 0.0 and 1.0.");
+                    errors.push(
+                        "agent_config.temperature must be a number between 0.0 and 1.0."
+                    );
                 } else {
-                    setFields["agent_config.temperature"] = Number(temp.toFixed(2));
+                    setFields["agent_config.temperature"] = Number(
+                        temp.toFixed(2)
+                    );
                 }
             }
 
@@ -87,12 +108,18 @@ function validateAndBuildUpdate(body) {
 
             if (ac.similarity_threshold !== undefined) {
                 const threshold = Number(ac.similarity_threshold);
-                if (Number.isNaN(threshold) || threshold < 0.5 || threshold > 0.95) {
+                if (
+                    Number.isNaN(threshold) ||
+                    threshold < 0.5 ||
+                    threshold > 0.95
+                ) {
                     errors.push(
                         "agent_config.similarity_threshold must be a number between 0.50 and 0.95."
                     );
                 } else {
-                    setFields["agent_config.similarity_threshold"] = Number(threshold.toFixed(2));
+                    setFields["agent_config.similarity_threshold"] = Number(
+                        threshold.toFixed(2)
+                    );
                 }
             }
         }
@@ -103,16 +130,55 @@ function validateAndBuildUpdate(body) {
 
 /**
  * GET /api/tenants
- * Returns list of all tenants in the `businesses` collection.
+ * Returns ONLY the tenant(s) authorized for the current session.
+ * In standard mode, preset tenants are strictly excluded even if old seeded records exist.
  */
 router.get("/", async (req, res) => {
     try {
+        const authorizedTenantId = authorizeTenantAccess(req, res);
+        if (!authorizedTenantId) return;
+
+        const currentMode = getAppMode(process.env);
+        const allowedIds = (req.auth.authorizedTenantIds || []).filter((id) =>
+            currentMode === "standard"
+                ? !isPresetTenantId(id)
+                : isPresetTenantId(id)
+        );
+
+        if (allowedIds.length === 0) {
+            return res.json([]);
+        }
+
+        const filter =
+            currentMode === "standard"
+                ? {
+                      tenant_id: {
+                          $in: allowedIds,
+                          $nin: Array.from(PRESET_TENANT_IDS),
+                      },
+                  }
+                : {
+                      tenant_id: {
+                          $in: allowedIds,
+                      },
+                  };
+
         const businesses = await getBusinessesCollection();
-        const tenants = await businesses.find({}).sort({ name: 1 }).toArray();
-        res.json(tenants);
+        const tenants = await businesses
+            .find(filter, { projection: { _id: 0 } })
+            .sort({ name: 1 })
+            .toArray();
+
+        const filtered = tenants.filter((t) =>
+            currentMode === "standard"
+                ? !isPresetTenantId(t.tenant_id)
+                : isPresetTenantId(t.tenant_id)
+        );
+
+        return res.json(filtered);
     } catch (error) {
         console.error("[GET /api/tenants] Error:", error.message);
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to fetch tenants from database.",
         });
     }
@@ -120,25 +186,36 @@ router.get("/", async (req, res) => {
 
 /**
  * GET /api/tenants/:tenantId/config
- * Returns specific tenant configuration document from the `businesses` collection.
- * See schema definition in gateway/README.md.
+ * Returns specific tenant configuration document if and only if authorized for the session.
  */
 router.get("/:tenantId/config", async (req, res) => {
     try {
-        const { tenantId } = req.params;
+        const authorizedTenantId = authorizeTenantAccess(
+            req,
+            res,
+            req.params.tenantId
+        );
+        if (!authorizedTenantId) return;
+
         const businesses = await getBusinessesCollection();
-        const tenant = await businesses.findOne({ tenant_id: tenantId });
+        const tenant = await businesses.findOne(
+            { tenant_id: authorizedTenantId },
+            { projection: { _id: 0 } }
+        );
 
         if (!tenant) {
             return res.status(404).json({
-                error: `Tenant '${tenantId}' not found.`,
+                error: `Tenant '${authorizedTenantId}' not found.`,
             });
         }
 
-        res.json(tenant);
+        return res.json(tenant);
     } catch (error) {
-        console.error("[GET /api/tenants/:tenantId/config] Error:", error.message);
-        res.status(500).json({
+        console.error(
+            "[GET /api/tenants/:tenantId/config] Error:",
+            error.message
+        );
+        return res.status(500).json({
             error: "Failed to fetch tenant configuration.",
         });
     }
@@ -150,7 +227,13 @@ router.get("/:tenantId/config", async (req, res) => {
  */
 router.put("/:tenantId/config", async (req, res) => {
     try {
-        const { tenantId } = req.params;
+        const authorizedTenantId = authorizeTenantAccess(
+            req,
+            res,
+            req.params.tenantId
+        );
+        if (!authorizedTenantId) return;
+
         const { errors, setFields } = validateAndBuildUpdate(req.body || {});
 
         if (errors.length > 0) {
@@ -170,25 +253,27 @@ router.put("/:tenantId/config", async (req, res) => {
 
         const businesses = await getBusinessesCollection();
         const updatedTenant = await businesses.findOneAndUpdate(
-            { tenant_id: tenantId },
+            { tenant_id: authorizedTenantId },
             { $set: setFields },
-            { returnDocument: "after" }
+            { returnDocument: "after", projection: { _id: 0 } }
         );
 
         if (!updatedTenant) {
             return res.status(404).json({
-                error: `Tenant '${tenantId}' not found.`,
+                error: `Tenant '${authorizedTenantId}' not found.`,
             });
         }
 
-        res.json(updatedTenant);
+        return res.json(updatedTenant);
     } catch (error) {
-        console.error("[PUT /api/tenants/:tenantId/config] Error:", error.message);
-        res.status(500).json({
+        console.error(
+            "[PUT /api/tenants/:tenantId/config] Error:",
+            error.message
+        );
+        return res.status(500).json({
             error: "Failed to update tenant configuration.",
         });
     }
 });
 
 module.exports = router;
-

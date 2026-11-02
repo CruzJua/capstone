@@ -1,23 +1,155 @@
 const GATEWAY_BASE_URL =
     process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:4000";
 
-export async function fetchTenants() {
-    const response = await fetch(`${GATEWAY_BASE_URL}/api/tenants`, {
+let unauthorizedHandler = null;
+
+export function registerUnauthorizedHandler(handler) {
+    unauthorizedHandler = typeof handler === "function" ? handler : null;
+}
+
+function notifyUnauthorized() {
+    if (unauthorizedHandler) {
+        try {
+            unauthorizedHandler();
+        } catch {
+            // Ignore handler errors
+        }
+    }
+}
+
+function buildHeaders(extraHeaders = {}) {
+    return {
+        "X-Requested-With": "XMLHttpRequest",
+        ...extraHeaders,
+    };
+}
+
+async function handleApiResponse(response, fallbackErrorMessage, { suppressUnauthorizedRedirect = false } = {}) {
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        if (response.status === 401 && !suppressUnauthorizedRedirect) {
+            notifyUnauthorized();
+        }
+        const detailMsg = Array.isArray(body.details)
+            ? body.details.join(" ")
+            : "";
+        const message =
+            [body.error, detailMsg].filter(Boolean).join(" — ") ||
+            `${fallbackErrorMessage} (HTTP ${response.status})`;
+        const error = new Error(message);
+        error.status = response.status;
+        error.code = body.code || null;
+        throw error;
+    }
+    return body;
+}
+
+export async function fetchAuthConfig() {
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/auth/config`, {
         method: "GET",
-        headers: {
+        headers: buildHeaders({
             "Content-Type": "application/json",
-        },
+        }),
+        credentials: "include",
         cache: "no-store",
     });
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(
-            errorBody.error || `Failed to load tenants (HTTP ${response.status})`
-        );
+    return handleApiResponse(
+        response,
+        "Failed to load authentication configuration",
+        { suppressUnauthorizedRedirect: true }
+    );
+}
+
+export async function fetchAuthSession() {
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/auth/session`, {
+        method: "GET",
+        headers: buildHeaders({
+            "Content-Type": "application/json",
+        }),
+        credentials: "include",
+        cache: "no-store",
+    });
+
+    return handleApiResponse(response, "No active session", {
+        suppressUnauthorizedRedirect: true,
+    });
+}
+
+export async function loginAdmin({ email, password }) {
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: buildHeaders({
+            "Content-Type": "application/json",
+        }),
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+    });
+
+    return handleApiResponse(response, "Login failed", {
+        suppressUnauthorizedRedirect: true,
+    });
+}
+
+export async function signupAdmin(payload) {
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: buildHeaders({
+            "Content-Type": "application/json",
+        }),
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+
+    return handleApiResponse(response, "Account registration failed", {
+        suppressUnauthorizedRedirect: true,
+    });
+}
+
+export async function demoLoginPreset(tenantId) {
+    if (!tenantId) {
+        throw new Error("Preset tenant_id is required");
     }
 
-    const data = await response.json();
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/auth/demo-login`, {
+        method: "POST",
+        headers: buildHeaders({
+            "Content-Type": "application/json",
+        }),
+        credentials: "include",
+        body: JSON.stringify({ tenant_id: tenantId }),
+    });
+
+    return handleApiResponse(response, "Demo login failed", {
+        suppressUnauthorizedRedirect: true,
+    });
+}
+
+export async function logoutSession() {
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: buildHeaders({
+            "Content-Type": "application/json",
+        }),
+        credentials: "include",
+    });
+
+    return handleApiResponse(response, "Logout failed", {
+        suppressUnauthorizedRedirect: true,
+    });
+}
+
+export async function fetchTenants() {
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/tenants`, {
+        method: "GET",
+        headers: buildHeaders({
+            "Content-Type": "application/json",
+        }),
+        credentials: "include",
+        cache: "no-store",
+    });
+
+    const data = await handleApiResponse(response, "Failed to load tenants");
     return Array.isArray(data) ? data : data.tenants || [];
 }
 
@@ -30,22 +162,18 @@ export async function fetchTenantConfig(tenantId) {
         `${GATEWAY_BASE_URL}/api/tenants/${encodeURIComponent(tenantId)}/config`,
         {
             method: "GET",
-            headers: {
+            headers: buildHeaders({
                 "Content-Type": "application/json",
-            },
+            }),
+            credentials: "include",
             cache: "no-store",
         }
     );
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(
-            errorBody.error ||
-                `Failed to load configuration for ${tenantId} (HTTP ${response.status})`
-        );
-    }
-
-    return response.json();
+    return handleApiResponse(
+        response,
+        `Failed to load configuration for ${tenantId}`
+    );
 }
 
 export async function updateTenantConfig(tenantId, configPayload) {
@@ -57,25 +185,18 @@ export async function updateTenantConfig(tenantId, configPayload) {
         `${GATEWAY_BASE_URL}/api/tenants/${encodeURIComponent(tenantId)}/config`,
         {
             method: "PUT",
-            headers: {
+            headers: buildHeaders({
                 "Content-Type": "application/json",
-            },
+            }),
+            credentials: "include",
             body: JSON.stringify(configPayload),
         }
     );
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const detailMsg = Array.isArray(errorBody.details)
-            ? errorBody.details.join(" ")
-            : "";
-        throw new Error(
-            [errorBody.error, detailMsg].filter(Boolean).join(" — ") ||
-                `Failed to update configuration for ${tenantId} (HTTP ${response.status})`
-        );
-    }
-
-    return response.json();
+    return handleApiResponse(
+        response,
+        `Failed to update configuration for ${tenantId}`
+    );
 }
 
 export async function fetchTenantDocuments(tenantId) {
@@ -87,22 +208,18 @@ export async function fetchTenantDocuments(tenantId) {
         `${GATEWAY_BASE_URL}/api/tenants/${encodeURIComponent(tenantId)}/documents`,
         {
             method: "GET",
-            headers: {
+            headers: buildHeaders({
                 "Content-Type": "application/json",
-            },
+            }),
+            credentials: "include",
             cache: "no-store",
         }
     );
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(
-            errorBody.error ||
-                `Failed to load documents for ${tenantId} (HTTP ${response.status})`
-        );
-    }
-
-    const data = await response.json();
+    const data = await handleApiResponse(
+        response,
+        `Failed to load documents for ${tenantId}`
+    );
     return Array.isArray(data) ? data : data.documents || [];
 }
 
@@ -115,22 +232,15 @@ export async function fetchTenantDocumentDetail(tenantId, docId) {
         `${GATEWAY_BASE_URL}/api/tenants/${encodeURIComponent(tenantId)}/documents/${encodeURIComponent(docId)}`,
         {
             method: "GET",
-            headers: {
+            headers: buildHeaders({
                 "Content-Type": "application/json",
-            },
+            }),
+            credentials: "include",
             cache: "no-store",
         }
     );
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(
-            errorBody.error ||
-                `Failed to load document '${docId}' (HTTP ${response.status})`
-        );
-    }
-
-    return response.json();
+    return handleApiResponse(response, `Failed to load document '${docId}'`);
 }
 
 export async function fetchTenantChunks(
@@ -151,22 +261,18 @@ export async function fetchTenantChunks(
         `${GATEWAY_BASE_URL}/api/tenants/${encodeURIComponent(tenantId)}/chunks?${params.toString()}`,
         {
             method: "GET",
-            headers: {
+            headers: buildHeaders({
                 "Content-Type": "application/json",
-            },
+            }),
+            credentials: "include",
             cache: "no-store",
         }
     );
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(
-            errorBody.error ||
-                `Failed to load chunks for ${tenantId} (HTTP ${response.status})`
-        );
-    }
-
-    return response.json();
+    return handleApiResponse(
+        response,
+        `Failed to load chunks for ${tenantId}`
+    );
 }
 
 export async function uploadTenantDocument({
@@ -192,17 +298,12 @@ export async function uploadTenantDocument({
 
     const response = await fetch(`${GATEWAY_BASE_URL}/api/documents/upload`, {
         method: "POST",
+        headers: buildHeaders(),
+        credentials: "include",
         body: formData,
     });
 
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok || body.status === "error") {
-        throw new Error(
-            body.error || `Document upload failed (HTTP ${response.status})`
-        );
-    }
-
-    return body;
+    return handleApiResponse(response, "Document upload failed");
 }
 
 export async function fetchTenantTickets(
@@ -228,28 +329,21 @@ export async function fetchTenantTickets(
 
     const response = await fetch(url, {
         method: "GET",
-        headers: {
+        headers: buildHeaders({
             "Content-Type": "application/json",
-        },
+        }),
+        credentials: "include",
         cache: "no-store",
     });
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(
-            errorBody.error ||
-                `Failed to load tickets for ${tenantId} (HTTP ${response.status})`
-        );
-    }
-
-    const data = await response.json();
+    const data = await handleApiResponse(
+        response,
+        `Failed to load tickets for ${tenantId}`
+    );
     return Array.isArray(data) ? data : data.tickets || [];
 }
 
-export async function updateTicketStatus(
-    ticketId,
-    payload = {}
-) {
+export async function updateTicketStatus(ticketId, payload = {}) {
     if (!ticketId) {
         throw new Error("ticketId is required");
     }
@@ -258,20 +352,13 @@ export async function updateTicketStatus(
         `${GATEWAY_BASE_URL}/api/tickets/${encodeURIComponent(ticketId)}`,
         {
             method: "PATCH",
-            headers: {
+            headers: buildHeaders({
                 "Content-Type": "application/json",
-            },
+            }),
+            credentials: "include",
             body: JSON.stringify(payload),
         }
     );
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(
-            errorBody.error ||
-                `Failed to update ticket ${ticketId} (HTTP ${response.status})`
-        );
-    }
-
-    return response.json();
+    return handleApiResponse(response, `Failed to update ticket ${ticketId}`);
 }

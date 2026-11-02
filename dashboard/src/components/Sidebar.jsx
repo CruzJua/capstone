@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import {
@@ -15,6 +15,7 @@ import {
     X,
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
+import { useAuth } from "@/context/AuthContext";
 
 function cn(...inputs) {
     return twMerge(clsx(inputs));
@@ -40,6 +41,14 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const {
+        user,
+        appMode,
+        demoLoginEnabled,
+        presetTenants,
+        logout,
+    } = useAuth();
     const {
         tenants,
         activeTenantId,
@@ -50,6 +59,23 @@ export default function Sidebar() {
         error,
     } = useTenant();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
+
+    const isDemoSelectorMode =
+        appMode === "preset_training" &&
+        demoLoginEnabled &&
+        presetTenants.length > 0;
+    const selectableTenants = isDemoSelectorMode ? presetTenants : tenants;
+
+    const handleLogout = async () => {
+        setLoggingOut(true);
+        try {
+            await logout();
+            router.replace("/login");
+        } finally {
+            setLoggingOut(false);
+        }
+    };
 
     return (
         <>
@@ -69,7 +95,11 @@ export default function Sidebar() {
                     className="p-1.5 rounded border border-zinc-800 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900"
                     aria-label="Toggle navigation menu"
                 >
-                    {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                    {mobileOpen ? (
+                        <X className="h-4 w-4" />
+                    ) : (
+                        <Menu className="h-4 w-4" />
+                    )}
                 </button>
             </div>
 
@@ -90,57 +120,97 @@ export default function Sidebar() {
             >
                 {/* Header */}
                 <div className="px-4 py-4 border-b border-zinc-800">
-                    <h1 className="font-semibold text-sm text-zinc-100">
-                        Support Admin Console
-                    </h1>
+                    <div className="flex items-center justify-between gap-2">
+                        <h1 className="font-semibold text-sm text-zinc-100">
+                            Support Admin Console
+                        </h1>
+                        <span
+                            className={cn(
+                                "rounded border px-1.5 py-0.5 font-mono text-[10px]",
+                                appMode === "preset_training"
+                                    ? "bg-amber-950/50 border-amber-800 text-amber-300"
+                                    : "bg-zinc-900 border-zinc-800 text-zinc-400"
+                            )}
+                        >
+                            {appMode}
+                        </span>
+                    </div>
                     <p className="font-mono text-xs text-zinc-500 mt-0.5">
                         Multi-Tenant RAG Gateway
                     </p>
                 </div>
 
-                {/* Active Tenant Selector Dropdown */}
+                {/* Authorized Tenant Selector */}
                 <div className="p-4 border-b border-zinc-800">
                     <div className="flex items-center justify-between mb-1.5">
-                        <label
-                            htmlFor="sidebar-tenant-selector"
-                            className="text-xs font-medium text-zinc-400"
-                        >
-                            Active Tenant
-                        </label>
+                        {isDemoSelectorMode ? (
+                            <label
+                                htmlFor="sidebar-tenant-selector"
+                                className="text-xs font-medium text-zinc-400"
+                            >
+                                Preset Demo Tenant
+                            </label>
+                        ) : (
+                            <span className="text-xs font-medium text-zinc-400">
+                                Authorized Workspace
+                            </span>
+                        )}
                         <button
                             type="button"
                             onClick={refreshTenants}
-                            title="Refresh tenants from Gateway"
-                            className="text-zinc-400 hover:text-zinc-200 p-1 rounded"
+                            title="Refresh authorized workspace from Gateway"
+                            className="text-zinc-400 hover:text-zinc-200 p-1 rounded cursor-pointer"
                         >
                             <RefreshCw
-                                className={cn("h-3.5 w-3.5", loading && "animate-spin")}
+                                className={cn(
+                                    "h-3.5 w-3.5",
+                                    loading && "animate-spin"
+                                )}
                             />
                         </button>
                     </div>
 
-                    <div className="relative">
-                        <select
-                            id="sidebar-tenant-selector"
-                            value={activeTenantId}
-                            onChange={(e) => setActiveTenantId(e.target.value)}
-                            disabled={loading || tenants.length === 0}
-                            className="w-full appearance-none bg-zinc-900 border border-zinc-800 rounded px-3 py-2 pr-8 text-sm text-zinc-100 focus:border-zinc-600 focus:outline-none disabled:opacity-60 cursor-pointer"
-                        >
-                            {loading && tenants.length === 0 ? (
-                                <option value="">Loading businesses...</option>
-                            ) : tenants.length === 0 ? (
-                                <option value="">No tenants available</option>
+                    {isDemoSelectorMode ? (
+                        <div className="relative">
+                            <select
+                                id="sidebar-tenant-selector"
+                                value={activeTenantId}
+                                onChange={(e) => setActiveTenantId(e.target.value)}
+                                disabled={
+                                    loading || selectableTenants.length === 0
+                                }
+                                className="w-full appearance-none bg-zinc-900 border border-zinc-800 rounded px-3 py-2 pr-8 text-sm text-zinc-100 focus:border-zinc-600 focus:outline-none disabled:opacity-60 cursor-pointer"
+                            >
+                                {loading && selectableTenants.length === 0 ? (
+                                    <option value="">Loading workspace...</option>
+                                ) : selectableTenants.length === 0 ? (
+                                    <option value="">No tenants available</option>
+                                ) : (
+                                    selectableTenants.map((tenant) => (
+                                        <option
+                                            key={tenant.tenant_id}
+                                            value={tenant.tenant_id}
+                                        >
+                                            {tenant.name}
+                                        </option>
+                                    ))
+                                )}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                        </div>
+                    ) : (
+                        <div className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 truncate">
+                            {loading && !activeTenant ? (
+                                <span className="text-zinc-400">
+                                    Loading workspace...
+                                </span>
                             ) : (
-                                tenants.map((tenant) => (
-                                    <option key={tenant.tenant_id} value={tenant.tenant_id}>
-                                        {tenant.name}
-                                    </option>
-                                ))
+                                activeTenant?.name ||
+                                user?.tenant_id ||
+                                "No workspace loaded"
                             )}
-                        </select>
-                        <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                    </div>
+                        </div>
+                    )}
 
                     {activeTenant && (
                         <div className="mt-2 flex items-center justify-between text-xs">
@@ -191,22 +261,44 @@ export default function Sidebar() {
                     })}
                 </nav>
 
-                {/* Footer Status */}
-                <div className="p-4 border-t border-zinc-800 font-mono text-xs text-zinc-400">
-                    <div className="flex items-center gap-2">
-                        <span
-                            className={cn(
-                                "h-2 w-2 rounded-full shrink-0",
-                                error
-                                    ? "bg-red-500"
-                                    : loading
-                                    ? "bg-amber-400"
-                                    : "bg-emerald-500"
-                            )}
-                        />
-                        <span className="truncate">
-                            {error ? "gateway: offline" : "gateway: :4000"}
-                        </span>
+                {/* Authenticated Principal & Sign Out Footer */}
+                <div className="p-4 border-t border-zinc-800 space-y-3">
+                    {user && (
+                        <div className="rounded border border-zinc-800 bg-zinc-900/40 px-3 py-2">
+                            <p className="text-xs font-medium text-zinc-200 truncate">
+                                {user.name}
+                            </p>
+                            <p className="font-mono text-[11px] text-zinc-400 truncate mt-0.5">
+                                {user.email || `principal: ${user.principal_type}`}
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 font-mono text-xs text-zinc-400">
+                            <span
+                                className={cn(
+                                    "h-2 w-2 rounded-full shrink-0",
+                                    error
+                                        ? "bg-red-500"
+                                        : loading
+                                        ? "bg-amber-400"
+                                        : "bg-emerald-500"
+                                )}
+                            />
+                            <span className="truncate">
+                                {error ? "gateway: err" : "gateway: :4000"}
+                            </span>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            disabled={loggingOut}
+                            className="rounded border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1 font-mono text-xs text-zinc-300 hover:text-zinc-100 disabled:opacity-50 cursor-pointer"
+                        >
+                            {loggingOut ? "Signing out..." : "Sign Out"}
+                        </button>
                     </div>
                 </div>
             </aside>

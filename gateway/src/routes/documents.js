@@ -4,6 +4,13 @@ const path = require("path");
 const { spawn } = require("child_process");
 const multer = require("multer");
 const { getDocVectorsCollection } = require("../db/mongo");
+const { getAppMode, getActiveDatabaseName } = require("../config/mode");
+const {
+    isPresetTenantId,
+    isValidTenantId,
+    isValidDocId,
+} = require("../config/presets");
+const { authorizeTenantAccess } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -39,25 +46,73 @@ const upload = multer({
         const ext = path.extname(file.originalname || "").toLowerCase();
         if (ext !== ".md" && ext !== ".json") {
             return cb(
-                new Error("Only Markdown (.md) and JSON (.json) files are allowed.")
+                new Error(
+                    "Only Markdown (.md) and JSON (.json) files are allowed."
+                )
             );
         }
         cb(null, true);
     },
 });
 
+/**
+ * Resolves a preset source file under data/<tenantId>/<docId>.<ext> ONLY when:
+ * 1. APP_MODE === 'preset_training'
+ * 2. tenantId is a registered preset tenant
+ * 3. tenantId and docId pass strict identifier validation
+ * 4. The resolved path stays strictly inside PROJECT_ROOT/data/<tenantId>
+ */
+function resolveSafePresetSourcePath(tenantId, docId, ext) {
+    if (getAppMode(process.env) !== "preset_training") {
+        return null;
+    }
+    if (
+        !isValidTenantId(tenantId) ||
+        !isPresetTenantId(tenantId) ||
+        !isValidDocId(docId)
+    ) {
+        return null;
+    }
+    if (ext !== "md" && ext !== "json") {
+        return null;
+    }
+
+    const baseDataDir = path.resolve(PROJECT_ROOT, "data");
+    const tenantDir = path.resolve(baseDataDir, tenantId);
+    if (
+        !tenantDir.startsWith(baseDataDir + path.sep) ||
+        path.dirname(tenantDir) !== baseDataDir
+    ) {
+        return null;
+    }
+
+    const candidatePath = path.resolve(tenantDir, `${docId}.${ext}`);
+    if (
+        !candidatePath.startsWith(tenantDir + path.sep) ||
+        path.dirname(candidatePath) !== tenantDir
+    ) {
+        return null;
+    }
+
+    if (!fs.existsSync(candidatePath)) {
+        return null;
+    }
+
+    return candidatePath;
+}
+
 function inferFormat(docId, explicitFormat, sampleText, tenantId) {
     if (explicitFormat === "md" || explicitFormat === "json") {
         return explicitFormat;
     }
-    const jsonDiskPath = path.join(PROJECT_ROOT, "data", tenantId, `${docId}.json`);
-    if (fs.existsSync(jsonDiskPath)) {
+
+    if (resolveSafePresetSourcePath(tenantId, docId, "json")) {
         return "json";
     }
-    const mdDiskPath = path.join(PROJECT_ROOT, "data", tenantId, `${docId}.md`);
-    if (fs.existsSync(mdDiskPath)) {
+    if (resolveSafePresetSourcePath(tenantId, docId, "md")) {
         return "md";
     }
+
     if (
         docId === "faq_support_knowledgebase" ||
         docId.endsWith("_matrix") ||
@@ -69,7 +124,13 @@ function inferFormat(docId, explicitFormat, sampleText, tenantId) {
     return "md";
 }
 
-function runPythonIngestion({ filePath, tenantId, overwrite, docId }) {
+function defaultPythonIngestionRunner({
+    filePath,
+    tenantId,
+    overwrite,
+    docId,
+    dbName,
+}) {
     return new Promise((resolve, reject) => {
         const scriptArgs = [
             "run",
@@ -84,12 +145,15 @@ function runPythonIngestion({ filePath, tenantId, overwrite, docId }) {
             overwrite ? "true" : "false",
             "--doc-id",
             docId,
+            "--db-name",
+            dbName,
         ];
 
         const child = spawn("uv", scriptArgs, {
             cwd: PROJECT_ROOT,
             env: {
                 ...process.env,
+                MONGODB_DB_NAME: dbName,
                 HF_HUB_DISABLE_PROGRESS_BARS: "1",
                 TOKENIZERS_PARALLELISM: "false",
             },
@@ -146,11 +210,29 @@ function runPythonIngestion({ filePath, tenantId, overwrite, docId }) {
     });
 }
 
+let activeIngestionRunner = defaultPythonIngestionRunner;
+
+function setIngestionRunner(runner) {
+    activeIngestionRunner = runner || defaultPythonIngestionRunner;
+}
+
+function resetIngestionRunner() {
+    activeIngestionRunner = defaultPythonIngestionRunner;
+}
+
 /**
  * POST /api/documents/upload
- * Receives multipart file (.md or .json), tenant_id, overwrite flag, and optional doc_id.
+ * Authenticates session and pre-validates any query/header tenant selector BEFORE multipart parsing.
+ * After multipart parsing, verifies any body tenant_id against the session tenant, cleans up temp files
+ * on rejection, and passes the session-authorized tenantId and active database name to the worker.
  */
 router.post("/documents/upload", (req, res) => {
+    // Pre-multipart authorization check (session + any query/header selector)
+    const preAuthTenant = authorizeTenantAccess(req, res);
+    if (!preAuthTenant) {
+        return;
+    }
+
     upload.single("file")(req, res, async (uploadErr) => {
         if (uploadErr) {
             return res.status(400).json({
@@ -161,18 +243,16 @@ router.post("/documents/upload", (req, res) => {
 
         const tempFilePath = req.file?.path;
         try {
+            // Post-multipart authorization check (validates body.tenant_id if provided)
+            const authorizedTenantId = authorizeTenantAccess(req, res);
+            if (!authorizedTenantId) {
+                return;
+            }
+
             if (!req.file) {
                 return res.status(400).json({
                     status: "error",
                     error: "No file uploaded. Provide a .md or .json file under field 'file'.",
-                });
-            }
-
-            const tenantId = (req.body?.tenant_id || "").trim();
-            if (!tenantId) {
-                return res.status(400).json({
-                    status: "error",
-                    error: "tenant_id is required.",
                 });
             }
 
@@ -188,16 +268,28 @@ router.post("/documents/upload", (req, res) => {
                 .trim()
                 .replace(/\.(md|json)$/i, "");
 
-            const summary = await runPythonIngestion({
+            if (!isValidDocId(targetDocId)) {
+                return res.status(400).json({
+                    status: "error",
+                    error: "Invalid doc_id format.",
+                });
+            }
+
+            const activeDbName = getActiveDatabaseName(process.env);
+            const summary = await activeIngestionRunner({
                 filePath: tempFilePath,
-                tenantId,
+                tenantId: authorizedTenantId,
                 overwrite,
                 docId: targetDocId,
+                dbName: activeDbName,
             });
 
             return res.status(200).json(summary);
         } catch (error) {
-            console.error("[POST /api/documents/upload] Error:", error.message);
+            console.error(
+                "[POST /api/documents/upload] Error:",
+                error.message
+            );
             const statusCode = error.code === "DOCUMENT_EXISTS" ? 409 : 400;
             return res.status(statusCode).json({
                 status: "error",
@@ -214,15 +306,21 @@ router.post("/documents/upload", (req, res) => {
 
 /**
  * GET /api/tenants/:tenantId/documents
- * Queries doc_vectors grouped by doc_id, returning file_name, format, chunk_count, and latest created_at.
+ * Queries doc_vectors grouped by doc_id for the session-authorized tenant.
  */
 router.get("/tenants/:tenantId/documents", async (req, res) => {
     try {
-        const { tenantId } = req.params;
+        const authorizedTenantId = authorizeTenantAccess(
+            req,
+            res,
+            req.params.tenantId
+        );
+        if (!authorizedTenantId) return;
+
         const docVectors = await getDocVectorsCollection();
 
         const pipeline = [
-            { $match: { tenant_id: tenantId } },
+            { $match: { tenant_id: authorizedTenantId } },
             { $sort: { chunk_index: 1 } },
             {
                 $group: {
@@ -247,7 +345,7 @@ router.get("/tenants/:tenantId/documents", async (req, res) => {
                 docId,
                 item.format,
                 item.sample_text,
-                tenantId
+                authorizedTenantId
             );
             return {
                 doc_id: docId,
@@ -259,13 +357,13 @@ router.get("/tenants/:tenantId/documents", async (req, res) => {
             };
         });
 
-        res.json(documents);
+        return res.json(documents);
     } catch (error) {
         console.error(
             "[GET /api/tenants/:tenantId/documents] Error:",
             error.message
         );
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to fetch tenant documents.",
         });
     }
@@ -277,12 +375,25 @@ router.get("/tenants/:tenantId/documents", async (req, res) => {
  */
 router.get("/tenants/:tenantId/documents/:docId", async (req, res) => {
     try {
-        const { tenantId, docId } = req.params;
+        const authorizedTenantId = authorizeTenantAccess(
+            req,
+            res,
+            req.params.tenantId
+        );
+        if (!authorizedTenantId) return;
+
+        const { docId } = req.params;
+        if (!isValidDocId(docId)) {
+            return res.status(400).json({
+                error: "Invalid document identifier.",
+            });
+        }
+
         const docVectors = await getDocVectorsCollection();
 
         const chunks = await docVectors
             .find(
-                { tenant_id: tenantId, doc_id: docId },
+                { tenant_id: authorizedTenantId, doc_id: docId },
                 { projection: { _id: 0, embedding: 0 } }
             )
             .sort({ chunk_index: 1 })
@@ -290,7 +401,7 @@ router.get("/tenants/:tenantId/documents/:docId", async (req, res) => {
 
         if (!chunks || chunks.length === 0) {
             return res.status(404).json({
-                error: `Document '${docId}' not found for tenant '${tenantId}'.`,
+                error: `Document '${docId}' not found for tenant '${authorizedTenantId}'.`,
             });
         }
 
@@ -299,21 +410,18 @@ router.get("/tenants/:tenantId/documents/:docId", async (req, res) => {
             docId,
             firstChunk.format,
             firstChunk.text,
-            tenantId
+            authorizedTenantId
         );
 
         let rawText = null;
-        // If this document was part of the baseline seed (no explicit format tag from upload),
-        // check if the original source file exists on disk; otherwise reconstruct from live chunks.
         if (!firstChunk.format) {
-            const diskCandidate = path.join(
-                PROJECT_ROOT,
-                "data",
-                tenantId,
-                `${docId}.${format}`
+            const safeDiskPath = resolveSafePresetSourcePath(
+                authorizedTenantId,
+                docId,
+                format
             );
-            if (fs.existsSync(diskCandidate)) {
-                rawText = await fs.promises.readFile(diskCandidate, "utf-8");
+            if (safeDiskPath) {
+                rawText = await fs.promises.readFile(safeDiskPath, "utf-8");
             }
         }
 
@@ -336,8 +444,8 @@ router.get("/tenants/:tenantId/documents/:docId", async (req, res) => {
             }
         }
 
-        res.json({
-            tenant_id: tenantId,
+        return res.json({
+            tenant_id: authorizedTenantId,
             doc_id: docId,
             file_name: `${docId}.${format}`,
             format,
@@ -351,7 +459,7 @@ router.get("/tenants/:tenantId/documents/:docId", async (req, res) => {
             "[GET /api/tenants/:tenantId/documents/:docId] Error:",
             error.message
         );
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to load document content.",
         });
     }
@@ -359,12 +467,24 @@ router.get("/tenants/:tenantId/documents/:docId", async (req, res) => {
 
 /**
  * GET /api/tenants/:tenantId/chunks
- * Returns paginated chunks for the tenant (chunk_index, section, snippet, text, char_count, token_estimate).
+ * Returns paginated chunks for the session-authorized tenant.
  */
 router.get("/tenants/:tenantId/chunks", async (req, res) => {
     try {
-        const { tenantId } = req.params;
+        const authorizedTenantId = authorizeTenantAccess(
+            req,
+            res,
+            req.params.tenantId
+        );
+        if (!authorizedTenantId) return;
+
         const docIdFilter = (req.query.doc_id || "").trim();
+        if (docIdFilter && !isValidDocId(docIdFilter)) {
+            return res.status(400).json({
+                error: "Invalid doc_id filter.",
+            });
+        }
+
         const searchQuery = (req.query.search || "").trim();
         const page = Math.max(1, parseInt(req.query.page, 10) || 1);
         const limit = Math.min(
@@ -373,7 +493,7 @@ router.get("/tenants/:tenantId/chunks", async (req, res) => {
         );
         const skip = (page - 1) * limit;
 
-        const query = { tenant_id: tenantId };
+        const query = { tenant_id: authorizedTenantId };
         if (docIdFilter) {
             query.doc_id = docIdFilter;
         }
@@ -419,8 +539,8 @@ router.get("/tenants/:tenantId/chunks", async (req, res) => {
             };
         });
 
-        res.json({
-            tenant_id: tenantId,
+        return res.json({
+            tenant_id: authorizedTenantId,
             chunks,
             total,
             page,
@@ -432,11 +552,13 @@ router.get("/tenants/:tenantId/chunks", async (req, res) => {
             "[GET /api/tenants/:tenantId/chunks] Error:",
             error.message
         );
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to fetch tenant vector chunks.",
         });
     }
 });
 
 module.exports = router;
-
+module.exports.setIngestionRunner = setIngestionRunner;
+module.exports.resetIngestionRunner = resetIngestionRunner;
+module.exports.resolveSafePresetSourcePath = resolveSafePresetSourcePath;

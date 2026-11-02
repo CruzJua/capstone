@@ -62,6 +62,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional explicit doc_id override (defaults to filename stem).",
     )
+    parser.add_argument(
+        "--db-name",
+        default=None,
+        help="Explicit MongoDB database name selected by the Orchestration Gateway.",
+    )
     return parser
 
 
@@ -70,7 +75,9 @@ def ingest_single_document(
     tenant_id: str,
     overwrite: bool = True,
     doc_id_override: str | None = None,
+    db_name_override: str | None = None,
 ) -> dict:
+    caller_db_name = (db_name_override or os.environ.get("MONGODB_DB_NAME") or "").strip()
     load_dotenv(PROJECT_ROOT / ".env", override=True)
 
     os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
@@ -97,7 +104,7 @@ def ingest_single_document(
     # Validate file integrity using the shared document parser
     parse_document(file_path, source_id=doc_id)
 
-    db_name = os.getenv("MONGODB_DB_NAME", "capstone_dev")
+    db_name = caller_db_name or os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
     collection_name = os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")
 
     with contextlib.redirect_stdout(sys.stderr):
@@ -176,6 +183,7 @@ def main() -> None:
             tenant_id=args.tenant,
             overwrite=args.overwrite,
             doc_id_override=args.doc_id,
+            db_name_override=args.db_name,
         )
         print(json.dumps(result))
     except FileExistsError as exc:

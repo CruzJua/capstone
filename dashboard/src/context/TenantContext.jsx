@@ -1,66 +1,126 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    useCallback,
+} from "react";
 import { fetchTenants } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 const TenantContext = createContext(null);
 
 const STORAGE_KEY = "capstone_active_tenant_id";
 
 export function TenantProvider({ children }) {
+    const {
+        authenticated,
+        user,
+        authorizedTenants,
+        appMode,
+        demoLoginEnabled,
+        presetTenants,
+        loading: authLoading,
+        sessionVersion,
+        demoLogin,
+    } = useAuth();
+
     const [tenants, setTenants] = useState([]);
     const [activeTenantId, setActiveTenantIdState] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const applyTenantsList = useCallback((list) => {
-        setTenants(list);
-        if (list.length > 0) {
+    const userTenantId = user?.tenant_id || "";
+
+    const applyAuthorizedTenantsList = useCallback(
+        (list, primaryUserTenantId = "") => {
+            const safeList = Array.isArray(list) ? list : [];
+            setTenants(safeList);
+
+            if (safeList.length === 0) {
+                setActiveTenantIdState("");
+                if (typeof window !== "undefined") {
+                    window.localStorage.removeItem(STORAGE_KEY);
+                }
+                return;
+            }
+
             const savedId =
                 typeof window !== "undefined"
                     ? window.localStorage.getItem(STORAGE_KEY)
                     : null;
-            const matchingSaved = list.find((t) => t.tenant_id === savedId);
-            const defaultTenant =
-                matchingSaved ||
-                list.find((t) => t.tenant_id === "iron_and_oak") ||
-                list[0];
 
-            setActiveTenantIdState((prev) => {
-                if (prev && list.some((t) => t.tenant_id === prev)) {
-                    return prev;
-                }
-                return defaultTenant.tenant_id;
-            });
-        }
-    }, []);
+            const matchingSaved = safeList.find((t) => t.tenant_id === savedId);
+            const matchingUserPrimary = safeList.find(
+                (t) => t.tenant_id === primaryUserTenantId
+            );
+            const selected =
+                matchingUserPrimary || matchingSaved || safeList[0];
+
+            setActiveTenantIdState(selected.tenant_id);
+            if (typeof window !== "undefined") {
+                window.localStorage.setItem(STORAGE_KEY, selected.tenant_id);
+            }
+        },
+        []
+    );
 
     const refreshTenants = useCallback(async () => {
+        if (!authenticated) {
+            setTenants([]);
+            setActiveTenantIdState("");
+            return;
+        }
         setLoading(true);
         setError(null);
         try {
             const list = await fetchTenants();
-            applyTenantsList(list);
+            applyAuthorizedTenantsList(list, userTenantId);
         } catch (err) {
-            setError(err.message || "Unable to connect to Orchestration Gateway.");
+            setError(
+                err.message || "Unable to load authorized tenant from Gateway."
+            );
         } finally {
             setLoading(false);
         }
-    }, [applyTenantsList]);
+    }, [authenticated, userTenantId, applyAuthorizedTenantsList]);
 
     useEffect(() => {
+        if (authLoading) return;
         let cancelled = false;
 
-        async function initTenants() {
+        async function syncTenantsWithSession() {
+            await Promise.resolve();
+            if (cancelled) return;
+
+            if (!authenticated) {
+                setTenants([]);
+                setActiveTenantIdState("");
+                setError(null);
+                setLoading(false);
+                return;
+            }
+
+            // Immediately apply session-supplied authorized tenants if present, then verify with GET /api/tenants
+            if (authorizedTenants && authorizedTenants.length > 0) {
+                applyAuthorizedTenantsList(authorizedTenants, userTenantId);
+            }
+
+            setLoading(true);
+            setError(null);
             try {
                 const list = await fetchTenants();
                 if (!cancelled) {
-                    applyTenantsList(list);
-                    setError(null);
+                    applyAuthorizedTenantsList(list, userTenantId);
                 }
             } catch (err) {
                 if (!cancelled) {
-                    setError(err.message || "Unable to connect to Orchestration Gateway.");
+                    setError(
+                        err.message ||
+                            "Unable to load authorized tenant from Gateway."
+                    );
                 }
             } finally {
                 if (!cancelled) {
@@ -69,24 +129,66 @@ export function TenantProvider({ children }) {
             }
         }
 
-        initTenants();
+        syncTenantsWithSession();
         return () => {
             cancelled = true;
         };
-    }, [applyTenantsList]);
+    }, [
+        authLoading,
+        authenticated,
+        sessionVersion,
+        userTenantId,
+        authorizedTenants,
+        applyAuthorizedTenantsList,
+    ]);
 
-    const setActiveTenantId = useCallback((tenantId) => {
-        setActiveTenantIdState(tenantId);
-        if (typeof window !== "undefined" && tenantId) {
-            window.localStorage.setItem(STORAGE_KEY, tenantId);
-        }
-    }, []);
+    const setActiveTenantId = useCallback(
+        async (requestedTenantId) => {
+            if (!requestedTenantId) return;
+
+            // Check if already in authorized tenants list
+            const isAuthorized = tenants.some(
+                (t) => t.tenant_id === requestedTenantId
+            );
+
+            if (isAuthorized) {
+                setActiveTenantIdState(requestedTenantId);
+                if (typeof window !== "undefined") {
+                    window.localStorage.setItem(STORAGE_KEY, requestedTenantId);
+                }
+                return;
+            }
+
+            // In preset_training mode, switching to another preset calls demo-login
+            // to revoke the old session and issue a session for the new preset fixture.
+            if (
+                appMode === "preset_training" &&
+                demoLoginEnabled &&
+                presetTenants.some((p) => p.tenant_id === requestedTenantId)
+            ) {
+                setLoading(true);
+                setError(null);
+                try {
+                    await demoLogin(requestedTenantId);
+                } catch (err) {
+                    setError(
+                        err.message || "Failed to switch preset training tenant."
+                    );
+                } finally {
+                    setLoading(false);
+                }
+            }
+        },
+        [tenants, appMode, demoLoginEnabled, presetTenants, demoLogin]
+    );
 
     const updateTenantInList = useCallback((updatedTenant) => {
         if (!updatedTenant || !updatedTenant.tenant_id) return;
         setTenants((prev) =>
             prev.map((item) =>
-                item.tenant_id === updatedTenant.tenant_id ? updatedTenant : item
+                item.tenant_id === updatedTenant.tenant_id
+                    ? updatedTenant
+                    : item
             )
         );
     }, []);
@@ -103,7 +205,7 @@ export function TenantProvider({ children }) {
                 setActiveTenantId,
                 updateTenantInList,
                 refreshTenants,
-                loading,
+                loading: authLoading || loading,
                 error,
             }}
         >

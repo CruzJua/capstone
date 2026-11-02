@@ -1,5 +1,6 @@
 const express = require("express");
 const { getTicketLogsCollection } = require("../db/mongo");
+const { authorizeTenantAccess } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -9,14 +10,20 @@ const VALID_ESCALATION_REASONS = new Set([
     "docs_require_human",
     "not_in_docs",
 ]);
+const TICKET_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]{1,63}$/;
 
 function normalizeMessages(rawMessages) {
     if (!Array.isArray(rawMessages)) return [];
     const nowIso = new Date().toISOString();
     return rawMessages
-        .filter((msg) => msg && typeof msg.content === "string" && msg.content.trim())
+        .filter(
+            (msg) =>
+                msg && typeof msg.content === "string" && msg.content.trim()
+        )
         .map((msg) => ({
-            role: String(msg.role || "customer").trim().toLowerCase(),
+            role: String(msg.role || "customer")
+                .trim()
+                .toLowerCase(),
             content: msg.content.trim(),
             timestamp: msg.timestamp || nowIso,
         }));
@@ -24,15 +31,21 @@ function normalizeMessages(rawMessages) {
 
 /**
  * GET /api/tenants/:tenantId/tickets
- * Returns tickets filtered by tenant_id and optional status / search query params.
+ * Returns tickets filtered by session-authorized tenant_id and optional status / search query params.
  */
 router.get("/tenants/:tenantId/tickets", async (req, res) => {
     try {
-        const { tenantId } = req.params;
+        const authorizedTenantId = authorizeTenantAccess(
+            req,
+            res,
+            req.params.tenantId
+        );
+        if (!authorizedTenantId) return;
+
         const statusFilter = (req.query.status || "").trim().toLowerCase();
         const searchQuery = (req.query.search || "").trim();
 
-        const query = { tenant_id: tenantId };
+        const query = { tenant_id: authorizedTenantId };
         if (statusFilter && statusFilter !== "all") {
             if (!VALID_STATUSES.has(statusFilter)) {
                 return res.status(400).json({
@@ -62,13 +75,13 @@ router.get("/tenants/:tenantId/tickets", async (req, res) => {
             .sort({ created_at: -1, ticket_id: 1 })
             .toArray();
 
-        res.json(tickets);
+        return res.json(tickets);
     } catch (error) {
         console.error(
             "[GET /api/tenants/:tenantId/tickets] Error:",
             error.message
         );
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to fetch tenant tickets.",
         });
     }
@@ -76,19 +89,18 @@ router.get("/tenants/:tenantId/tickets", async (req, res) => {
 
 /**
  * POST /api/tickets (and POST /api/tenants/:tenantId/tickets)
- * Creates a new ticket log entry (used by the Storefront Chat Widget for logging
- * multi-turn conversations and customer escalation handoffs).
+ * Creates a new ticket log entry scoped to the session-authorized tenant.
  */
 async function createTicketHandler(req, res) {
     try {
-        const body = req.body || {};
-        const tenantId = (req.params.tenantId || body.tenant_id || "").trim();
-        if (!tenantId) {
-            return res.status(400).json({
-                error: "tenant_id is required.",
-            });
-        }
+        const authorizedTenantId = authorizeTenantAccess(
+            req,
+            res,
+            req.params.tenantId || null
+        );
+        if (!authorizedTenantId) return;
 
+        const body = req.body || {};
         const nowIso = new Date().toISOString();
         const normalizedMessages = normalizeMessages(body.messages);
         const lastCustomerTurn = [...normalizedMessages]
@@ -114,13 +126,19 @@ async function createTicketHandler(req, res) {
         }
 
         const prefix =
-            tenantId
+            authorizedTenantId
                 .split("_")
                 .map((part) => part[0] || "")
                 .join("")
                 .toUpperCase() || "TKT";
+        const customTicketId = (body.ticket_id || "").trim();
+        if (customTicketId && !TICKET_ID_PATTERN.test(customTicketId)) {
+            return res.status(400).json({
+                error: "Invalid ticket_id format.",
+            });
+        }
         const ticketId =
-            (body.ticket_id || "").trim() ||
+            customTicketId ||
             `TKT-${prefix}-${Math.floor(1000 + Math.random() * 9000)}`;
 
         const rawStatus = String(body.status || "pending_review")
@@ -140,7 +158,8 @@ async function createTicketHandler(req, res) {
         const contact = body.customer_contact || {};
         const customerContact = {
             name: typeof contact.name === "string" ? contact.name.trim() : "",
-            email: typeof contact.email === "string" ? contact.email.trim() : "",
+            email:
+                typeof contact.email === "string" ? contact.email.trim() : "",
         };
 
         const finalMessages =
@@ -165,10 +184,11 @@ async function createTicketHandler(req, res) {
 
         const newTicket = {
             ticket_id: ticketId,
-            tenant_id: tenantId,
+            tenant_id: authorizedTenantId,
             question,
             answer,
-            rationale: typeof body.rationale === "string" ? body.rationale.trim() : "",
+            rationale:
+                typeof body.rationale === "string" ? body.rationale.trim() : "",
             similarity_score: Number(body.similarity_score ?? 0),
             retrieved_chunks: Array.isArray(body.retrieved_chunks)
                 ? body.retrieved_chunks
@@ -193,10 +213,10 @@ async function createTicketHandler(req, res) {
         await ticketLogs.insertOne(newTicket);
         const { _id, ...cleanTicket } = newTicket;
 
-        res.status(201).json(cleanTicket);
+        return res.status(201).json(cleanTicket);
     } catch (error) {
         console.error("[POST /api/tickets] Error:", error.message);
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to create ticket log.",
         });
     }
@@ -208,11 +228,21 @@ router.post("/tenants/:tenantId/tickets", createTicketHandler);
 /**
  * PATCH /api/tickets/:ticketId
  * Updates status, admin_notes, customer_contact, escalation_reason,
- * ticket_summary, or messages for a ticket in MongoDB Atlas.
+ * ticket_summary, or messages for a ticket scoped strictly by BOTH ticket_id
+ * and the session-authorized tenant_id.
  */
 router.patch("/tickets/:ticketId", async (req, res) => {
     try {
+        const authorizedTenantId = authorizeTenantAccess(req, res);
+        if (!authorizedTenantId) return;
+
         const { ticketId } = req.params;
+        if (!ticketId || !TICKET_ID_PATTERN.test(ticketId)) {
+            return res.status(400).json({
+                error: "Invalid ticket identifier.",
+            });
+        }
+
         const body = req.body || {};
         const setFields = {};
         const pushFields = {};
@@ -322,7 +352,10 @@ router.patch("/tickets/:ticketId", async (req, res) => {
 
         const ticketLogs = await getTicketLogsCollection();
         const updatedTicket = await ticketLogs.findOneAndUpdate(
-            { ticket_id: ticketId },
+            {
+                ticket_id: ticketId,
+                tenant_id: authorizedTenantId,
+            },
             updateDoc,
             { returnDocument: "after", projection: { _id: 0 } }
         );
@@ -333,10 +366,10 @@ router.patch("/tickets/:ticketId", async (req, res) => {
             });
         }
 
-        res.json(updatedTicket);
+        return res.json(updatedTicket);
     } catch (error) {
         console.error("[PATCH /api/tickets/:ticketId] Error:", error.message);
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to update ticket.",
         });
     }
