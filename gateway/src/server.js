@@ -3,6 +3,7 @@ const cors = require("cors");
 const { connectToDatabase } = require("./db/mongo");
 const tenantsRouter = require("./routes/tenants");
 const documentsRouter = require("./routes/documents");
+const ticketsRouter = require("./routes/tickets");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -10,7 +11,7 @@ const PORT = process.env.PORT || 4000;
 app.use(
     cors({
         origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
     })
@@ -30,6 +31,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/tenants", tenantsRouter);
 app.use("/api", documentsRouter);
+app.use("/api", ticketsRouter);
 
 async function startServer() {
     try {

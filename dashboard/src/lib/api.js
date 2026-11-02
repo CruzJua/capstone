@@ -204,3 +204,74 @@ export async function uploadTenantDocument({
 
     return body;
 }
+
+export async function fetchTenantTickets(
+    tenantId,
+    { status = "all", search = "" } = {}
+) {
+    if (!tenantId) {
+        throw new Error("tenantId is required");
+    }
+
+    const params = new URLSearchParams();
+    if (status && status !== "all") {
+        params.set("status", status);
+    }
+    if (search && search.trim()) {
+        params.set("search", search.trim());
+    }
+
+    const queryString = params.toString();
+    const url = `${GATEWAY_BASE_URL}/api/tenants/${encodeURIComponent(tenantId)}/tickets${
+        queryString ? `?${queryString}` : ""
+    }`;
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        throw new Error(
+            errorBody.error ||
+                `Failed to load tickets for ${tenantId} (HTTP ${response.status})`
+        );
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : data.tickets || [];
+}
+
+export async function updateTicketStatus(
+    ticketId,
+    payload = {}
+) {
+    if (!ticketId) {
+        throw new Error("ticketId is required");
+    }
+
+    const response = await fetch(
+        `${GATEWAY_BASE_URL}/api/tickets/${encodeURIComponent(ticketId)}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        }
+    );
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        throw new Error(
+            errorBody.error ||
+                `Failed to update ticket ${ticketId} (HTTP ${response.status})`
+        );
+    }
+
+    return response.json();
+}
