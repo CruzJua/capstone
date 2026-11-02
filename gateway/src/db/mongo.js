@@ -151,6 +151,12 @@ async function getBusinessesCollection() {
     return db.collection("businesses");
 }
 
+async function getDocVectorsCollection() {
+    const db = await getDb();
+    const collectionName = process.env.MONGODB_COLLECTION_NAME || "doc_vectors";
+    return db.collection(collectionName);
+}
+
 async function closeDatabase() {
     if (clientInstance) {
         await clientInstance.close();
@@ -163,6 +169,7 @@ module.exports = {
     connectToDatabase,
     getDb,
     getBusinessesCollection,
+    getDocVectorsCollection,
     closeDatabase,
 };
 

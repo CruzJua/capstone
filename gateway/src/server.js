@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { connectToDatabase } = require("./db/mongo");
 const tenantsRouter = require("./routes/tenants");
+const documentsRouter = require("./routes/documents");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -28,15 +29,23 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/tenants", tenantsRouter);
+app.use("/api", documentsRouter);
 
 async function startServer() {
     try {
         const { db } = await connectToDatabase();
         console.log(`[Gateway] Connected to MongoDB Atlas database: ${db.databaseName}`);
 
-        app.listen(PORT, () => {
+        const server = app.listen(PORT, () => {
             console.log(`[Gateway] Express Orchestration Gateway listening on http://localhost:${PORT}`);
         });
+
+        const shutdown = () => {
+            server.close(() => process.exit(0));
+            setTimeout(() => process.exit(0), 500).unref();
+        };
+        process.on("SIGTERM", shutdown);
+        process.on("SIGINT", shutdown);
     } catch (error) {
         console.error("[Gateway] Failed to connect to MongoDB Atlas:", error.message);
         process.exit(1);
@@ -48,4 +57,5 @@ if (require.main === module) {
 }
 
 module.exports = { app, startServer };
+
 
