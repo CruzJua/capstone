@@ -12,7 +12,11 @@ import { useAuth } from "@/context/AuthContext";
 
 const TenantContext = createContext(null);
 
-const STORAGE_KEY = "capstone_active_tenant_id";
+function getStorageKey(appMode) {
+    return appMode === "preset_training"
+        ? "capstone_demo_active_tenant_id"
+        : "capstone_active_tenant_id";
+}
 
 export function TenantProvider({ children }) {
     const {
@@ -38,18 +42,19 @@ export function TenantProvider({ children }) {
         (list, primaryUserTenantId = "") => {
             const safeList = Array.isArray(list) ? list : [];
             setTenants(safeList);
+            const storageKey = getStorageKey(appMode);
 
             if (safeList.length === 0) {
                 setActiveTenantIdState("");
                 if (typeof window !== "undefined") {
-                    window.localStorage.removeItem(STORAGE_KEY);
+                    window.localStorage.removeItem(storageKey);
                 }
                 return;
             }
 
             const savedId =
                 typeof window !== "undefined"
-                    ? window.localStorage.getItem(STORAGE_KEY)
+                    ? window.localStorage.getItem(storageKey)
                     : null;
 
             const matchingSaved = safeList.find((t) => t.tenant_id === savedId);
@@ -61,10 +66,10 @@ export function TenantProvider({ children }) {
 
             setActiveTenantIdState(selected.tenant_id);
             if (typeof window !== "undefined") {
-                window.localStorage.setItem(STORAGE_KEY, selected.tenant_id);
+                window.localStorage.setItem(storageKey, selected.tenant_id);
             }
         },
-        []
+        [appMode]
     );
 
     const refreshTenants = useCallback(async () => {
@@ -154,7 +159,10 @@ export function TenantProvider({ children }) {
             if (isAuthorized) {
                 setActiveTenantIdState(requestedTenantId);
                 if (typeof window !== "undefined") {
-                    window.localStorage.setItem(STORAGE_KEY, requestedTenantId);
+                    window.localStorage.setItem(
+                        getStorageKey(appMode),
+                        requestedTenantId
+                    );
                 }
                 return;
             }

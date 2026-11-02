@@ -76,9 +76,14 @@ def ingest_single_document(
     overwrite: bool = True,
     doc_id_override: str | None = None,
     db_name_override: str | None = None,
+    mongo_uri_override: str | None = None,
 ) -> dict:
     caller_db_name = (db_name_override or os.environ.get("MONGODB_DB_NAME") or "").strip()
-    load_dotenv(PROJECT_ROOT / ".env", override=True)
+    caller_mongo_uri = (mongo_uri_override or os.environ.get("MONGODB_URI") or "").strip()
+    caller_collection_name = (os.environ.get("MONGODB_COLLECTION_NAME") or "").strip()
+    caller_model_name = (os.environ.get("EMBEDDING_MODEL_NAME") or "").strip()
+
+    load_dotenv(PROJECT_ROOT / ".env", override=False)
 
     os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
     os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
@@ -104,13 +109,17 @@ def ingest_single_document(
     # Validate file integrity using the shared document parser
     parse_document(file_path, source_id=doc_id)
 
+    mongo_uri = caller_mongo_uri or os.getenv("MONGODB_URI")
     db_name = caller_db_name or os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
-    collection_name = os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")
+    collection_name = caller_collection_name or os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")
+    model_name = caller_model_name or os.getenv("EMBEDDING_MODEL_NAME", "BAAI/bge-small-en-v1.5")
 
     with contextlib.redirect_stdout(sys.stderr):
         ingestor = DocumentIngestor(
+            mongo_uri=mongo_uri,
             db_name=db_name,
             collection_name=collection_name,
+            model_name=model_name,
             env_file=PROJECT_ROOT / ".env",
         )
 

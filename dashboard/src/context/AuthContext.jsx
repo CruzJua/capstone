@@ -19,7 +19,11 @@ import {
 
 const AuthContext = createContext(null);
 
-const STORAGE_KEY = "capstone_active_tenant_id";
+function getStorageKey(appMode) {
+    return appMode === "preset_training"
+        ? "capstone_demo_active_tenant_id"
+        : "capstone_active_tenant_id";
+}
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -35,7 +39,8 @@ export function AuthProvider({ children }) {
         setAuthorizedTenants([]);
         setSessionVersion((v) => v + 1);
         if (typeof window !== "undefined") {
-            window.localStorage.removeItem(STORAGE_KEY);
+            window.localStorage.removeItem("capstone_active_tenant_id");
+            window.localStorage.removeItem("capstone_demo_active_tenant_id");
         }
     }, []);
 
@@ -47,6 +52,7 @@ export function AuthProvider({ children }) {
             ? [payload.tenant]
             : [];
 
+        const nextMode = payload?.app_mode || "standard";
         if (payload?.app_mode) {
             setAppMode(payload.app_mode);
         }
@@ -56,12 +62,13 @@ export function AuthProvider({ children }) {
         setSessionVersion((v) => v + 1);
 
         if (typeof window !== "undefined") {
+            const storageKey = getStorageKey(nextMode);
             const primaryId =
                 nextUser?.tenant_id || nextTenants[0]?.tenant_id || "";
             if (primaryId) {
-                window.localStorage.setItem(STORAGE_KEY, primaryId);
+                window.localStorage.setItem(storageKey, primaryId);
             } else {
-                window.localStorage.removeItem(STORAGE_KEY);
+                window.localStorage.removeItem(storageKey);
             }
         }
     }, []);

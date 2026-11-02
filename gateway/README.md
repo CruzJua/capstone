@@ -58,6 +58,25 @@ npm run dev
 
 ---
 
+## 3B. Self-Contained Docker Local Demo (No Atlas Account Required)
+
+To run the complete local demo stack (`mongodb/mongodb-atlas-local:8.0` with local `$vectorSearch`, deterministic fixture seeding from `data/fixtures/demo_manifest.json`, `gateway-demo`, and `dashboard-demo`) isolated from any standard instance on ports `3001` / `4001` / `27018`:
+
+```bash
+# From the repository root:
+bash scripts/setup_demo.sh
+
+# Check health, vector index readiness, and Ollama reachability:
+curl -s http://localhost:4001/api/health | python3 -m json.tool
+
+# Reset only the local demo containers and volumes (never touches standard/Atlas data):
+bash scripts/setup_demo.sh reset
+```
+
+The containerized demo uses `SESSION_COOKIE_NAME=capstone_demo_session` and `UPLOAD_STAGING_DIR=/tmp/capstone_demo_uploads` so it can run side-by-side with a standard instance on `:3000` / `:4000` without session or file staging collisions.
+
+---
+
 ## 4. Running Automated Security & Authorization Tests
 
 ```bash

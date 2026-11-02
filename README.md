@@ -8,6 +8,35 @@ The compact [experiment results](evaluation/results.json) retain source hashes, 
 
 ## Setup and local demo
 
+### Portable Self-Contained Docker Demo (No Atlas Account or Paid API Required)
+
+For a reproducible, self-contained local demonstration of the Management Dashboard (`dashboard/`), Orchestration Gateway (`gateway/`), local MongoDB Vector Search (`mongodb/mongodb-atlas-local:8.0`), and the 5 preset businesses (`cinder_and_salt`, `harbor_view`, `iron_and_oak`, `kettle_and_loom`, `northstar_auto`) from [`data/fixtures/demo_manifest.json`](data/fixtures/demo_manifest.json):
+
+```bash
+# 1-command setup: generates .env.demo.local, starts local MongoDB + Vector Search,
+# seeds 5 businesses, 12 sample tickets, 30 source docs (384-dim bge-small-en-v1.5),
+# waits for vector_index READY + $vectorSearch smoke query, and launches Gateway + Dashboard:
+bash scripts/setup_demo.sh
+
+# Lifecycle commands:
+bash scripts/setup_demo.sh status            # Inspect container health, seed counts, and Ollama readiness
+bash scripts/setup_demo.sh restart           # Restart gateway/dashboard while preserving demo MongoDB volumes
+bash scripts/setup_demo.sh stop              # Stop demo containers without deleting volumes
+bash scripts/setup_demo.sh logs              # Inspect container logs
+bash scripts/setup_demo.sh reset             # Tear down ONLY capstone_local_demo containers and demo volumes
+bash scripts/setup_demo.sh reset --rebuild   # Wipe demo volumes and re-seed from scratch
+```
+
+- **Endpoints (bound to loopback `127.0.0.1`):**
+  - **Admin Dashboard (One-Click Demo Login):** [http://localhost:3001/login](http://localhost:3001/login)
+  - **Orchestration Gateway API & Health:** [http://localhost:4001/api/health](http://localhost:4001/api/health)
+  - **Local MongoDB Atlas (Vector Search):** `127.0.0.1:27018` (database `capstone_demo`, isolated from standard `rag_knowledge_base` and `capstone_dev`)
+- **Prerequisites & Disk Expectations:** Docker Engine / Desktop with `docker compose` (~2.5 GB disk for container images and the cached `BAAI/bge-small-en-v1.5` embedding model). If `~/.cache/huggingface` already contains `BAAI/bge-small-en-v1.5`, the seed job copies it into the `demo_hf_cache` volume automatically.
+- **What Works Without vs. With Ollama:** One-click demo authentication, tenant switching, runtime configuration updates, document inventory, raw document viewing, chunk inspection, `.md`/`.json` document uploads with 384-dim vector indexing, ticket review queue actions, and `$vectorSearch` retrieval all work immediately without Ollama. For live LLM generation, start `ollama serve` on the host (and `ollama pull llama3.2:3b` or import your fine-tuned GGUF); `/api/health` and the dashboard sidebar report `ollama_reachable` and `ollama_ready` dynamically.
+- **Dry-Run & Host Seeding CLI:** You can inspect the deterministic fixture manifest and hashes without connecting to any database via `.venv/bin/python scripts/seed_demo.py --dry-run`.
+
+### Python Loopback Chat Demo & Manual Setup
+
 From the repository root, install Python 3.14+ and `uv`, then initialize a fresh checkout:
 
 ```bash

@@ -75,8 +75,7 @@ class DemoService:
                     warnings.append("No tenant documents found. Check your MongoDB database/collection and ingestion.")
             except Exception as exc:
                 logger.warning("Tenant discovery failed (%s)", type(exc).__name__)
-                tenant_ids = sorted(path.name for path in (PROJECT_ROOT / "data").iterdir()
-                                    if path.is_dir() and (path / "faq_support_knowledgebase.json").is_file())
+                tenant_ids = []
                 rag_ready = False
                 warnings.append("Cannot reach MongoDB. Check MONGODB_URI, Atlas network access, and the database settings in .env.")
             self._tenant_ids = set(tenant_ids)

@@ -15,7 +15,8 @@ const { authorizeTenantAccess } = require("../middleware/auth");
 const router = express.Router();
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../..");
-const UPLOAD_STAGING_DIR = "/tmp/uploads";
+const UPLOAD_STAGING_DIR =
+    (process.env.UPLOAD_STAGING_DIR || "").trim() || "/tmp/uploads";
 
 fs.mkdirSync(UPLOAD_STAGING_DIR, { recursive: true });
 
@@ -132,7 +133,9 @@ function defaultPythonIngestionRunner({
     dbName,
 }) {
     return new Promise((resolve, reject) => {
-        const scriptArgs = [
+        const pythonExecutable = (process.env.PYTHON_EXECUTABLE || "").trim();
+        let command = "uv";
+        let scriptArgs = [
             "run",
             "python",
             "-m",
@@ -149,7 +152,18 @@ function defaultPythonIngestionRunner({
             dbName,
         ];
 
-        const child = spawn("uv", scriptArgs, {
+        if (pythonExecutable) {
+            command = pythonExecutable;
+            scriptArgs = scriptArgs.slice(2);
+        } else {
+            const venvPython = path.resolve(PROJECT_ROOT, ".venv/bin/python");
+            if (fs.existsSync(venvPython)) {
+                command = venvPython;
+                scriptArgs = scriptArgs.slice(2);
+            }
+        }
+
+        const child = spawn(command, scriptArgs, {
             cwd: PROJECT_ROOT,
             env: {
                 ...process.env,

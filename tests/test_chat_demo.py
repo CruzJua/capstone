@@ -90,6 +90,12 @@ class ChatDemoTests(unittest.TestCase):
         self.assertEqual([tenant["id"] for tenant in config["tenants"]], ["tenant_a", "tenant_b"])
         self.assertNotIn("mongodb", json.dumps(config).lower())
 
+    def test_database_failure_does_not_fallback_to_preset_filesystem_data(self):
+        self.collection.distinct.side_effect = RuntimeError("db unavailable")
+        config = self.service.config()
+        self.assertFalse(config["rag_ready"])
+        self.assertEqual(config["tenants"], [])
+
     def test_http_route_streams_json_and_does_not_serve_arbitrary_files(self):
         # Feed an HTTP request to the real handler without binding a network socket.
         class Connection:

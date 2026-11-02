@@ -44,6 +44,21 @@ async function handleApiResponse(response, fallbackErrorMessage, { suppressUnaut
     return body;
 }
 
+export async function fetchGatewayHealth() {
+    const response = await fetch(`${GATEWAY_BASE_URL}/api/health`, {
+        method: "GET",
+        headers: buildHeaders({
+            "Content-Type": "application/json",
+        }),
+        credentials: "include",
+        cache: "no-store",
+    });
+
+    return handleApiResponse(response, "Failed to load gateway health", {
+        suppressUnauthorizedRedirect: true,
+    });
+}
+
 export async function fetchAuthConfig() {
     const response = await fetch(`${GATEWAY_BASE_URL}/api/auth/config`, {
         method: "GET",

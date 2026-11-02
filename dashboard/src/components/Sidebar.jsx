@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "clsx";
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useAuth } from "@/context/AuthContext";
+import { fetchGatewayHealth } from "@/lib/api";
 
 function cn(...inputs) {
     return twMerge(clsx(inputs));
@@ -60,6 +61,19 @@ export default function Sidebar() {
     } = useTenant();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
+    const [health, setHealth] = useState(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        fetchGatewayHealth()
+            .then((data) => {
+                if (!cancelled) setHealth(data);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, [activeTenantId]);
 
     const isDemoSelectorMode =
         appMode === "preset_training" &&
@@ -287,7 +301,7 @@ export default function Sidebar() {
                                 )}
                             />
                             <span className="truncate">
-                                {error ? "gateway: err" : "gateway: :4000"}
+                                {error ? "gateway: err" : "gateway: ready"}
                             </span>
                         </div>
 
@@ -300,6 +314,38 @@ export default function Sidebar() {
                             {loggingOut ? "Signing out..." : "Sign Out"}
                         </button>
                     </div>
+
+                    {health && (
+                        <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between font-mono text-[10px] text-zinc-500">
+                            <span
+                                className={
+                                    health.vector_index_ready
+                                        ? "text-emerald-400"
+                                        : "text-amber-400"
+                                }
+                            >
+                                vector_index:{" "}
+                                {health.vector_index_ready
+                                    ? "ready"
+                                    : "not_ready"}
+                            </span>
+                            <span
+                                className={
+                                    health.ollama_ready
+                                        ? "text-emerald-400"
+                                        : "text-amber-400"
+                                }
+                                title={`Requested local model: ${health.model_requested || "llama3.2:3b"}`}
+                            >
+                                ollama:{" "}
+                                {health.ollama_ready
+                                    ? "ready"
+                                    : health.ollama_reachable
+                                    ? "model_absent"
+                                    : "offline"}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </aside>
         </>

@@ -1250,5 +1250,59 @@ describe("Sprint 4 Slice 4: Authentication, Mode Isolation & Tenant Authorizatio
         });
         assert.equal(limitedRes.status, 429);
     });
+
+    test("7. Slice 5: Canonical Fixture Manifest, Custom Session Cookie & Upload Staging Isolation, and Health Readiness", async () => {
+        process.env.APP_MODE = "preset_training";
+        process.env.MONGODB_DB_NAME = "standard_prod_db";
+        process.env.MONGODB_TRAINING_DB_NAME = "training_sandbox_db";
+        process.env.SESSION_COOKIE_NAME = "capstone_demo_session";
+        process.env.UPLOAD_STAGING_DIR = "/tmp/capstone_test_demo_uploads";
+
+        await connectToDatabase(process.env);
+
+        // 7A. Demo login issues custom cookie name capstone_demo_session (does not collide with capstone_session)
+        const demoRes = await fetch(`${baseUrl}/api/auth/demo-login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tenant_id: "cinder_and_salt" }),
+        });
+        assert.equal(demoRes.status, 200);
+        const setCookieHeader = demoRes.headers.get("set-cookie") || "";
+        assert.ok(
+            setCookieHeader.startsWith("capstone_demo_session="),
+            `Expected capstone_demo_session cookie, got ${setCookieHeader}`
+        );
+
+        // Standard capstone_session cookie is ignored when SESSION_COOKIE_NAME=capstone_demo_session
+        const rawCookieValue = setCookieHeader.split(";")[0].split("=")[1];
+        const wrongCookieNameRes = await fetch(`${baseUrl}/api/auth/session`, {
+            headers: { Cookie: `capstone_session=${rawCookieValue}` },
+        });
+        assert.equal(wrongCookieNameRes.status, 401);
+
+        const rightCookieNameRes = await fetch(`${baseUrl}/api/auth/session`, {
+            headers: { Cookie: `capstone_demo_session=${rawCookieValue}` },
+        });
+        assert.equal(rightCookieNameRes.status, 200);
+
+        // 7B. Health check reports database_ready, vector_index_ready, ollama_ready without exposing DB names or URIs
+        const healthRes = await fetch(`${baseUrl}/api/health`);
+        assert.equal(healthRes.status, 200);
+        const healthBody = await healthRes.json();
+        assert.equal(healthBody.status, "ok");
+        assert.equal(healthBody.app_mode, "preset_training");
+        assert.equal(healthBody.database_ready, true);
+        assert.equal(typeof healthBody.vector_index_ready, "boolean");
+        assert.equal(typeof healthBody.ollama_reachable, "boolean");
+        assert.equal(typeof healthBody.ollama_ready, "boolean");
+        assert.equal(typeof healthBody.model_requested, "string");
+        const serializedHealth = JSON.stringify(healthBody).toLowerCase();
+        assert.ok(!serializedHealth.includes("training_sandbox_db"));
+        assert.ok(!serializedHealth.includes("standard_prod_db"));
+        assert.ok(!serializedHealth.includes("mongodb"));
+
+        delete process.env.SESSION_COOKIE_NAME;
+        delete process.env.UPLOAD_STAGING_DIR;
+    });
 });
 

@@ -13,6 +13,15 @@ const {
 const SESSION_COOKIE_NAME = "capstone_session";
 const DEFAULT_SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
 const TOKEN_HEX_PATTERN = /^[a-f0-9]{64}$/i;
+const COOKIE_NAME_PATTERN = /^[a-zA-Z0-9_-]{3,64}$/;
+
+function getSessionCookieName(env = process.env) {
+    const custom = String(env.SESSION_COOKIE_NAME || "").trim();
+    if (custom && COOKIE_NAME_PATTERN.test(custom)) {
+        return custom;
+    }
+    return SESSION_COOKIE_NAME;
+}
 
 const DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -75,9 +84,10 @@ function setSessionCookie(
     rawToken,
     ttlMs = DEFAULT_SESSION_TTL_MS
 ) {
+    const cookieName = getSessionCookieName(process.env);
     const maxAgeSec = Math.max(1, Math.floor(ttlMs / 1000));
     const parts = [
-        `${SESSION_COOKIE_NAME}=${encodeURIComponent(rawToken)}`,
+        `${cookieName}=${encodeURIComponent(rawToken)}`,
         "Path=/",
         "HttpOnly",
         "SameSite=Lax",
@@ -90,8 +100,9 @@ function setSessionCookie(
 }
 
 function clearSessionCookie(res, req) {
+    const cookieName = getSessionCookieName(process.env);
     const parts = [
-        `${SESSION_COOKIE_NAME}=`,
+        `${cookieName}=`,
         "Path=/",
         "HttpOnly",
         "SameSite=Lax",
@@ -106,7 +117,8 @@ function clearSessionCookie(res, req) {
 
 function getRawSessionTokenFromRequest(req) {
     const cookies = parseCookies(req?.headers?.cookie);
-    return cookies[SESSION_COOKIE_NAME] || null;
+    const cookieName = getSessionCookieName(process.env);
+    return cookies[cookieName] || null;
 }
 
 async function createSession({
@@ -465,6 +477,7 @@ function authorizeTenantAccess(req, res, explicitTenantId = null) {
 module.exports = {
     SESSION_COOKIE_NAME,
     DEFAULT_SESSION_TTL_MS,
+    getSessionCookieName,
     getAllowedOrigins,
     parseCookies,
     hashSessionToken,
