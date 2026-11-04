@@ -20,6 +20,7 @@ class RAGRetriever:
         rerank_candidates: int = 20,
         min_rerank_score: Optional[float] = None,
         query_prefix: Optional[str] = None,
+        collection: Optional[Any] = None,
     ):
         # Load environment variables
         if env_file:
@@ -27,20 +28,25 @@ class RAGRetriever:
         else:
             load_dotenv(find_dotenv(usecwd=True), override=False)
 
-        resolved_uri = mongo_uri or os.getenv("MONGODB_URI")
-        if not resolved_uri or "<username>" in resolved_uri or "<password>" in resolved_uri:
-            raise ValueError(
-                "MongoDB connection URI is missing or contains placeholder values. "
-                "Please configure MONGODB_URI in your .env file or pass mongo_uri to RAGRetriever."
-            )
-
-        resolved_db = db_name or os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
-        resolved_collection = collection_name or os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")
         resolved_model = model_name or os.getenv("EMBEDDING_MODEL_NAME", "BAAI/bge-small-en-v1.5")
 
-        self.client = MongoClient(resolved_uri)
-        self.db = self.client[resolved_db]
-        self.collection = self.db[resolved_collection]
+        if collection is not None:
+            # An injected collection (e.g. the offline in-memory index) replaces MongoDB entirely.
+            self.client = None
+            self.db = None
+            self.collection = collection
+        else:
+            resolved_uri = mongo_uri or os.getenv("MONGODB_URI")
+            if not resolved_uri or "<username>" in resolved_uri or "<password>" in resolved_uri:
+                raise ValueError(
+                    "MongoDB connection URI is missing or contains placeholder values. "
+                    "Please configure MONGODB_URI in your .env file or pass mongo_uri to RAGRetriever."
+                )
+            resolved_db = db_name or os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
+            resolved_collection = collection_name or os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")
+            self.client = MongoClient(resolved_uri)
+            self.db = self.client[resolved_db]
+            self.collection = self.db[resolved_collection]
         self.index_name = os.getenv("MONGODB_VECTOR_INDEX_NAME", "vector_index")
         self.model = SentenceTransformer(resolved_model, token=os.getenv("HF_TOKEN") or None)
 
