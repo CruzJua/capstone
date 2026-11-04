@@ -187,10 +187,10 @@ class RAGDocumentIngestor:
                         })
         return results
 
-    def ingest_tenant_directory(self, tenant_id: str, tenant_dir: Path) -> int:
-        """Parses, embeds, and stores all documents in a tenant folder."""
+    def collect_tenant_chunks(self, tenant_dir: Path) -> List[Dict[str, Any]]:
+        """Parses every eligible document in a tenant folder into chunks, without embedding or storing."""
         raw_chunks = []
-        
+
         # Traverse markdown and json files
         structured = getattr(self, "document_parser", "legacy") == "structured"
         if structured:
@@ -206,6 +206,12 @@ class RAGDocumentIngestor:
                 continue
             raw_chunks.extend(self._parse_file(file_path, file_path.relative_to(tenant_dir).as_posix())
                               if structured else self._parse_file(file_path))
+        return raw_chunks
+
+    def ingest_tenant_directory(self, tenant_id: str, tenant_dir: Path) -> int:
+        """Parses, embeds, and stores all documents in a tenant folder."""
+        structured = getattr(self, "document_parser", "legacy") == "structured"
+        raw_chunks = self.collect_tenant_chunks(tenant_dir)
 
         if not raw_chunks:
             return 0
