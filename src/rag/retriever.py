@@ -5,6 +5,9 @@ from dotenv import load_dotenv, find_dotenv
 from pymongo import MongoClient
 from sentence_transformers import SentenceTransformer
 
+BGE_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
+
+
 class RAGRetriever:
     def __init__(
         self,
@@ -13,6 +16,10 @@ class RAGRetriever:
         collection_name: Optional[str] = None,
         model_name: Optional[str] = None,
         env_file: Optional[Path | str] = None,
+        reranker_model_name: Optional[str] = None,
+        rerank_candidates: int = 20,
+        min_rerank_score: Optional[float] = None,
+        query_prefix: Optional[str] = None,
     ):
         # Load environment variables
         if env_file:
@@ -37,6 +44,35 @@ class RAGRetriever:
         self.index_name = os.getenv("MONGODB_VECTOR_INDEX_NAME", "vector_index")
         self.model = SentenceTransformer(resolved_model, token=os.getenv("HF_TOKEN") or None)
 
+        # BGE retrieval models expect this instruction on queries only (documents stay unprefixed).
+        if query_prefix is None:
+            query_prefix = BGE_QUERY_PREFIX if "bge-" in resolved_model.lower() else ""
+        self.query_prefix = query_prefix
+
+        # The reranker is optional: it is loaded lazily and only when a model name is configured.
+        self.reranker_model_name = reranker_model_name or os.getenv("RERANKER_MODEL_NAME") or None
+        self.rerank_candidates = rerank_candidates
+        if min_rerank_score is None and os.getenv("MIN_RERANK_SCORE"):
+            min_rerank_score = float(os.environ["MIN_RERANK_SCORE"])
+        self.min_rerank_score = min_rerank_score
+        self._reranker = None
+
+    def _rerank(self, query: str, chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Reorders candidates by cross-encoder relevance and drops those under the cutoff."""
+        if not self.reranker_model_name or not chunks:
+            return chunks
+        if self._reranker is None:
+            from sentence_transformers import CrossEncoder
+            self._reranker = CrossEncoder(self.reranker_model_name)
+        scores = self._reranker.predict([(query, c.get("text", "")) for c in chunks])
+        ranked = []
+        for chunk, score in zip(chunks, scores):
+            ranked.append({**chunk, "vector_score": chunk.get("score"), "rerank_score": float(score)})
+        ranked.sort(key=lambda c: c["rerank_score"], reverse=True)
+        if self.min_rerank_score is not None:
+            ranked = [c for c in ranked if c["rerank_score"] >= self.min_rerank_score]
+        return ranked
+
     def retrieve(
         self,
         query: str,
@@ -50,8 +86,10 @@ class RAGRetriever:
             # An empty tenant would silently match nothing at best; refuse rather than risk leakage
             raise ValueError("tenant_id is required for retrieval.")
 
-        query_embedding = self.model.encode(query).tolist()
+        query_embedding = self.model.encode(self.query_prefix + query).tolist()
         fetch_limit = max(top_k * 4, 20) if max_per_doc else top_k
+        if self.reranker_model_name:
+            fetch_limit = max(fetch_limit, self.rerank_candidates)
         pipeline = [
             {
                 "$vectorSearch": {
@@ -86,7 +124,7 @@ class RAGRetriever:
         raw_results = list(self.collection.aggregate(pipeline))
 
         # Defense in depth: drop anything that is not this tenant's
-        filtered_results = [r for r in raw_results if r.get("tenant_id") == tenant_id]
+        filtered_results = self._rerank(query, [r for r in raw_results if r.get("tenant_id") == tenant_id])
 
         if not max_per_doc:
             return filtered_results[:top_k]
