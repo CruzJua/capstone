@@ -31,6 +31,7 @@ htmlcov/
 /data/*/generation_reference/
 /data/cleaned/train_tickets*.csv
 /data/cleaned/train_tickets*.jsonl
+/data/cleaned/*/train_tickets*.csv
 
 # Downloaded models, training state, adapters and export intermediates
 /models/
