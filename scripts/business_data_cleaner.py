@@ -405,8 +405,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Suppress summary printout to console.",
     )
-    parser.add_argument("--provenance-mode", choices=["off", "report", "quarantine"], default="off",
-                        help="Uniform source evidence screening; never repairs individual rows.")
+    parser.add_argument("--provenance-mode", choices=["off", "report", "quarantine", "quarantine-quotes"],
+                        default="off",
+                        help="Uniform source evidence screening; never repairs individual rows. "
+                             "'quarantine-quotes' is the narrow rule: it removes only rows whose cited quote "
+                             "is not found in the cited document (the sprint-3 audit definition).")
     parser.add_argument("--data-root", type=Path, default=ROOT / "data",
                         help="Root of tenant source-document directories for provenance screening.")
     parser.add_argument("--provenance-report", type=Path,
@@ -444,9 +447,12 @@ def main() -> None:
         strict_schema=args.strict_schema,
     )
     if args.provenance_mode != "off":
-        from src.documents.quality import screen_records
-        screened, report = screen_records(df_raw.to_dict(orient="records"), args.data_root,
-                                         args.provenance_mode)
+        from src.documents.quality import screen_cited_quotes, screen_records
+        if args.provenance_mode == "quarantine-quotes":
+            screened, report = screen_cited_quotes(df_raw.to_dict(orient="records"), args.data_root)
+        else:
+            screened, report = screen_records(df_raw.to_dict(orient="records"), args.data_root,
+                                             args.provenance_mode)
         args.provenance_report.parent.mkdir(parents=True, exist_ok=True)
         with args.provenance_report.open("x", encoding="utf-8") as handle:
             json.dump(report, handle, indent=4, ensure_ascii=False)

@@ -144,7 +144,9 @@ class Evidence(BaseModel):
 
 
 class Ticket(BaseModel):
-    interaction_type: Literal["single_qa", "multi_turn", "inference", "escalation", "unanswerable"]
+    # "retrieval_distractor" marks escalations whose evidence is retrieved context, not a claimed source.
+    interaction_type: Literal["single_qa", "multi_turn", "inference", "escalation", "unanswerable",
+                              "retrieval_distractor"]
     category: str
     messages: list[Message] = Field(min_length=1)
     is_answerable: bool
@@ -692,6 +694,146 @@ def cmd_download(args) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Subcommands: hard negatives (re-label real questions against real retrieved context)
+# ---------------------------------------------------------------------------
+PRICING_FILE = ROOT / "evaluation" / "pricing_gemini_20261027.json"
+
+
+def estimate_cost(model: str, prompts: list[str], output_tokens_per_request: int = 900) -> dict | None:
+    """List-price estimate only (no cache or batch discount); returns None if rates are unknown."""
+    try:
+        rates = json.loads(PRICING_FILE.read_text(encoding="utf-8"))[model]
+        input_tokens = int(sum(len(p) for p in prompts) / 3.5)
+        output_tokens = output_tokens_per_request * len(prompts)
+        usd = (input_tokens * rates["prompt_cost_per_million"]
+               + output_tokens * rates["completion_cost_per_million"]) / 1_000_000
+        return {"requests": len(prompts), "approx_input_tokens": input_tokens,
+                "assumed_output_tokens": output_tokens, "estimated_usd_list_price": round(usd, 2)}
+    except (OSError, KeyError, ValueError):
+        return None
+
+
+def cmd_prepare_hardneg(args, retrieve_fn=None) -> None:
+    """Local only: retrieve context for existing questions and write teacher requests. No API calls."""
+    import csv
+    from src.generation.hard_negatives import (HardNegativeLabel, build_request_line, plan_requests,
+                                               select_source_tickets)
+
+    source_csv = Path(args.source_csv)
+    if not source_csv.is_file():
+        die(f"source CSV not found: {source_csv}")
+    with source_csv.open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    selected = select_source_tickets(rows, args.reasons, args.limit, args.seed, args.exclude_tenants)
+    if not selected:
+        die(f"no tickets in {source_csv} match reasons {args.reasons}")
+
+    tenants = sorted({row["business"] for row in selected})
+    args.businesses = tenants
+    names = {business.key: business.name for business in load_businesses(args)}
+
+    if retrieve_fn is None:
+        from src.rag.offline import build_offline_retriever
+        log(f"Indexing {len(tenants)} tenant(s) locally with the cached embedding model (no network)...")
+        retriever = build_offline_retriever(Path(args.data_dir), tenants)
+
+        def retrieve_fn(query: str, tenant: str) -> list[dict]:
+            return retriever.retrieve(query, tenant, top_k=args.top_k)
+
+    rdir = run_dir(args)
+    if (rdir / "requests.jsonl").exists() and not args.force:
+        die(f"{rdir / 'requests.jsonl'} already exists; choose a new --run-name or pass --force.")
+    rdir.mkdir(parents=True, exist_ok=True)
+
+    prompts, plan, skipped = plan_requests(selected, retrieve_fn, Path(args.data_dir), names,
+                                           args.max_context_chars, args.top_k)
+    if not prompts:
+        (rdir / "skipped.json").write_text(json.dumps(skipped, indent=4), encoding="utf-8")
+        die("no ticket had retrievable context within the budget; nothing was prepared (see skipped.json).")
+    schema ={"type": "OBJECT", "required": ["tickets"], "properties": {"tickets": {
+        "type": "ARRAY", "minItems": 1, "maxItems": 1,
+        "items": t_schema(None, HardNegativeLabel).to_json_dict()}}}
+    requests_file = rdir / "requests.jsonl"
+    with requests_file.open("w", encoding="utf-8") as handle:
+        for key, prompt in prompts.items():
+            handle.write(json.dumps(build_request_line(key, prompt, schema, args.temperature, args.thinking_level),
+                                    ensure_ascii=False) + "\n")
+    (rdir / "plan.json").write_text(json.dumps(plan, indent=4, ensure_ascii=False), encoding="utf-8")
+    (rdir / "skipped.json").write_text(json.dumps(skipped, indent=4), encoding="utf-8")
+
+    state = load_state(Path(args.out_dir))
+    state["runs"][args.run_name] = {
+        "kind": "hardneg", "model": args.model, "dry_run": False, "requests_file": str(requests_file),
+        "prepared": now_iso(), "businesses": tenants, "source_csv": str(source_csv),
+        "reasons": args.reasons, "top_k": args.top_k, "max_context_chars": args.max_context_chars,
+    }
+    save_state(Path(args.out_dir), state)
+
+    cost = estimate_cost(args.model, list(prompts.values()))
+    log(f"\nWrote {len(prompts):,} requests -> {requests_file} ({len(skipped)} tickets skipped, see skipped.json)")
+    log(f"Estimated cost: {json.dumps(cost) if cost else 'unavailable (no pricing entry for this model)'}")
+    log("No API call was made. Paid steps, in order:")
+    for step in ("submit", "status --wait", "download"):
+        log(f"  python scripts/business_data_generator.py {step} --run-name {args.run_name}")
+    log(f"Then: python scripts/business_data_generator.py finalize-hardneg --run-name {args.run_name}")
+
+
+def cmd_finalize_hardneg(args) -> None:
+    """Local only: validate teacher labels and write results in the format the cleaner reads."""
+    from src.generation.hard_negatives import extract_label, finalize_label, result_line
+
+    rdir = run_dir(args)
+    raw_path, plan_path = rdir / "results.jsonl", rdir / "plan.json"
+    for path in (raw_path, plan_path):
+        if not path.exists():
+            die(f"{path} not found; run `download` first.")
+    out_path = rdir / "results_finalized.jsonl"
+    if out_path.exists() and not args.force:
+        die(f"{out_path} already exists; pass --force to rebuild it.")
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+
+    accepted, rejected, seen = [], [], set()
+    with raw_path.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            raw = json.loads(line)
+            key = raw.get("key")
+            entry = plan.get(key)
+            if entry is None:
+                rejected.append({"key": key, "reason": "unknown_key"})
+                continue
+            seen.add(key)
+            label = extract_label(raw)
+            ticket, reason = (None, "unparseable_teacher_response") if label is None else finalize_label(entry, label)
+            if ticket is not None:
+                try:
+                    ticket = Ticket.model_validate(ticket).model_dump()
+                except Exception:
+                    ticket, reason = None, "ticket_schema_invalid"
+            if ticket is None:
+                rejected.append({"key": key, "source_ticket_id": entry["source_ticket_id"], "reason": reason})
+            else:
+                accepted.append(result_line(key, ticket))
+    for key in sorted(set(plan) - seen):
+        rejected.append({"key": key, "source_ticket_id": plan[key]["source_ticket_id"], "reason": "no_teacher_result"})
+
+    with out_path.open("w", encoding="utf-8") as handle:
+        for line in accepted:
+            handle.write(json.dumps(line, ensure_ascii=False) + "\n")
+    (rdir / "rejected.json").write_text(json.dumps(rejected, indent=4), encoding="utf-8")
+    reasons: dict[str, int] = {}
+    for item in rejected:
+        reasons[item["reason"]] = reasons.get(item["reason"], 0) + 1
+    log(f"Accepted {len(accepted):,} of {len(plan):,}; rejected {len(rejected):,} {json.dumps(reasons)}")
+    log(f"Finalized -> {out_path}\nRejections -> {rdir / 'rejected.json'}")
+    log("Next (cleaner; writes new files only):\n  python scripts/business_data_cleaner.py "
+        f"--files {out_path} --output-csv data/cleaned/hardneg_{args.run_name}.csv "
+        f"--provenance-mode quarantine-quotes --provenance-report logs/hardneg_{args.run_name}_quotes.json "
+        "--dedupe-by none")
+
+
+# ---------------------------------------------------------------------------
 # CLI Parser Definition
 # ---------------------------------------------------------------------------
 def build_parser() -> argparse.ArgumentParser:
@@ -751,8 +893,36 @@ def build_parser() -> argparse.ArgumentParser:
     dl_parser.add_argument("--results-file", help="path to an already downloaded local results JSONL file")
     dl_parser.set_defaults(fn=cmd_download)
 
+    # Command: prepare-hardneg (local only, no API calls)
+    hn_parser = subparsers.add_parser(
+        "prepare-hardneg", help="retrieve real context for existing questions and write teacher requests (local)")
+    add_common_args(hn_parser)
+    hn_parser.set_defaults(run_name="hardneg_v1", fn=cmd_prepare_hardneg)
+    hn_parser.add_argument("--source-csv", default=str(DEFAULT_DATA_DIR / "cleaned" / "train_tickets.csv"),
+                           help="existing training CSV to take questions from (read-only)")
+    hn_parser.add_argument("--reasons", nargs="+", default=["not_in_docs", "docs_require_human"],
+                           choices=["not_in_docs", "docs_require_human"],
+                           help="which escalation types to re-label with retrieved context")
+    hn_parser.add_argument("--exclude-tenants", nargs="*", default=["harbor_view"],
+                           help="tenants never used (default: the held-out benchmark tenant)")
+    hn_parser.add_argument("--limit", type=int, default=None, help="pilot: only this many tickets")
+    hn_parser.add_argument("--top-k", type=int, default=4, help="retrieved chunks per question (default: 4)")
+    hn_parser.add_argument("--max-context-chars", type=int, default=3000,
+                           help="context budget per example; keeps examples under the notebook's token limit")
+    hn_parser.add_argument("--seed", type=int, default=390)
+    hn_parser.add_argument("--temperature", type=float, default=0.2)
+    hn_parser.add_argument("--thinking-level", default="low", choices=["", "minimal", "low", "medium", "high"])
+    hn_parser.add_argument("--force", action="store_true", help="overwrite an existing run's request file")
+
+    # Command: finalize-hardneg (local only)
+    fh_parser = subparsers.add_parser(
+        "finalize-hardneg", help="validate downloaded teacher labels and write cleaner-ready results (local)")
+    add_common_args(fh_parser)
+    fh_parser.set_defaults(run_name="hardneg_v1", fn=cmd_finalize_hardneg)
+    fh_parser.add_argument("--force", action="store_true", help="rebuild an existing results_finalized.jsonl")
+
     # Command: extend-caches
-    ec_parser = subparsers.add_parser("extend-caches", help="reset cache TTL")
+    ec_parser =subparsers.add_parser("extend-caches", help="reset cache TTL")
     add_common_args(ec_parser, is_run=False)
     ec_parser.add_argument("--hours", type=float, default=24, help="new TTL in hours from now (default: 24)")
     ec_parser.set_defaults(fn=cmd_extend_caches)
