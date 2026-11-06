@@ -22,6 +22,34 @@ from src.documents.parser import (
     parse_document,
 )
 from src.rag.ingestor import RAGDocumentIngestor as DocumentIngestor
+from src.rag.vector_index import VectorIndexPermissionError
+
+
+def ensure_vector_index_step(ingestor) -> dict:
+    """Creates the collection and vector index if missing, before any chunk is inserted.
+
+    Idempotent and never waits for the index build. It must not abort an upload: the chunks are
+    stored either way and the gateway's /api/health reports the index state, so a failure here
+    is returned as a warning in the result instead of an exception.
+    """
+    try:
+        status = ingestor.ensure_vector_search_index()
+        return {
+            "state": status["state"],
+            "index_created": bool(status.get("index_created")),
+            **({"message": status["message"]} if status.get("message") else {}),
+        }
+    except VectorIndexPermissionError as exc:
+        print(f"WARNING: {exc}", file=sys.stderr)
+        return {"state": "permission_denied", "index_created": False, "message": str(exc)}
+    except Exception as exc:
+        # Type only: driver exception text can contain connection details.
+        print(f"WARNING: could not verify the vector search index ({type(exc).__name__}).", file=sys.stderr)
+        return {
+            "state": "unknown",
+            "index_created": False,
+            "message": "The vector search index could not be verified.",
+        }
 
 
 def parse_bool(value: str | bool) -> bool:
@@ -123,6 +151,9 @@ def ingest_single_document(
             env_file=PROJECT_ROOT / ".env",
         )
 
+        # Ensure the collection and vector index exist before inserting any chunk.
+        vector_index = ensure_vector_index_step(ingestor)
+
         existing_count = ingestor.collection.count_documents(
             {"tenant_id": tenant_id, "doc_id": doc_id},
             limit=1,
@@ -179,6 +210,7 @@ def ingest_single_document(
         "doc_id": doc_id,
         "format": doc_format,
         "chunks_created": len(documents),
+        "vector_index": vector_index,
     }
 
 

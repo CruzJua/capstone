@@ -1,10 +1,20 @@
+// Load .env files before anything reads process.env (PORT, MONGODB_*, CHAT_*, WIDGET_*, ...).
+const path = require("path");
+const { loadEnv } = require("./config/env");
+const loadedEnvFiles = loadEnv();
+
 const express = require("express");
 const cors = require("cors");
 const {
     connectToDatabase,
     getBusinessesCollection,
-    getDocVectorsCollection,
 } = require("./db/mongo");
+const {
+    getVectorIndexName,
+    getVectorIndexStatus,
+    startVectorIndexSetup,
+    summarizeSetupForHealth,
+} = require("./db/vectorIndex");
 const { resolveRuntimeConfig, getAppMode } = require("./config/mode");
 const {
     getAllowedOrigins,
@@ -18,6 +28,8 @@ const {
 const tenantsRouter = require("./routes/tenants");
 const documentsRouter = require("./routes/documents");
 const ticketsRouter = require("./routes/tickets");
+const { router: chatRouter } = require("./routes/chat");
+const { router: widgetRouter } = require("./routes/widget");
 
 async function checkOllamaReadiness(env = process.env) {
     const modelRequested = (env.OLLAMA_MODEL || "llama3.2:3b").trim();
@@ -65,44 +77,53 @@ async function checkOllamaReadiness(env = process.env) {
 
 async function checkDatabaseAndVectorReadiness(env = process.env) {
     let databaseReady = false;
-    let vectorIndexReady = false;
-    const targetIndexName = (
-        env.MONGODB_VECTOR_INDEX_NAME || "vector_index"
-    ).trim();
-
     try {
         const businesses = await getBusinessesCollection();
         await businesses.countDocuments({}, { limit: 1 });
         databaseReady = true;
-
-        const docVectors = await getDocVectorsCollection();
-        if (typeof docVectors.listSearchIndexes === "function") {
-            const indexes = await docVectors.listSearchIndexes().toArray();
-            const matched = indexes.find(
-                (idx) => idx && idx.name === targetIndexName
-            );
-            if (matched) {
-                const status = String(
-                    matched.status || matched.state || ""
-                ).toUpperCase();
-                vectorIndexReady =
-                    status === "READY" ||
-                    matched.queryable === true ||
-                    status === "";
-            }
-        }
     } catch {
         // Keep boolean readiness flags false without exposing internal driver errors
     }
 
+    const status = databaseReady
+        ? await getVectorIndexStatus(env)
+        : {
+              name: getVectorIndexName(env),
+              state: "unknown",
+              message: "The database is not reachable.",
+          };
+
     return {
         database_ready: databaseReady,
-        vector_index_ready: vectorIndexReady,
+        // Stays a boolean (true only when the index is queryable): the compose healthcheck,
+        // scripts/setup_demo.sh and the dashboard all read it as one. The detailed state is
+        // exposed separately as vector_index_state / vector_index.
+        vector_index_ready: status.state === "ready",
+        vector_index: {
+            name: status.name,
+            state: status.state,
+            ...(status.message ? { message: status.message } : {}),
+            auto_setup: summarizeSetupForHealth(env),
+        },
     };
 }
 
 function createApp() {
     const app = express();
+    app.set("json spaces", 4);
+
+    // Behind a reverse proxy, set TRUST_PROXY (e.g. "1") so req.ip is the real client address for
+    // rate limiting. Left unset, the socket address is used.
+    const trustProxy = String(process.env.TRUST_PROXY || "").trim();
+    if (trustProxy) {
+        app.set("trust proxy", /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy);
+    }
+
+    // Public widget surface for third-party storefronts. These are mounted BEFORE the admin CORS
+    // policy, CSRF origin check and requireAuth below: they are anonymous, send no credentials, and
+    // apply their own origin allowlist and rate limits.
+    app.use("/widget.js", widgetRouter);
+    app.use("/api/chat", chatRouter);
 
     app.use(
         cors({
@@ -145,6 +166,8 @@ function createApp() {
             app_mode: getAppMode(process.env),
             database_ready: dbStatus.database_ready,
             vector_index_ready: dbStatus.vector_index_ready,
+            vector_index_state: dbStatus.vector_index.state,
+            vector_index: dbStatus.vector_index,
             ollama_reachable: ollamaStatus.ollama_reachable,
             ollama_ready: ollamaStatus.ollama_ready,
             model_requested: ollamaStatus.model_requested,
@@ -173,6 +196,14 @@ async function startServer(env = process.env) {
     try {
         // Fail closed immediately on invalid APP_MODE or missing training DB config
         const runtimeConfig = resolveRuntimeConfig(env);
+        const repoRoot = path.resolve(__dirname, "../..");
+        console.log(
+            loadedEnvFiles.length > 0
+                ? `[Gateway] Environment files loaded: ${loadedEnvFiles
+                      .map((file) => path.relative(repoRoot, file))
+                      .join(", ")}`
+                : "[Gateway] No .env file found; using the process environment only"
+        );
         await connectToDatabase(env);
         console.log(
             `[Gateway] Mode: ${runtimeConfig.appMode} | Connected to MongoDB Atlas`
@@ -181,6 +212,15 @@ async function startServer(env = process.env) {
         const server = app.listen(PORT, () => {
             console.log(
                 `[Gateway] Express Orchestration Gateway listening on http://localhost:${PORT}`
+            );
+        });
+
+        // Ensure the vector collection and index exist. Deliberately not awaited: the gateway is
+        // already serving, the index builds asynchronously, and /api/health reports its state.
+        startVectorIndexSetup(env).catch((error) => {
+            console.error(
+                "[Gateway] Vector index setup failed unexpectedly:",
+                error && error.name
             );
         });
 

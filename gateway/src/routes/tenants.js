@@ -3,6 +3,7 @@ const { getBusinessesCollection } = require("../db/mongo");
 const { getAppMode } = require("../config/mode");
 const { PRESET_TENANT_IDS, isPresetTenantId } = require("../config/presets");
 const { authorizeTenantAccess } = require("../middleware/auth");
+const { parseAllowedOrigins } = require("../chat/origins");
 
 const router = express.Router();
 
@@ -121,6 +122,23 @@ function validateAndBuildUpdate(body) {
                         threshold.toFixed(2)
                     );
                 }
+            }
+        }
+    }
+
+    if (body.widget_config !== undefined) {
+        if (
+            typeof body.widget_config !== "object" ||
+            body.widget_config === null ||
+            Array.isArray(body.widget_config)
+        ) {
+            errors.push("widget_config must be an object.");
+        } else if (body.widget_config.allowed_origins !== undefined) {
+            const parsed = parseAllowedOrigins(body.widget_config.allowed_origins);
+            if (parsed.error) {
+                errors.push(parsed.error);
+            } else {
+                setFields["widget_config.allowed_origins"] = parsed.origins;
             }
         }
     }
