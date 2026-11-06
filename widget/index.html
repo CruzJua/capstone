@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Support Widget Dev Page</title>
+        <style>
+            body { font-family: Georgia, serif; max-width: 640px; margin: 48px auto; padding: 0 16px; }
+            code { background: #eee; padding: 1px 4px; }
+        </style>
+    </head>
+    <body>
+        <h1>Example Storefront (mock host page)</h1>
+        <p>
+            This page simulates a business site embedding the chat widget. Start the mock gateway
+            with <code>npm run mock</code> (port 4100) and open the chat bubble.
+        </p>
+        <p>Try messages containing: <code>slow</code>, <code>error</code>, <code>ratelimit</code>, <code>nostream</code>.</p>
+
+        <script
+            type="module"
+            src="/src/embed.jsx"
+            data-tenant-id="example_tenant"
+            data-api-url="http://localhost:4100"
+            data-title="Example Support"
+        ></script>
+    </body>
+</html>

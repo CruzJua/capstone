@@ -1,0 +1,181 @@
+import { createSseParser } from "./sse.js";
+
+export class ChatError extends Error {
+    constructor(code, message, status) {
+        super(message);
+        this.name = "ChatError";
+        this.code = code;
+        this.status = status;
+    }
+}
+
+export const DEFAULT_IDLE_TIMEOUT_MS = 30000;
+
+function chatUrl(apiUrl) {
+    return `${String(apiUrl).replace(/\/+$/, "")}/api/chat`;
+}
+
+async function readHttpError(response) {
+    let code = `http_${response.status}`;
+    let message = `Request failed (${response.status})`;
+    try {
+        const body = await response.json();
+        if (body && body.error) {
+            code = body.error.code || code;
+            message = body.error.message || message;
+        }
+    } catch {
+        // non-JSON error body
+    }
+    return new ChatError(code, message, response.status);
+}
+
+/**
+ * Sends one visitor message to the gateway and streams the reply.
+ *
+ * Supports the SSE response described in widget/API_CONTRACT.md and falls back to a
+ * single JSON body when the gateway (or a buffering proxy) does not stream.
+ *
+ * Resolves with `{ answer, sessionId }`; rejects with `ChatError`
+ * (`code === "aborted"` when the caller cancels).
+ */
+export async function streamChat({
+    apiUrl,
+    tenantId,
+    message,
+    sessionId,
+    signal,
+    onToken = () => {},
+    idleTimeoutMs = DEFAULT_IDLE_TIMEOUT_MS,
+    fetchImpl = (...args) => fetch(...args),
+}) {
+    const controller = new AbortController();
+    let timedOut = false;
+    let timer = null;
+
+    const armTimer = () => {
+        if (!idleTimeoutMs) {
+            return;
+        }
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            timedOut = true;
+            controller.abort();
+        }, idleTimeoutMs);
+    };
+
+    const onCallerAbort = () => controller.abort();
+    if (signal) {
+        if (signal.aborted) {
+            throw new ChatError("aborted", "Request cancelled");
+        }
+        signal.addEventListener("abort", onCallerAbort, { once: true });
+    }
+
+    const translate = (error) => {
+        if (error instanceof ChatError) {
+            return error;
+        }
+        if (timedOut) {
+            return new ChatError("timeout", "The assistant took too long to respond");
+        }
+        if (controller.signal.aborted) {
+            return new ChatError("aborted", "Request cancelled");
+        }
+        return new ChatError("network_error", "Could not reach the support service");
+    };
+
+    try {
+        armTimer();
+        const response = await fetchImpl(chatUrl(apiUrl), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "text/event-stream, application/json",
+            },
+            body: JSON.stringify({
+                tenant_id: tenantId,
+                message,
+                session_id: sessionId,
+            }),
+            signal: controller.signal,
+        });
+
+        if (!response.ok) {
+            throw await readHttpError(response);
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+
+        // Non-streaming fallback: one JSON body.
+        if (!contentType.includes("text/event-stream") || !response.body) {
+            const body = await response.json();
+            const answer = String(body.answer ?? "");
+            if (answer) {
+                onToken(answer);
+            }
+            return { answer, sessionId: body.session_id ?? sessionId };
+        }
+
+        let answer = "";
+        let finished = false;
+        let streamError = null;
+
+        const parser = createSseParser(({ event, data }) => {
+            let payload = {};
+            try {
+                payload = data ? JSON.parse(data) : {};
+            } catch {
+                return; // ignore malformed events rather than failing the whole reply
+            }
+            if (event === "token") {
+                const text = String(payload.text ?? "");
+                answer += text;
+                onToken(text);
+            } else if (event === "error") {
+                streamError = new ChatError(
+                    payload.code || "stream_error",
+                    payload.message || "The assistant ran into a problem"
+                );
+            } else if (event === "done") {
+                finished = true;
+            }
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
+            }
+            armTimer();
+            parser.push(decoder.decode(value, { stream: true }));
+            if (streamError) {
+                await reader.cancel().catch(() => {});
+                throw streamError;
+            }
+            if (finished) {
+                await reader.cancel().catch(() => {});
+                break;
+            }
+        }
+        parser.push(decoder.decode());
+        parser.flush();
+
+        if (streamError) {
+            throw streamError;
+        }
+        if (!finished) {
+            throw new ChatError("stream_interrupted", "The response ended unexpectedly");
+        }
+        return { answer, sessionId };
+    } catch (error) {
+        throw translate(error);
+    } finally {
+        clearTimeout(timer);
+        if (signal) {
+            signal.removeEventListener("abort", onCallerAbort);
+        }
+    }
+}
