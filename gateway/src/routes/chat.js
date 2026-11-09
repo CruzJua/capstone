@@ -16,8 +16,11 @@ const { getChatConfig } = require("../chat/config");
 const { resolveAllowedOrigins, isOriginAllowed } = require("../chat/origins");
 const { getChatBackend } = require("../chat/backend");
 const { buildEscalationTicket, isEscalation, saveEscalationTicket } = require("../chat/escalation");
+const { withTimeout, SAVE_TIMEOUT_MS } = require("../chat/escalation");
 const { SessionHistory } = require("../chat/sessionHistory");
 const { SlidingWindowLimiter } = require("../middleware/rateLimit");
+
+const { issueToken, readToken, validEmail, businessContact, saveContact } = require("../chat/followUp");
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_SOURCES = 20;
@@ -105,7 +108,7 @@ async function loadTenant(tenantId) {
     const businesses = await getBusinessesCollection();
     return businesses.findOne(
         { tenant_id: tenantId },
-        { projection: { _id: 0, tenant_id: 1, agent_config: 1, widget_config: 1 } }
+        { projection: { _id: 0, tenant_id: 1, agent_config: 1, widget_config: 1, contact_email: 1, contact_phone: 1 } }
     );
 }
 
@@ -132,18 +135,20 @@ const INTERRUPTED_MESSAGE = "The connection was interrupted before the reply fin
 
 const STILL_WAITING = Symbol("still waiting for the first token");
 
+const FOLLOW_UP_UNAVAILABLE = "The email follow-up form is temporarily unavailable. Please contact the business directly.";
+
 const ESCALATED_WITHOUT_REPLY ="(The assistant escalated without a reply.)";
 
 /**
  * Remembers a finished exchange for follow-up questions and, when the model escalated it, saves the
- * conversation as a human-review ticket. Escalation is invisible to the visitor, and a failure to save
- * the ticket is logged (name of the error only) but never affects the reply they already received.
+ * conversation as a human-review ticket. Returns its id only after an acknowledged save.
+ * A save failure leaves the generated answer intact but never offers a follow-up capability.
  */
 async function recordTurn({ tenantId, sessionId, message, answer, done, sources, historyMaxMessages }) {
     const escalated = isEscalation(done);
     const text = answer.trim() ? answer : escalated ? ESCALATED_WITHOUT_REPLY : "";
     if (!text) return;
-    sessionHistory.add(tenantId, sessionId, message, text, historyMaxMessages);
+    const rememberedReply = sessionHistory.add(tenantId, sessionId, message, text, historyMaxMessages);
     if (!escalated) return;
     try {
         const ticket = buildEscalationTicket({
@@ -156,10 +161,10 @@ async function recordTurn({ tenantId, sessionId, message, answer, done, sources,
             transcript: sessionHistory.getTranscript(tenantId, sessionId),
         });
         await saveEscalationTicket(ticket);
-        // Ids only: never the conversation text.
-        console.log(`[POST /api/chat] Escalation ticket saved: ${ticket.ticket_id} (tenant ${tenantId})`);
+        return ticket.ticket_id;
     } catch (error) {
         console.error("[POST /api/chat] Could not save escalation ticket:", error && error.name);
+        rememberedReply.content = `${text.slice(0, 2000 - FOLLOW_UP_UNAVAILABLE.length - 2)}\n\n${FOLLOW_UP_UNAVAILABLE}`;
     }
 }
 
@@ -251,6 +256,7 @@ async function handleChat(req, res) {
         query: message,
         history: sessionHistory.get(tenant.tenant_id, sessionId),
         agent_config: buildAgentConfig(tenant.agent_config),
+        business_contact: businessContact(tenant),
     };
 
     // Abort generation as soon as the visitor goes away or the overall deadline passes.
@@ -343,6 +349,25 @@ async function handleChat(req, res) {
             historyMaxMessages: config.historyMaxMessages,
         });
 
+        const persistTurn = async (onNotice = () => {}) => {
+            const ticketId = await recordTurn(turn());
+            if (!ticketId) {
+                if (isEscalation(doneEvent)) {
+                    const notice = `\n\n${FOLLOW_UP_UNAVAILABLE}`;
+                    answer += notice;
+                    onNotice(notice);
+                }
+                return {};
+            }
+            const contact = businessContact(tenant);
+            return { follow_up: {
+                available: true,
+                token: issueToken(tenant.tenant_id, sessionId, ticketId),
+                ...(contact.email ? { contact_email: contact.email } : {}),
+                ...(contact.phone ? { contact_phone: contact.phone } : {}),
+            } };
+        };
+
         if (!wantsStream) {
             let errorEvent = null;
             outcome = await consumeEvents(
@@ -374,8 +399,8 @@ async function handleChat(req, res) {
             if (errorEvent || !outcome.completed) {
                 return sendError(res, 503, "service_unavailable", UNAVAILABLE_MESSAGE);
             }
-            await recordTurn(turn());
-            return res.json({ answer, session_id: sessionId });
+            const metadata = await persistTurn();
+            return res.json({ answer, session_id: sessionId, ...metadata });
         }
 
         res.status(200);
@@ -410,7 +435,7 @@ async function handleChat(req, res) {
                     },
                     onDone: (event) => {
                         doneEvent = event;
-                        sendEvent("done", {});
+
                     },
                     onError: (code, text) => sendEvent("error", failure(code, text)),
                 },
@@ -424,8 +449,12 @@ async function handleChat(req, res) {
             }
             outcome = { completed: false };
         }
-        // `done` has already been sent, so saving an escalation ticket never delays the visitor.
-        if (outcome.completed) await recordTurn(turn());
+        if (outcome.completed) {
+            const metadata = await persistTurn((text) => {
+                if (!isGone()) sendEvent("token", { text });
+            });
+            if (!isGone()) sendEvent("done", metadata);
+        }
         finished = true;
         if (!res.writableEnded) res.end();
         return undefined;
@@ -434,9 +463,44 @@ async function handleChat(req, res) {
     }
 }
 
+async function handleContact(req, res) {
+    const body = req.body || {};
+    const { tenant_id: tenantId, session_id: sessionId, follow_up_token: token } = body;
+    const name = typeof body.name === "string" ? body.name.trim() : "";
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+    if (typeof tenantId !== "string" || !isValidTenantId(tenantId) ||
+        typeof sessionId !== "string" || !SESSION_ID_PATTERN.test(sessionId) ||
+        !name || name.length > 100 || /[\x00-\x1f\x7f]/.test(name) || !validEmail(email)) {
+        return sendError(res, 400, "invalid_request", "A valid conversation, name, and email are required.");
+    }
+    const config = getChatConfig(process.env);
+    const limited = sessionLimiter.hit(`contact:${tenantId}:${sessionId}`, config.rateLimitPerSession, config.rateLimitWindowMs);
+    if (!limited.allowed) return rateLimited(res, limited.retryAfterSec);
+    try {
+        const tenant = await withTimeout(loadTenant(tenantId), SAVE_TIMEOUT_MS);
+        if (!tenant) return sendError(res, 404, "unknown_tenant", "No support assistant is configured for this site.");
+        if (!isOriginAllowed(req.headers.origin, resolveAllowedOrigins(tenant, config.defaultAllowedOrigins))) {
+            return sendError(res, 403, "origin_not_allowed", "This site is not allowed to use this support assistant.");
+        }
+        const claims = readToken(token, tenantId, sessionId);
+        if (!claims) return sendError(res, 403, "invalid_follow_up", "This follow-up form has expired or is invalid.");
+        if (!await saveContact(claims, { name, email })) {
+            return sendError(res, 409, "contact_already_submitted", "Contact details have already been submitted or this request is unavailable.");
+        }
+        return res.json({ status: "saved" });
+    } catch (error) {
+        console.error("[POST /api/chat/contact] Save failed:", error.name);
+        return sendError(res, 503, "service_unavailable", "Unable to save your request. Please try again.");
+    }
+}
+
 const router = express.Router();
 router.use(applyCorsHeaders);
 router.options("/", handlePreflight);
+router.options("/contact", handlePreflight);
+router.post("/contact", limitByIp, express.json({ limit: "8kb" }), (req, res, next) => {
+    handleContact(req, res).catch(next);
+});
 router.post("/", limitByIp, express.json({ limit: "16kb" }), (req, res, next) => {
     handleChat(req, res).catch(next);
 });

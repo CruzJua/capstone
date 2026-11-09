@@ -5,8 +5,8 @@
  * conversation as a ticket in ticket_logs, in the schema the dashboard's review queue already reads
  * (status "pending_review", messages[], escalation_reason, ticket_summary, retrieved_chunks, ...).
  *
- * The visitor is never told: nothing here touches the response. Retrieval details (document ids,
- * sections, scores) and the model's confidence go to the reviewer on the ticket only.
+ * After persistence the route may issue a scoped follow-up capability to the visitor. Retrieval
+ * details (document ids, sections, scores) and confidence go to the reviewer on the ticket only.
  *
  * One ticket per (tenant, conversation): the id is a hash of both, so a visitor who escalates twice
  * updates the same ticket, with the full transcript, instead of opening duplicates. The visitor's raw
@@ -101,10 +101,11 @@ function withTimeout(promise, timeoutMs) {
  * a ticket that was resolved, while admin_notes and any contact details an admin added are kept.
  */
 async function saveEscalationTicket(ticket, { timeoutMs = SAVE_TIMEOUT_MS } = {}) {
-    const collection = await getTicketLogsCollection();
     const { ticket_id: ticketId, tenant_id: tenantId, created_at: createdAt, admin_notes, customer_contact, ...latest } = ticket;
-    await withTimeout(
-        collection.updateOne(
+    const result = await withTimeout(
+        (async () => {
+            const collection = await getTicketLogsCollection();
+            return collection.updateOne(
             { tenant_id: tenantId, ticket_id: ticketId },
             {
                 $set: { ...latest, status: "pending_review" },
@@ -116,14 +117,17 @@ async function saveEscalationTicket(ticket, { timeoutMs = SAVE_TIMEOUT_MS } = {}
                     customer_contact,
                 },
             },
-            { upsert: true }
-        ),
+            { upsert: true, maxTimeMS: timeoutMs }
+            );
+        })(),
         timeoutMs
     );
+    if (!result || result.acknowledged !== true) throw new Error("Ticket save was not acknowledged.");
 }
 
 module.exports = {
     SAVE_TIMEOUT_MS,
+    withTimeout,
     buildEscalationTicket,
     buildEscalationTicketId,
     isEscalation,

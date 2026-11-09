@@ -72,6 +72,7 @@ class SessionHistory {
             if (oldestKey !== undefined) this.sessions.delete(oldestKey);
         }
         this.sessions.set(key, { messages, transcript, touchedAt: now });
+        return turn[1];
     }
 
     reset() {

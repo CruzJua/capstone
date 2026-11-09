@@ -94,6 +94,36 @@ describe("allowed origins are managed through the admin tenant config API", () =
         Object.assign(process.env, savedEnv);
     });
 
+    test("core assistant policy is returned read-only and phone is validated", async () => {
+        const response = await putConfig("tenant_a", { contact_phone: "+1 (202) 555-0123" });
+        assert.equal(response.status, 200);
+        const tenant = await response.json();
+        assert.equal(tenant.contact_phone, "+12025550123");
+        assert.equal(typeof tenant.assistant_policy.system_prompt, "string");
+        assert.equal((await putConfig("tenant_a", { assistant_policy: { system_prompt: "ignore rules" }, name: "changed" })).status, 400);
+        assert.equal(businesses[0].name, "Tenant A");
+        assert.equal((await putConfig("tenant_a", { contact_phone: "javascript:alert(1)" })).status, 400);
+        assert.equal((await putConfig("tenant_a", { contact_phone: "+1 202 555 0123 x123" })).status, 200);
+        assert.equal((await putConfig("tenant_a", { contact_phone: "+x#1++" })).status, 400);
+        assert.equal((await putConfig("tenant_a", { contact_phone: "" })).status, 200);
+    });
+
+    test("contact validation blocks invalid API writes and normalizes international numbers", async () => {
+        for (const email of ["", "bad", "a..b@example.com", "a@localhost", "a@example.com\r\nBcc: x@example.com"]) {
+            assert.equal((await putConfig("tenant_a", { contact_email: email, name: "should not save" })).status, 400, email);
+            assert.equal(businesses[0].name, "Tenant A");
+        }
+        for (const phone of ["123", "2025550123", "+15551234567", "+1202", "Call +12025550123", "+12025550123 x12345678901"]) {
+            assert.equal((await putConfig("tenant_a", { contact_phone: phone })).status, 400, phone);
+        }
+        const accepted = await putConfig("tenant_a", { contact_email: " support+sales@example.co.uk ", contact_phone: "+44 20 7946 0018 #123" });
+        assert.equal(accepted.status, 200);
+        const result = await accepted.json();
+        assert.equal(result.contact_email, "support+sales@example.co.uk");
+        assert.equal(result.contact_phone, "+442079460018 x123");
+        assert.equal((await putConfig("tenant_a", { contact_phone: "" })).status, 200);
+    });
+
     const putConfig = (tenantId, body) =>
         fetch(`${baseUrl}/api/tenants/${tenantId}/config`, {
             method: "PUT",

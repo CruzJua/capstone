@@ -119,25 +119,26 @@ describe("human escalation tickets", () => {
         });
 
     describe("what the visitor sees", () => {
-        test("an escalated reply looks exactly like any other reply (streamed)", async () => {
+        test("an escalated stream exposes only a scoped follow-up capability", async () => {
             setChatBackend(backendFor());
             const text = await (await ask("I want a refund for a broken item")).text();
             const events = parseSse(text);
             assert.deepEqual(events.map((event) => event.event), ["token", "token", "done"]);
-            assert.deepEqual(events[2].data, {});
+            assert.equal(events[2].data.follow_up.available, true);
+            assert.equal(typeof events[2].data.follow_up.token, "string");
             for (const leaked of ["escalat", "action", "confidence", "ticket", "human", "sources", "RETURNS", "SECRET CHUNK", "review"]) {
                 assert.ok(!text.toLowerCase().includes(leaked.toLowerCase()), `must not reveal '${leaked}'`);
             }
         });
 
-        test("an escalated reply looks exactly like any other reply (JSON)", async () => {
+        test("an escalated JSON reply exposes follow-up metadata", async () => {
             setChatBackend(backendFor());
             const body = await (await ask("refund please", { accept: "application/json" })).json();
-            assert.deepEqual(Object.keys(body).sort(), ["answer", "session_id"]);
+            assert.deepEqual(Object.keys(body).sort(), ["answer", "follow_up", "session_id"]);
             assert.equal(body.answer, "A person will follow up.");
         });
 
-        test("saving the ticket never delays the visitor's reply", async () => {
+        test("done waits until the escalation ticket is persisted", async () => {
             setChatBackend(backendFor());
             saveDelayMs = 400;
             const response = await ask("refund please");
@@ -149,7 +150,7 @@ describe("human escalation tickets", () => {
                 assert.ok(!done, "stream ended before done");
                 seen += decoder.decode(value, { stream: true });
             }
-            assert.equal(tickets.length, 0, "the visitor already has the full reply while the ticket is still being saved");
+            assert.equal(tickets.length, 1, "follow-up is available only after persistence");
             await reader.cancel().catch(() => {});
             for (let i = 0; i < 100 && tickets.length === 0; i += 1) await new Promise((r) => setTimeout(r, 20));
             assert.equal(tickets.length, 1, "the ticket is still saved after the visitor has disconnected");
@@ -369,13 +370,16 @@ describe("human escalation tickets", () => {
             console.error = (...args) => logged.push(args.join(" "));
             try {
                 const events = parseSse(await (await ask("refund please")).text());
-                assert.deepEqual(events.map((event) => event.event), ["token", "token", "done"]);
+                assert.deepEqual(events.map((event) => event.event), ["token", "token", "token", "done"]);
+                assert.match(events[2].data.text, /email follow-up form is temporarily unavailable/);
+                assert.deepEqual(events[3].data, {});
                 await (await ask("hello again")).text();
             } finally {
                 console.error = originalError;
             }
             assert.equal(tickets.length, 0);
-            assert.deepEqual(backend.calls[1].history.map((m) => m.content), ["refund please", "A person will follow up."]);
+            assert.equal(backend.calls[1].history[0].content, "refund please");
+            assert.match(backend.calls[1].history[1].content, /A person will follow up[.]\n\nThe email follow-up form is temporarily unavailable/);
             assert.ok(logged.some((line) => /Could not save escalation ticket/.test(line)));
             assert.ok(!logged.join(" ").includes("secret-host"), "driver error text must not be logged");
         });

@@ -5,11 +5,20 @@ const { PRESET_TENANT_IDS, isPresetTenantId } = require("../config/presets");
 const { authorizeTenantAccess } = require("../middleware/auth");
 const { parseAllowedOrigins } = require("../chat/origins");
 
+const { validEmail, normalizePhone } = require("../chat/followUp");
+const assistantPolicy = require("../../../src/inference/system_policy.json");
+
 const router = express.Router();
 
 function validateAndBuildUpdate(body) {
     const errors = [];
     const setFields = {};
+    if (body.assistant_policy !== undefined) errors.push("assistant_policy is read-only.");
+    if (body.contact_phone !== undefined) {
+        const phone = normalizePhone(body.contact_phone);
+        if (phone === null) errors.push("contact_phone must be a valid international phone number (with country code), optional extension of up to 10 digits, or empty.");
+        else setFields.contact_phone = phone;
+    }
 
     if (body.name !== undefined) {
         if (typeof body.name !== "string" || !body.name.trim()) {
@@ -22,9 +31,9 @@ function validateAndBuildUpdate(body) {
     if (body.contact_email !== undefined) {
         if (
             typeof body.contact_email !== "string" ||
-            !body.contact_email.trim()
+            !validEmail(body.contact_email.trim())
         ) {
-            errors.push("contact_email must be a non-empty string.");
+            errors.push("contact_email must be a valid email address of at most 254 characters.");
         } else {
             setFields.contact_email = body.contact_email.trim();
         }
@@ -227,7 +236,7 @@ router.get("/:tenantId/config", async (req, res) => {
             });
         }
 
-        return res.json(tenant);
+        return res.json({ ...tenant, assistant_policy: assistantPolicy });
     } catch (error) {
         console.error(
             "[GET /api/tenants/:tenantId/config] Error:",
@@ -282,7 +291,7 @@ router.put("/:tenantId/config", async (req, res) => {
             });
         }
 
-        return res.json(updatedTenant);
+        return res.json({ ...updatedTenant, assistant_policy: assistantPolicy });
     } catch (error) {
         console.error(
             "[PUT /api/tenants/:tenantId/config] Error:",

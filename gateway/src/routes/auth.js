@@ -31,7 +31,7 @@ const DUMMY_BCRYPT_HASH = bcrypt.hashSync(
     10
 );
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const { validEmail } = require("../chat/followUp");
 
 // Bounded rate limiter for login attempts
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
@@ -152,7 +152,7 @@ publicAuthRouter.post("/signup", async (req, res) => {
         if (adminName.length < 2 || adminName.length > 100) {
             errors.push("admin_name must be between 2 and 100 characters.");
         }
-        if (!EMAIL_PATTERN.test(email)) {
+        if (!validEmail(email)) {
             errors.push("A valid administrator email is required.");
         }
         if (password.length < 8 || password.length > 128) {
@@ -164,7 +164,7 @@ publicAuthRouter.post("/signup", async (req, res) => {
         if (industry.length < 2 || industry.length > 120) {
             errors.push("industry must be between 2 and 120 characters.");
         }
-        if (!EMAIL_PATTERN.test(contactEmail)) {
+        if (!validEmail(contactEmail)) {
             errors.push("A valid support contact_email is required.");
         }
 

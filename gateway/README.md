@@ -131,11 +131,11 @@ widget -> POST /api/chat (gateway: validate, rate limit, load tenant, check orig
        <- NDJSON events (sources, token, done / error) -> SSE to the visitor: token, done / error only
 ```
 
-The gateway talks to the Python service over HTTP so the embedding model and reranker load once instead of per request, and so the existing `RAGRetriever` and Ollama client are reused as they are. The model's schema-constrained JSON output is streamed and only the `answer` field is forwarded to the visitor, as `token` events.
+The gateway talks to the Python service over HTTP so the embedding model and reranker load once instead of per request, reusing the existing `RAGRetriever` and Ollama client. The Python service buffers the model's complete schema-constrained JSON response, validates its schema, and applies a narrow safeguard against unsupported live-transfer or notification promises before emitting the safe `answer` as a `token` event. This delays visible text until generation and validation finish; it prevents those detected promises from reaching the visitor first. It is not a general factuality guarantee. Content-free internal progress events preserve cancellation during generation; the gateway's SSE heartbeats keep the visitor connection alive without exposing that internal progress.
 
 ### What the visitor sees, and human escalation
 
-The visitor receives **only the model's reply**: no document sources, scores, chunk text, confidence, or any hint that the question was escalated. The `sources` event the chat service sends to the gateway is used server-side only.
+The visitor receives the reply and, after an escalation ticket has been successfully saved, optional `follow_up` metadata. Document sources, scores, chunk text, raw action, and confidence remain private. The `sources` event from the chat service stays server-side.
 
 When the model decides a question needs a person (`action: "escalate"`), the gateway saves the conversation as a ticket in `ticket_logs`, in the schema the dashboard's review queue already reads, so it shows up there with no dashboard changes:
 
@@ -147,7 +147,7 @@ When the model decides a question needs a person (`action: "escalate"`), the gat
 | `retrieved_chunks`, `similarity_score`, `confidence`, `cited_sources` | for the reviewer only; chunks are `doc_id`, `section`, `score` and never include text |
 | `ticket_summary`, `channel` | a short digest; `widget` |
 
-There is one ticket per conversation, so a visitor who escalates twice updates the same ticket and keeps any admin notes and contact details. The ticket id is a hash of tenant and session; the visitor's raw session id is never stored. Ordinary answered conversations are not written to the database. Saving happens after the visitor has the full reply, and a failure to save is logged without affecting them. The widget collects no name or email, so `customer_contact` starts empty for an admin to fill in.
+There is one ticket per conversation, so a visitor who escalates twice updates the same ticket and keeps any admin notes and contact details. The ticket id is a hash of tenant and session; the visitor's raw session id is never stored. Ordinary answered conversations are not written to the database. The gateway forwards the safe answer when the Python service releases it; the final `done` waits for the acknowledged ticket save (bounded to five seconds). A failed save omits `follow_up` and appends a fixed visitor notice that the email follow-up form is temporarily unavailable; it never advertises a saved request. The optional contact form saves a visitor name/email to the existing ticket, for manual follow-up in the dashboard. No email is sent automatically.
 
 ### Running it locally
 
@@ -201,3 +201,13 @@ A tenant with no `widget_config.allowed_origins` falls back to `WIDGET_DEFAULT_A
 - `session_id` must be 16 to 128 characters of letters, digits, `_`, `-`, `.`, `:`. The widget's ids satisfy this; short ids are rejected because history is keyed by them.
 - Behind nginx or another proxy, disable buffering for `/api/chat` (the route sends `X-Accel-Buffering: no`) and do not compress it.
 - Tenant `agent_config.system_prompt` and `agent_tone` are appended after the base support prompt the model was trained on. That combination has not been evaluated on the held-out benchmark.
+
+### Asynchronous follow-up contract
+
+SSE `done` and the JSON fallback can include `follow_up: { available: true, token, contact_email?, contact_phone? }` only after an escalation ticket is persisted. Contact values come exclusively from the tenant's public `contact_email`/optional `contact_phone`, never an administrator account. The gateway also passes trusted `business_contact: { email, phone }` to `/v1/chat`.
+
+`POST /api/chat/contact` accepts `{ tenant_id, session_id, follow_up_token, name, email }`. It applies the same tenant/origin allowlist and IP/session limits as chat, validates a nonempty name (100 characters maximum) and email (254 maximum), and updates only the saved ticket authenticated by the capability. Response `200 { "status": "saved" }` means the database acknowledged persistence, not that an email was sent. Invalid inputs return 400, invalid/expired capabilities or disallowed origins 403, unknown tenants 404, conflicting submissions 409, rate limits 429, and persistence failures 503. The first contact submission wins; an identical retry succeeds without rewriting the transcript, contact, or admin notes.
+
+Capabilities are opaque AES-GCM authenticated tokens bound to tenant, session, and ticket; they expire after 24 hours. Configure a strong random `CHAT_FOLLOW_UP_SECRET` identically across gateway replicas to preserve forms across restarts. Without it the gateway generates an in-memory random key, so forms expire on restart and cannot be shared across replicas. Never send that secret to visitors. Contact persistence and ticket saves have five-second bounds.
+
+Authenticated tenant config GET/PUT responses include `assistant_policy: { version, system_prompt }`, loaded from the shared repository policy. Writing this field is rejected. `agent_config.system_prompt` remains editable tenant business instructions. Optional `contact_phone` requires a valid international number with an explicit country calling code (no default country is guessed). The gateway checks numbering-plan validity using `libphonenumber-js/max`, accepts an optional trailing x/X/# extension of 1–10 digits and at most 50 input characters, and stores E.164 plus ` x<extension>` when supplied. It may be cleared with an empty string. Public follow-up, tenant-profile, and signup emails use `validator` syntax checks with a 254-character maximum; surrounding whitespace is trimmed. These checks validate format and numbering plans, not ownership or actual email/phone reachability.
