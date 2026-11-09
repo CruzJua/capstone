@@ -135,3 +135,18 @@ test("aborting mid-stream stops the client", async () => {
     });
     await assert.rejects(pending, (e) => e.code === "aborted");
 });
+
+test("contract: follow-up capability supports SSE and JSON and scopes contact saving", async () => {
+    const { submitContact } = await import("../src/lib/chatClient.js");
+    for (const message of ["human please", "human nostream please"]) {
+        const result = await call(message);
+        assert.equal(result.followUp.available, true);
+        assert.equal(typeof result.followUp.token, "string");
+        assert.equal(result.followUp.contactEmail, "support@example.test");
+        const options = { apiUrl, tenantId: "example_tenant", sessionId: "s1", followUpToken: result.followUp.token,
+            name: "Test Visitor", email: "visitor@example.test" };
+        assert.deepEqual(await submitContact(options), { status: "saved" });
+        await assert.rejects(submitContact({ ...options, sessionId: "other" }), (error) => error.status === 403);
+        await assert.rejects(submitContact({ ...options, tenantId: "other" }), (error) => error.status === 403);
+    }
+});

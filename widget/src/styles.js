@@ -72,6 +72,8 @@ export const WIDGET_CSS = `
     color: var(--cw-accent-text);
     font-weight: 600;
 }
+.cw-header > span { flex: 1; }
+.cw-new-chat { border: 1px solid currentColor; border-radius: 6px; background: transparent; color: inherit; padding: 4px 7px; cursor: pointer; font: inherit; font-size: 12px; }
 .cw-close {
     background: transparent;
     border: none;
@@ -134,6 +136,14 @@ export const WIDGET_CSS = `
     opacity: 0.7;
 }
 
+.cw-follow-up { border: 1px solid var(--cw-border); border-radius: 8px; padding: 10px; background: var(--cw-surface); }
+.cw-follow-up p { margin: 6px 0; font-size: 12px; }
+.cw-follow-up a { color: var(--cw-text); text-decoration: underline; }
+.cw-contact-form { display: flex; flex-direction: column; gap: 8px; }
+.cw-contact-form label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.cw-contact-form .cw-send { padding: 9px; }
+.cw-contact-form [role="alert"] { color: var(--cw-error); }
+.cw-new-chat:focus-visible, .cw-contact-form input:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .cw-form {
     display: flex;
     gap: 8px;
@@ -141,6 +151,7 @@ export const WIDGET_CSS = `
     border-top: 1px solid var(--cw-border);
 }
 .cw-input {
+    min-width: 0;
     flex: 1;
     border: 1px solid var(--cw-border);
     background: var(--cw-bg);

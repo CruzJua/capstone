@@ -191,3 +191,39 @@ test("times out when the gateway goes silent", async () => {
         (err) => err.code === "timeout"
     );
 });
+
+test("receives follow-up capability only from successful SSE done or JSON fallback", async () => {
+    const metadata = { available: true, token: "opaque", contact_email: "help@example.test" };
+    const expected = { answer: "Hi", sessionId: "s1", followUp: { available: true, token: "opaque", contactEmail: "help@example.test" } };
+    for (const response of [
+        sseResponse(['event: token\ndata: {"text":"Hi"}\n\n', `event: done\ndata: ${JSON.stringify({ follow_up: metadata })}\n\n`]),
+        jsonResponse({ answer: "Hi", follow_up: metadata }),
+    ]) {
+        assert.deepEqual(await streamChat({ ...base, fetchImpl: async () => response }), expected);
+    }
+    assert.deepEqual(await streamChat({ ...base, fetchImpl: async () => jsonResponse({ answer: "Hi", follow_up: { available: true } }) }),
+        { answer: "Hi", sessionId: "s1" });
+});
+
+test("contact submission posts scoped capability and returns only confirmed persistence", async () => {
+    const { submitContact } = await import("../src/lib/chatClient.js");
+    let captured;
+    const result = await submitContact({ ...base, followUpToken: "opaque", name: " Visitor ", email: " v@example.test ",
+        fetchImpl: async (url, init) => { captured = { url, init }; return jsonResponse({ status: "saved" }); } });
+    assert.deepEqual(result, { status: "saved" });
+    assert.equal(captured.url, "http://gw.test/api/chat/contact");
+    assert.deepEqual(JSON.parse(captured.init.body), { tenant_id: "example_tenant", session_id: "s1", follow_up_token: "opaque", name: "Visitor", email: "v@example.test" });
+    assert.equal(captured.init.credentials, undefined);
+    for (const response of [jsonResponse({}), jsonResponse({ error: { code: "invalid_request", message: "private details" } }, 400)]) {
+        await assert.rejects(submitContact({ ...base, followUpToken: "opaque", name: "V", email: "v@example.test", fetchImpl: async () => response }));
+    }
+});
+
+test("contact submission cancellation propagates abort without claiming saved", async () => {
+    const { submitContact } = await import("../src/lib/chatClient.js");
+    const controller = new AbortController();
+    const request = submitContact({ ...base, name: "V", email: "v@example.test", followUpToken: "a", signal: controller.signal,
+        fetchImpl: (url, init) => new Promise((resolve, reject) => init.signal.addEventListener("abort", () => reject(Error("abort")))) });
+    controller.abort();
+    await assert.rejects(request, (error) => error.code === "aborted");
+});

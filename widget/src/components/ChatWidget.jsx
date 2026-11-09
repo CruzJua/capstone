@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { streamChat } from "../lib/chatClient.js";
-import { getSessionId } from "../lib/session.js";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { streamChat, submitContact } from "../lib/chatClient.js";
+import { getSessionId, newSessionId } from "../lib/session.js";
 import { isRetryable, visitorMessage } from "../lib/messages.js";
+import { contactLinks, createConversationScope } from "../lib/followUp.js";
 import { WIDGET_CSS } from "../styles.js";
 
 const MAX_MESSAGE_LENGTH = 2000;
@@ -36,11 +37,41 @@ export default function ChatWidget({
         { id: makeId(), role: "assistant", text: greeting, status: "done" },
     ]);
     const abortRef = useRef(null);
+    const scopeRef = useRef(null);
+    if (!scopeRef.current) scopeRef.current = createConversationScope();
+    const [sessionId, setSessionId] = useState(() => getSessionId(tenantId));
+    const [followUp, setFollowUp] = useState(null);
+    const [contactName, setContactName] = useState("");
+    const [contactEmail, setContactEmail] = useState("");
+    const [contactStatus, setContactStatus] = useState("idle");
+    const [contactError, setContactError] = useState("");
+    const contactPendingRef = useRef(false);
+    const sendingRef = useRef(false);
     const listRef = useRef(null);
     const inputRef = useRef(null);
     const lastUserTextRef = useRef("");
 
-    const sessionId = useMemo(() => getSessionId(tenantId), [tenantId]);
+    const resetConversation = useCallback((fresh) => {
+        scopeRef.current.reset();
+        abortRef.current = null;
+        sendingRef.current = false;
+        contactPendingRef.current = false;
+        lastUserTextRef.current = "";
+        setSessionId(fresh ? newSessionId(tenantId) : getSessionId(tenantId));
+        setMessages([{ id: makeId(), role: "assistant", text: greeting, status: "done" }]);
+        setInput("");
+        setSending(false);
+        setSlow(false);
+        setFollowUp(null);
+        setContactName("");
+        setContactEmail("");
+        setContactStatus("idle");
+        setContactError("");
+        inputRef.current?.focus();
+    }, [tenantId, greeting]);
+
+    // Invalidate old callbacks before a changed tenant/API can display their results.
+    useLayoutEffect(() => { resetConversation(false); }, [tenantId, apiUrl]);
 
     useEffect(() => {
         const el = listRef.current;
@@ -55,7 +86,7 @@ export default function ChatWidget({
         }
     }, [open]);
 
-    useEffect(() => () => abortRef.current?.abort(), []);
+    useEffect(() => () => scopeRef.current.reset(), []);
 
     const patchMessage = useCallback((id, patch) => {
         setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
@@ -64,9 +95,10 @@ export default function ChatWidget({
     const send = useCallback(
         async (text) => {
             const trimmed = text.trim().slice(0, MAX_MESSAGE_LENGTH);
-            if (!trimmed || sending) {
+            if (!trimmed || sendingRef.current) {
                 return;
             }
+            sendingRef.current = true;
             lastUserTextRef.current = trimmed;
             const replyId = makeId();
             setMessages((prev) => [
@@ -77,15 +109,15 @@ export default function ChatWidget({
             setInput("");
             setSending(true);
 
-            const controller = new AbortController();
+            const controller = scopeRef.current.begin();
             abortRef.current = controller;
             let received = "";
             // A local model can take a while to start answering; say so instead of showing dots forever.
             setSlow(false);
-            const slowTimer = setTimeout(() => setSlow(true), SLOW_REPLY_MS);
+            const slowTimer = setTimeout(() => { if (controller.isCurrent()) setSlow(true); }, SLOW_REPLY_MS);
 
             try {
-                await streamChat({
+                const result = await streamChat({
                     apiUrl,
                     tenantId,
                     message: trimmed,
@@ -93,14 +125,21 @@ export default function ChatWidget({
                     signal: controller.signal,
                     fetchImpl,
                     onToken: (token) => {
+                        if (!controller.isCurrent()) return;
                         clearTimeout(slowTimer);
                         setSlow(false);
                         received += token;
                         patchMessage(replyId, { text: received });
                     },
                 });
+                if (!controller.isCurrent()) return;
                 patchMessage(replyId, { status: "done" });
+                if (result.followUp) {
+                    setFollowUp(result.followUp);
+                    setContactError("");
+                }
             } catch (error) {
+                if (!controller.isCurrent()) return;
                 if (error.code === "aborted") {
                     patchMessage(replyId, { status: "done", text: received || "(stopped)" });
                 } else {
@@ -114,12 +153,16 @@ export default function ChatWidget({
                 }
             } finally {
                 clearTimeout(slowTimer);
-                abortRef.current = null;
-                setSlow(false);
-                setSending(false);
+                controller.finish();
+                if (controller.isCurrent()) {
+                    abortRef.current = null;
+                    sendingRef.current = false;
+                    setSlow(false);
+                    setSending(false);
+                }
             }
         },
-        [apiUrl, tenantId, sessionId, sending, fetchImpl, patchMessage]
+        [apiUrl, tenantId, sessionId, fetchImpl, patchMessage]
     );
 
     const retry = useCallback(() => {
@@ -137,6 +180,35 @@ export default function ChatWidget({
         send(input);
     };
 
+    const onContactSubmit = async (event) => {
+        event.preventDefault();
+        if (!followUp || contactPendingRef.current || contactStatus === "saved") return;
+        contactPendingRef.current = true;
+        const request = scopeRef.current.begin();
+        setContactStatus("pending");
+        setContactError("");
+        const timeout = setTimeout(() => request.abort(), 30000);
+        try {
+            await submitContact({ apiUrl, tenantId, sessionId, followUpToken: followUp.token,
+                name: contactName, email: contactEmail, signal: request.signal, fetchImpl });
+            if (request.isCurrent()) {
+                setContactStatus("saved");
+                setContactName("");
+                setContactEmail("");
+            }
+        } catch {
+            if (request.isCurrent()) {
+                setContactStatus("error");
+                setContactError("Your details could not be saved. Please try again or contact the business directly.");
+            }
+        } finally {
+            clearTimeout(timeout);
+            request.finish();
+            if (request.isCurrent()) contactPendingRef.current = false;
+        }
+    };
+    const links = contactLinks(followUp);
+
     const rootStyle = accentColor ? { "--cw-accent": accentColor } : undefined;
     const sideClass = position === "left" ? "cw-left" : "cw-right";
 
@@ -147,6 +219,9 @@ export default function ChatWidget({
                 <section className="cw-panel" role="dialog" aria-label={title}>
                     <header className="cw-header">
                         <span>{title}</span>
+                        <button type="button" className="cw-new-chat" onClick={() => resetConversation(true)}>
+                            New chat
+                        </button>
                         <button
                             type="button"
                             className="cw-close"
@@ -183,6 +258,31 @@ export default function ChatWidget({
                                 </div>
                             );
                         })}
+                        {followUp ? (
+                            <section className="cw-follow-up" aria-label="Email follow-up">
+                                <strong>Email follow-up</strong>
+                                <p>Email follow-up is not immediate. For time-sensitive help, contact the business directly.</p>
+                                {links.phone ? <p>Call <a href={links.phone} target="_blank" rel="noopener noreferrer">{followUp.contactPhone}</a></p> : null}
+                                {links.email ? <p>Email <a href={links.email} target="_blank" rel="noopener noreferrer">{followUp.contactEmail}</a></p> : null}
+                                {contactStatus === "saved" ? (
+                                    <p role="status">Your details were saved for the team to review and follow up by email.</p>
+                                ) : (
+                                    <form className="cw-contact-form" onSubmit={onContactSubmit}>
+                                        <p>Leave your name and email to request follow-up about this conversation.</p>
+                                        <label>Name<input className="cw-input" name="name" autoComplete="name" required
+                                            maxLength={100} value={contactName} disabled={contactStatus === "pending"}
+                                            onChange={(e) => setContactName(e.target.value)} /></label>
+                                        <label>Email<input className="cw-input" name="email" type="email" autoComplete="email" required
+                                            maxLength={254} value={contactEmail} disabled={contactStatus === "pending"}
+                                            onChange={(e) => setContactEmail(e.target.value)} /></label>
+                                        {contactError ? <p role="alert">{contactError}</p> : null}
+                                        <button className="cw-send" type="submit" disabled={contactStatus === "pending" || !contactName.trim() || !contactEmail.trim()}>
+                                            {contactStatus === "pending" ? "Saving…" : "Request email follow-up"}
+                                        </button>
+                                    </form>
+                                )}
+                            </section>
+                        ) : null}
                     </div>
                     <form className="cw-form" onSubmit={onSubmit}>
                         <input

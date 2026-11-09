@@ -1,3 +1,4 @@
+import { normalizeFollowUp } from "./followUp.js";
 import { createSseParser } from "./sse.js";
 
 export class ChatError extends Error {
@@ -39,7 +40,7 @@ async function readHttpError(response) {
  * Supports the SSE response described in widget/API_CONTRACT.md and falls back to a
  * single JSON body when the gateway (or a buffering proxy) does not stream.
  *
- * Resolves with `{ answer, sessionId }`; rejects with `ChatError`
+ * Resolves with `{ answer, sessionId, followUp? }`; rejects with `ChatError`
  * (`code === "aborted"` when the caller cancels).
  */
 export async function streamChat({
@@ -117,11 +118,13 @@ export async function streamChat({
             if (answer) {
                 onToken(answer);
             }
-            return { answer, sessionId: body.session_id ?? sessionId };
+            const followUp = normalizeFollowUp(body.follow_up);
+            return { answer, sessionId: body.session_id ?? sessionId, ...(followUp ? { followUp } : {}) };
         }
 
         let answer = "";
         let finished = false;
+        let followUp;
         let streamError = null;
 
         const parser = createSseParser(({ event, data }) => {
@@ -142,6 +145,7 @@ export async function streamChat({
                 );
             } else if (event === "done") {
                 finished = true;
+                followUp = normalizeFollowUp(payload.follow_up);
             }
         });
 
@@ -172,7 +176,7 @@ export async function streamChat({
         if (!finished) {
             throw new ChatError("stream_interrupted", "The response ended unexpectedly");
         }
-        return { answer, sessionId };
+        return { answer, sessionId, ...(followUp ? { followUp } : {}) };
     } catch (error) {
         throw translate(error);
     } finally {
@@ -180,5 +184,28 @@ export async function streamChat({
         if (signal) {
             signal.removeEventListener("abort", onCallerAbort);
         }
+    }
+}
+
+/** Saves visitor contact details; success means persisted, never an email delivery. */
+export async function submitContact({ apiUrl, tenantId, sessionId, followUpToken, name, email, signal,
+    fetchImpl = (...args) => fetch(...args) }) {
+    try {
+        if (signal?.aborted) throw new ChatError("aborted", "Request cancelled");
+        const response = await fetchImpl(`${chatUrl(apiUrl)}/contact`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ tenant_id: tenantId, session_id: sessionId,
+                follow_up_token: followUpToken, name: name.trim(), email: email.trim() }),
+            signal,
+        });
+        if (!response.ok) throw await readHttpError(response);
+        const body = await response.json();
+        if (body.status !== "saved") throw new ChatError("invalid_response", "Could not confirm save");
+        return { status: "saved" };
+    } catch (error) {
+        if (signal?.aborted) throw new ChatError("aborted", "Request cancelled");
+        if (error instanceof ChatError) throw error;
+        throw new ChatError("network_error", "Could not save contact details");
     }
 }

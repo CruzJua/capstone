@@ -80,3 +80,21 @@ npm run build   # dist/widget.js (script tag) and dist/lib/index.js (React impor
 npm pack --dry-run     # check the file list
 npm publish            # prepublishOnly runs the tests and the build
 ```
+
+## Email follow-up and starting again
+
+A saved escalation can expose an optional email-follow-up form (name and email) through
+`follow_up` response metadata. Details are submitted to the gateway's public
+`/api/chat/contact` endpoint and attached to that conversation's ticket. The UI confirms
+that details were saved, not that an email was sent or that a live agent was connected.
+Configured public contact links are shown with a warning that email is not immediate.
+
+The header's **New chat** button stops current requests, clears visitor contact fields
+and follow-up capabilities, and persists a fresh session ID for the tenant. It does not
+delete admin tickets. Blocked/private-window localStorage falls back to memory.
+
+For a local mock preview, run `npm run mock` and `npm run dev` in separate widget
+terminals. Send a message containing **human** to exercise follow-up; **human nostream**
+exercises JSON fallback. The mock returns synthetic contact options and accepts details
+without persisting or emailing them; use fictional data. The real gateway validates
+scoped capabilities and saves to the ticket. See [API_CONTRACT.md](API_CONTRACT.md).

@@ -1,9 +1,8 @@
 /**
- * Mock Orchestration Gateway implementing ONLY `POST /api/chat` as specified in
+ * Mock Orchestration Gateway implementing chat and contact submission as specified in
  * widget/API_CONTRACT.md. It exists so the widget can be developed and tested without
  * MongoDB, llama.cpp or the real gateway. It performs no retrieval and no generation.
- * Like the real gateway, it sends the visitor only the model's reply: no document sources and no
- * escalation signal (escalations are handled server-side and are invisible to visitors).
+ * Like the real gateway, it sends reply text without document sources or retrieval metadata. Follow-up capability is issued for messages containing "human".
  *
  * Run:  npm run mock            (listens on MOCK_PORT, default 4100)
  *
@@ -49,6 +48,21 @@ export function createMockApp({ tokenDelayMs = 25 } = {}) {
     app.use(express.json({ limit: "16kb" }));
     app.set("json spaces", 4);
 
+    // Demo-only capability store: no visitor data is persisted by this mock.
+    const capabilities = new Map();
+    app.post("/api/chat/contact", (req, res) => {
+        const { tenant_id, session_id, follow_up_token, name, email } = req.body || {};
+        const scope = capabilities.get(follow_up_token);
+        if (!scope || scope.tenantId !== tenant_id || scope.sessionId !== session_id) {
+            return res.status(403).json(errorBody("invalid_follow_up", "Follow-up is unavailable"));
+        }
+        if (typeof name !== "string" || !name.trim() || name.length > 100 ||
+            typeof email !== "string" || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json(errorBody("invalid_request", "Name and email are required"));
+        }
+        return res.json({ status: "saved" });
+    });
+
     app.post("/api/chat", (req, res) => {
         const { tenant_id: tenantId, message, session_id: sessionId } = req.body || {};
 
@@ -76,11 +90,17 @@ export function createMockApp({ tokenDelayMs = 25 } = {}) {
             return res.status(404).json(errorBody("unknown_tenant", "No support assistant is configured for this site."));
         }
 
-        const answer = buildAnswer(message);
+        const answer = lower.includes("human") ? "A staff member will need to help with that request. You can request email follow-up below." : buildAnswer(message);
+        let followUp;
+        if (lower.includes("human")) {
+            const token = crypto.randomUUID();
+            capabilities.set(token, { tenantId, sessionId });
+            followUp = { available: true, token, contact_email: "support@example.test", contact_phone: "+1 555 123 4567" };
+        }
         const wantsStream = String(req.get("accept") || "").includes("text/event-stream");
 
         if (lower.includes("nostream") || !wantsStream) {
-            return res.json({ answer, session_id: sessionId });
+            return res.json({ answer, session_id: sessionId, ...(followUp ? { follow_up: followUp } : {}) });
         }
 
         res.status(200).set({
@@ -112,7 +132,7 @@ export function createMockApp({ tokenDelayMs = 25 } = {}) {
                 index += 1;
                 return;
             }
-            res.write(sseEvent("done", {}));
+            res.write(sseEvent("done", followUp ? { follow_up: followUp } : {}));
             clearInterval(timer);
             res.end();
         }, delay);

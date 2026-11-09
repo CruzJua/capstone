@@ -34,6 +34,25 @@ export interface StreamChatOptions {
     fetchImpl?: typeof fetch;
 }
 
-export function streamChat(options: StreamChatOptions): Promise<{ answer: string; sessionId: string }>;
+export interface FollowUp {
+    available: true;
+    token: string;
+    contactEmail?: string;
+    contactPhone?: string;
+}
+export function streamChat(options: StreamChatOptions): Promise<{ answer: string; sessionId: string; followUp?: FollowUp }>;
+export interface ContactOptions {
+    apiUrl: string;
+    tenantId: string;
+    sessionId: string;
+    followUpToken: string;
+    name: string;
+    email: string;
+    signal?: AbortSignal;
+    fetchImpl?: typeof fetch;
+}
+export function submitContact(options: ContactOptions): Promise<{ status: "saved" }>;
 
 export function getSessionId(tenantId: string, storage?: Pick<Storage, "getItem" | "setItem"> | null): string;
+
+export function newSessionId(tenantId: string, storage?: Pick<Storage, "getItem" | "setItem"> | null): string;

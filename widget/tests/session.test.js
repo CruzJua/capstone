@@ -41,3 +41,32 @@ test("works with no storage at all", () => {
     const id = getSessionId("t", null);
     assert.equal(getSessionId("t", null), id);
 });
+
+test("new chat replaces the persisted id and preserves other tenants", async () => {
+    const { newSessionId } = await import("../src/lib/session.js");
+    const storage = fakeStorage();
+    const original = getSessionId("a", storage);
+    const other = getSessionId("b", storage);
+    const fresh = newSessionId("a", storage);
+    assert.notEqual(fresh, original);
+    resetSessionMemory();
+    assert.equal(getSessionId("a", storage), fresh);
+    assert.equal(getSessionId("b", storage), other);
+});
+
+test("new chat remains usable and stable when private-window storage rejects writes", async () => {
+    const { newSessionId } = await import("../src/lib/session.js");
+    const blocked = { getItem() { throw Error("blocked"); }, setItem() { throw Error("blocked"); } };
+    const original = getSessionId("a", blocked);
+    const fresh = newSessionId("a", blocked);
+    assert.notEqual(fresh, original);
+    assert.equal(getSessionId("a", blocked), fresh);
+});
+
+test("new chat overrides a readable stale persisted id when writes are blocked", async () => {
+    const { newSessionId } = await import("../src/lib/session.js");
+    const storage = { getItem: () => "old-session", setItem() { throw Error("quota"); } };
+    assert.equal(getSessionId("a", storage), "old-session");
+    const fresh = newSessionId("a", storage);
+    assert.equal(getSessionId("a", storage), fresh);
+});

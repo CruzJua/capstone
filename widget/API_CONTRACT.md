@@ -36,13 +36,13 @@ The request carries **no cookies and no `Authorization` header**. It is a public
 | Order | Event | `data` payload | Notes |
 | :--- | :--- | :--- | :--- |
 | 1 | `token` | `{"text": "Items "}` | Zero or more. Text deltas; the widget concatenates them. |
-| 2 | `done` | `{}` | Terminates a successful reply. Always an empty object. |
+| 2 | `done` | `{}` | Terminates a successful reply. May include `follow_up` after a saved escalation. |
 | any | `error` | `{"code": "generation_failed", "message": "..."}` | Terminal. Used when a failure happens after the `200` has been sent. No `done` follows. Codes: `generation_failed` (the model failed or produced unusable output), `stream_interrupted` (the connection to the backend was cut mid-reply), `timeout` (the overall time limit passed). |
 
 The `message` text is for developers. The widget never shows it: it shows a fixed, safe sentence per `code`
 (see `src/lib/messages.js`) and offers Retry only when resending can help.
 
-The visitor receives **only the model's reply**. There is no `sources` event and the stream carries no
+The visitor receives the model's reply and, when available, public follow-up options. There is no `sources` event and the stream carries no
 document ids, sections, scores, chunk text, confidence or action (see "What visitors never receive" below).
 A widget that sees an unknown event, such as a legacy `sources` event from an older gateway, ignores it.
 
@@ -82,9 +82,9 @@ The widget handles this automatically based on the response `Content-Type`.
 
 Retrieval details and the model's decision stay on the server. Neither the streaming nor the JSON response
 includes: document ids, sections or scores, chunk text, embeddings, the model's confidence or cited sources,
-or whether the model decided the question needs a person.
+or the raw action field. Follow-up availability is exposed only after a ticket is saved.
 
-### Human escalation (server-side, invisible to the visitor)
+### Human escalation and email follow-up
 
 When the model decides a question needs a person (`action: "escalate"`), the gateway saves the conversation
 as a ticket in `ticket_logs`, in the schema the dashboard's review queue already reads:
@@ -96,7 +96,7 @@ as a ticket in `ticket_logs`, in the schema the dashboard's review queue already
 - For the reviewer only: `retrieved_chunks` (`doc_id`, `section`, `score`; never chunk text),
   `similarity_score`, `confidence` and `cited_sources`.
 
-The visitor still gets the model's normal reply and sees nothing about the ticket. One ticket exists per
+The visitor gets the normal reply. When the ticket save succeeds, the gateway can offer email follow-up. One ticket exists per
 conversation: a further escalation updates it (and re-opens it if it was resolved) and keeps the admin's notes
 and contact details. Ordinary answered conversations are not written to the database. If saving the ticket
 fails, the visitor's reply is unaffected and the failure is logged.
@@ -124,8 +124,7 @@ JSON body, always this shape:
 | 503 | `service_unavailable` | Inference engine or vector store unreachable, or the backend failed before producing a reply. |
 | 504 | `timeout` | The overall time limit passed before the first token. |
 
-The widget shows `error.message` to the visitor verbatim, so keep messages visitor-safe (no stack traces,
-no internals).
+The widget displays fixed safe messages and never renders the server error message.
 
 ## Notes for whoever wires up the real gateway
 
@@ -147,3 +146,48 @@ These are requirements the mock cannot enforce.
 7. **Disable response compression/buffering** on this route, or events will arrive in one lump.
 8. **Out of scope for the widget:** conversation memory. The widget sends one `message` and a `session_id`; if
    multi-turn context is wanted, the gateway should keep history keyed by `session_id`.
+
+## Optional follow-up metadata and contact submission
+
+Both SSE `done` data and JSON fallback may include:
+
+```json
+{
+    "follow_up": {
+        "available": true,
+        "token": "opaque-scoped-capability",
+        "contact_email": "support@example.test",
+        "contact_phone": "+1 555 123 4567"
+    }
+}
+```
+
+Omit metadata for ordinary answers or when ticket persistence fails. The client requires
+`available: true` and a non-empty token, returns it as `followUp`, and keeps the capability
+in memory only. It never puts capabilities or visitor contact details in localStorage.
+Phone/email links use validated configured data; they are not extracted from model prose.
+The panel warns that email follow-up is not immediate and never promises a live transfer.
+
+`POST /api/chat/contact` uses the same anonymous tenant-origin policy as chat:
+
+```json
+{
+    "tenant_id": "example_tenant",
+    "session_id": "visitor-session-id",
+    "follow_up_token": "opaque-scoped-capability",
+    "name": "Visitor",
+    "email": "visitor@example.test"
+}
+```
+
+Return HTTP 200 with `{"status":"saved"}` only after details are persisted to the
+existing ticket. This means saved for staff review; no email delivery or response time
+is promised. First submission wins; identical retries are idempotent. Errors include
+400 invalid input, 403 invalid/expired capability or origin, 409 conflicting details or
+missing ticket, 429 rate limit, and 503 persistence failure. The widget keeps the form
+available on errors and shows fixed visitor-safe wording.
+
+New chat aborts outstanding replies and contact saves, ignores stale callbacks, clears
+local messages and form data, and persists a new per-tenant session ID. Existing server
+history and admin tickets are untouched. Changing tenant or gateway also invalidates
+outstanding callbacks and clears the visible conversation.

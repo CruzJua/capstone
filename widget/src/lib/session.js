@@ -21,9 +21,11 @@ function defaultStorage() {
  */
 export function getSessionId(tenantId, storage = defaultStorage()) {
     const key = `support_widget_session:${tenantId}`;
+    if (memoryStore.has(key)) return memoryStore.get(key);
     try {
         const existing = storage ? storage.getItem(key) : null;
         if (existing) {
+            memoryStore.set(key, existing);
             return existing;
         }
     } catch {
@@ -47,4 +49,13 @@ export function getSessionId(tenantId, storage = defaultStorage()) {
 /** Test helper: clears the in-memory fallback. */
 export function resetSessionMemory() {
     memoryStore.clear();
+}
+
+/** Starts and persists a fresh conversation; existing server history is untouched. */
+export function newSessionId(tenantId, storage = defaultStorage()) {
+    const key = `support_widget_session:${tenantId}`;
+    const id = generateId();
+    memoryStore.set(key, id);
+    try { storage?.setItem(key, id); } catch { /* private-window fallback */ }
+    return id;
 }
