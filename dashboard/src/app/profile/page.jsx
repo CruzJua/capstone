@@ -1,10 +1,13 @@
 "use client";
 
+import BusinessPhoneInput from "@/components/BusinessPhoneInput";
+import { splitContactPhone, validateContactFields } from "@/lib/contactValidation.mjs";
 import React, { useState, useEffect, useCallback } from "react";
 import { useTenant } from "@/context/TenantContext";
 import { fetchTenantConfig, updateTenantConfig } from "@/lib/api";
 import ConfigSlider from "@/components/ConfigSlider";
-import { originsToText, widgetConfigPayload } from "@/lib/origins.mjs";
+import { originsToText } from "@/lib/origins.mjs";
+import { profilePayload, readAssistantPolicy } from "@/lib/profile.mjs";
 
 const TONE_PRESETS = [
     "Warm & Professional",
@@ -19,6 +22,9 @@ const INITIAL_FORM = {
     name: "",
     industry: "",
     contact_email: "",
+    contact_phone: "",
+    contact_phone_extension: "",
+    assistant_policy: null,
     team_name: "",
     // One origin per line, as typed (widget_config.allowed_origins).
     allowed_origins: "",
@@ -33,11 +39,15 @@ const INITIAL_FORM = {
 };
 
 function normalizeDocToForm(doc) {
+    const phone = splitContactPhone(doc?.contact_phone || "");
     return {
         tenant_id: doc?.tenant_id || "",
         name: doc?.name || "",
         industry: doc?.industry || "",
         contact_email: doc?.contact_email || "",
+        contact_phone: phone.number,
+        contact_phone_extension: phone.extension,
+        assistant_policy: readAssistantPolicy(doc),
         team_name: doc?.team_name || "",
         allowed_origins: originsToText(doc?.widget_config?.allowed_origins),
         agent_config: {
@@ -71,6 +81,9 @@ export default function ProfilePage() {
     const [savedSnapshot, setSavedSnapshot] = useState(INITIAL_FORM);
     const [loadingConfig, setLoadingConfig] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [contactTouched, setContactTouched] = useState({});
+    const contactErrors = validateContactFields(form);
+    const touchContact = (field) => setContactTouched((prev) => ({ ...prev, [field]: true }));
     const [loadError, setLoadError] = useState(null);
     const [toast, setToast] = useState(null);
 
@@ -159,6 +172,7 @@ export default function ProfilePage() {
 
     const handleReset = () => {
         setForm(savedSnapshot);
+        setContactTouched({});
         showToast(
             "info",
             "Changes Discarded",
@@ -170,26 +184,14 @@ export default function ProfilePage() {
         if (e) e.preventDefault();
         if (!activeTenantId) return;
 
+        setContactTouched({ contact_email: true, contact_phone: true, contact_phone_extension: true });
+        if (Object.keys(contactErrors).length) {
+            showToast("error", "Check Contact Details", Object.values(contactErrors)[0]);
+            return;
+        }
         setSaving(true);
         try {
-            const widgetConfig = widgetConfigPayload(
-                form.allowed_origins,
-                savedSnapshot.allowed_origins
-            );
-            const payload = {
-                name: form.name,
-                industry: form.industry,
-                contact_email: form.contact_email,
-                team_name: form.team_name,
-                ...(widgetConfig ? { widget_config: widgetConfig } : {}),
-                agent_config: {
-                    system_prompt: form.agent_config.system_prompt,
-                    agent_tone: form.agent_config.agent_tone,
-                    temperature: Number(form.agent_config.temperature),
-                    max_context_chunks: Number(form.agent_config.max_context_chunks),
-                    similarity_threshold: Number(form.agent_config.similarity_threshold),
-                },
-            };
+            const payload = profilePayload(form, savedSnapshot);
 
             const updatedDoc = await updateTenantConfig(activeTenantId, payload);
             const normalized = normalizeDocToForm(updatedDoc);
@@ -218,6 +220,8 @@ export default function ProfilePage() {
             name: form.name,
             industry: form.industry,
             contact_email: form.contact_email,
+            contact_phone: form.contact_phone,
+            contact_phone_extension: form.contact_phone_extension,
             team_name: form.team_name,
             allowed_origins: form.allowed_origins,
             agent_config: form.agent_config,
@@ -226,6 +230,8 @@ export default function ProfilePage() {
             name: savedSnapshot.name,
             industry: savedSnapshot.industry,
             contact_email: savedSnapshot.contact_email,
+            contact_phone: savedSnapshot.contact_phone,
+            contact_phone_extension: savedSnapshot.contact_phone_extension,
             team_name: savedSnapshot.team_name,
             allowed_origins: savedSnapshot.allowed_origins,
             agent_config: savedSnapshot.agent_config,
@@ -296,8 +302,8 @@ export default function ProfilePage() {
                             Reset
                         </button>
                         <button
-                            type="button"
-                            onClick={handleSave}
+                            type="submit"
+                            form="tenant-profile-form"
                             disabled={saving || loadingConfig || !activeTenantId}
                             className="rounded bg-zinc-100 hover:bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-900 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                         >
@@ -335,7 +341,7 @@ export default function ProfilePage() {
                         </p>
                     </div>
                 ) : (
-                    <form onSubmit={handleSave} className="space-y-6">
+                    <form id="tenant-profile-form" onSubmit={handleSave} className="space-y-6">
                         {/* Card 1: Business Identity */}
                         <section className="rounded border border-zinc-800 bg-zinc-950">
                             <div className="border-b border-zinc-800 px-5 py-3.5 flex items-center justify-between bg-zinc-900/40">
@@ -409,6 +415,11 @@ export default function ProfilePage() {
                                     <input
                                         id="contact-email"
                                         type="email"
+                                        maxLength={254}
+                                        autoComplete="email"
+                                        onBlur={() => touchContact("contact_email")}
+                                        aria-invalid={Boolean(contactTouched.contact_email && contactErrors.contact_email)}
+                                        aria-describedby="contact-email-error"
                                         required
                                         value={form.contact_email}
                                         onChange={(e) =>
@@ -420,6 +431,51 @@ export default function ProfilePage() {
                                         placeholder="support@ironandoak.com"
                                         className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 focus:border-zinc-600 focus:outline-none"
                                     />
+                                    {contactTouched.contact_email && contactErrors.contact_email ? (
+                                        <p id="contact-email-error" role="alert" className="text-xs text-red-400 mt-1.5">{contactErrors.contact_email}</p>
+                                    ) : null}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="contact-phone" className="block text-xs font-medium text-zinc-300 mb-1.5">
+                                        Public Support Phone (optional)
+                                    </label>
+                                    <BusinessPhoneInput
+                                        id="contact-phone"
+                                        value={form.contact_phone || undefined}
+                                        onChange={(value) => {
+                                            handleIdentityChange("contact_phone", value || "");
+                                            if (!value) handleIdentityChange("contact_phone_extension", "");
+                                        }}
+                                        onBlur={() => touchContact("contact_phone")}
+                                        placeholder="Phone number"
+                                        autoComplete="tel"
+                                        maxLength={50}
+                                        aria-invalid={Boolean(contactTouched.contact_phone && contactErrors.contact_phone)}
+                                        aria-describedby="contact-phone-help contact-phone-error"
+                                    />
+                                    {contactTouched.contact_phone && contactErrors.contact_phone ? (
+                                        <p id="contact-phone-error" role="alert" className="text-xs text-red-400 mt-1.5">{contactErrors.contact_phone}</p>
+                                    ) : null}
+                                    <p id="contact-phone-help" className="text-xs text-zinc-500 mt-1.5">
+                                        Choose a country, then enter the number. You can also paste a full international number.
+                                    </p>
+                                    <label htmlFor="contact-phone-extension" className="block text-xs font-medium text-zinc-300 mt-3 mb-1.5">
+                                        Extension (optional)
+                                    </label>
+                                    <input id="contact-phone-extension" type="text" inputMode="numeric" maxLength={10}
+                                        pattern="[0-9]{1,10}" value={form.contact_phone_extension}
+                                        onChange={(e) => handleIdentityChange("contact_phone_extension", e.target.value)}
+                                        onBlur={() => touchContact("contact_phone_extension")}
+                                        aria-invalid={Boolean(contactTouched.contact_phone_extension && contactErrors.contact_phone_extension)}
+                                        aria-describedby="contact-phone-extension-error"
+                                        className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 focus:border-zinc-600 focus:outline-none" />
+                                    {contactTouched.contact_phone_extension && contactErrors.contact_phone_extension ? (
+                                        <p id="contact-phone-extension-error" role="alert" className="text-xs text-red-400 mt-1.5">{contactErrors.contact_phone_extension}</p>
+                                    ) : null}
+                                    <p className="text-xs text-zinc-500 mt-1.5">
+                                        Visitors may see this number for direct contact. Email follow-up is not immediate assistance.
+                                    </p>
                                 </div>
 
                                 {/* Team / Admin Name */}
@@ -490,7 +546,7 @@ export default function ProfilePage() {
                                         AI Agent Configuration
                                     </h2>
                                     <p className="text-xs text-zinc-400">
-                                        System prompt, tone, and Atlas $vectorSearch parameters.
+                                        Core policy, business instructions, tone, and retrieval settings.
                                     </p>
                                 </div>
                                 <span className="font-mono text-xs text-zinc-400">
@@ -499,14 +555,40 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="p-5 space-y-5">
-                                {/* System Prompt Editor */}
+                                <div>
+                                    <label htmlFor="assistant-policy" className="block text-xs font-medium text-zinc-300 mb-1.5">
+                                        Core Assistant Policy (read-only)
+                                    </label>
+                                    {form.assistant_policy ? (
+                                        <>
+                                            <p className="text-xs text-zinc-500 mb-2">Version {form.assistant_policy.version}</p>
+                                            <textarea
+                                                id="assistant-policy"
+                                                readOnly
+                                                rows={12}
+                                                value={form.assistant_policy.system_prompt}
+                                                className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 font-mono text-xs leading-relaxed text-zinc-300 focus:border-zinc-600 focus:outline-none"
+                                            />
+                                        </>
+                                    ) : (
+                                        <p id="assistant-policy" className="text-xs text-amber-300">
+                                            The gateway did not provide its core policy. Update the gateway to view the active policy here.
+                                        </p>
+                                    )}
+                                    <p className="mt-1 text-xs text-zinc-500">
+                                        Managed by the application. Requires grounded answers, human follow-up when needed,
+                                        and accurate contact guidance. Business settings cannot override this policy.
+                                    </p>
+                                </div>
+
+                                {/* Business Instructions Editor */}
                                 <div>
                                     <div className="flex items-center justify-between mb-1.5">
                                         <label
                                             htmlFor="system-prompt"
                                             className="text-xs font-medium text-zinc-300"
                                         >
-                                            System Prompt
+                                            Business Instructions
                                         </label>
                                         <span className="font-mono text-xs text-zinc-500">
                                             {form.agent_config.system_prompt.length} chars
@@ -527,7 +609,7 @@ export default function ProfilePage() {
                                         className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 font-mono text-xs leading-relaxed text-zinc-100 focus:border-zinc-600 focus:outline-none"
                                     />
                                     <p className="mt-1 text-xs text-zinc-500">
-                                        Prepended to retrieved context chunks during orchestration gateway prompt assembly.
+                                        Describe your business and preferred response style. These instructions are subordinate to the core policy above.
                                     </p>
                                 </div>
 
