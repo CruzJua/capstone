@@ -190,6 +190,8 @@ A tenant with no `widget_config.allowed_origins` falls back to `WIDGET_DEFAULT_A
 | `CHAT_RATE_LIMIT_WINDOW_MS` | `60000` | Sliding window. |
 | `CHAT_MAX_DURATION_MS` | `120000` | Hard cap on one reply; ends with a `timeout` error event. |
 | `CHAT_HEARTBEAT_MS` | `10000` | SSE `: ping` interval while a slow model reads the prompt. |
+| `CHAT_PRE_STREAM_WAIT_MS` | `3000` | How long to wait for the first token before committing to a `200` stream. A backend that fails inside this window (model server down, retrieval failed) gets a real `503`; a slower model just starts streaming. `0` commits immediately. |
+| `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | `5000` | Read by the chat service (`scripts/run_chat_service.py`): how long retrieval waits for MongoDB before the request fails. |
 | `CHAT_HISTORY_MAX_MESSAGES` | `8` | In-memory turns kept per `(tenant, session)`. |
 | `TRUST_PROXY` | *(unset)* | Express `trust proxy` (for example `1`) so `req.ip` is the real client behind a reverse proxy. |
 

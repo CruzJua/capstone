@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { streamChat } from "../lib/chatClient.js";
 import { getSessionId } from "../lib/session.js";
+import { isRetryable, visitorMessage } from "../lib/messages.js";
 import { WIDGET_CSS } from "../styles.js";
 
 const MAX_MESSAGE_LENGTH = 2000;
+const SLOW_REPLY_MS = 6000;
 
 let nextId = 0;
 function makeId() {
@@ -29,6 +31,7 @@ export default function ChatWidget({
     const [open, setOpen] = useState(defaultOpen);
     const [input, setInput] = useState("");
     const [sending, setSending] = useState(false);
+    const [slow, setSlow] = useState(false);
     const [messages, setMessages] = useState(() => [
         { id: makeId(), role: "assistant", text: greeting, status: "done" },
     ]);
@@ -77,6 +80,9 @@ export default function ChatWidget({
             const controller = new AbortController();
             abortRef.current = controller;
             let received = "";
+            // A local model can take a while to start answering; say so instead of showing dots forever.
+            setSlow(false);
+            const slowTimer = setTimeout(() => setSlow(true), SLOW_REPLY_MS);
 
             try {
                 await streamChat({
@@ -87,6 +93,8 @@ export default function ChatWidget({
                     signal: controller.signal,
                     fetchImpl,
                     onToken: (token) => {
+                        clearTimeout(slowTimer);
+                        setSlow(false);
                         received += token;
                         patchMessage(replyId, { text: received });
                     },
@@ -96,15 +104,18 @@ export default function ChatWidget({
                 if (error.code === "aborted") {
                     patchMessage(replyId, { status: "done", text: received || "(stopped)" });
                 } else {
+                    // Never show the server's own error text: visitors get a fixed, safe message per code.
+                    const notice = visitorMessage(error);
                     patchMessage(replyId, {
                         status: "error",
-                        text: received
-                            ? `${received}\n\n${error.message}`
-                            : error.message || "Something went wrong.",
+                        retryable: isRetryable(error),
+                        text: received ? `${received}\n\n${notice}` : notice,
                     });
                 }
             } finally {
+                clearTimeout(slowTimer);
                 abortRef.current = null;
+                setSlow(false);
                 setSending(false);
             }
         },
@@ -155,9 +166,14 @@ export default function ChatWidget({
                                 >
                                     {m.text}
                                     {m.status === "streaming" && !m.text ? (
-                                        <span className="cw-typing" aria-label="Assistant is typing" />
+                                        <>
+                                            <span className="cw-typing" aria-label="Assistant is typing" />
+                                            {slow ? (
+                                                <span className="cw-slow">Still working on your answer…</span>
+                                            ) : null}
+                                        </>
                                     ) : null}
-                                    {m.status === "error" && isLast && !sending ? (
+                                    {m.status === "error" && m.retryable !== false && isLast && !sending ? (
                                         <div>
                                             <button type="button" className="cw-retry" onClick={retry}>
                                                 Retry

@@ -98,6 +98,8 @@ describe("POST /api/chat (public widget endpoint)", () => {
         process.env.CHAT_RATE_LIMIT_PER_IP = "1000";
         process.env.CHAT_RATE_LIMIT_PER_SESSION = "1000";
         process.env.CHAT_HEARTBEAT_MS = "60000";
+        // Commit to the stream right after the sources event; tests of the pre-stream grace window set their own.
+        process.env.CHAT_PRE_STREAM_WAIT_MS = "0";
         resetChatState();
 
         queries = [];
@@ -595,6 +597,52 @@ describe("POST /api/chat (public widget endpoint)", () => {
             assert.ok(!JSON.stringify(events[1].data).includes("Traceback"));
         });
 
+        test("a model failure right after retrieval is a 503, not a 200 stream with an error event", async () => {
+            process.env.CHAT_PRE_STREAM_WAIT_MS = "500";
+            setChatBackend(
+                scriptedBackend(async function* () {
+                    yield { type: "sources", sources: [] };
+                    yield { type: "error", code: "generation_failed", message: "Traceback: connection refused" };
+                })
+            );
+            const response = await post(valid());
+            const body = await assertError(response, 503, "service_unavailable");
+            assert.ok(!JSON.stringify(body).includes("Traceback"));
+        });
+
+        test("a slow model is not held back by the grace window: the stream starts and heartbeats flow", async () => {
+            process.env.CHAT_PRE_STREAM_WAIT_MS = "50";
+            process.env.CHAT_HEARTBEAT_MS = "40";
+            setChatBackend(
+                scriptedBackend(async function* () {
+                    yield { type: "sources", sources: [] };
+                    await new Promise((resolve) => setTimeout(resolve, 250));
+                    yield { type: "token", text: "late" };
+                    yield { type: "done" };
+                })
+            );
+            const response = await post(valid());
+            assert.equal(response.status, 200);
+            const text = await response.text();
+            assert.ok(text.includes(": ping"));
+            assert.deepEqual(
+                parseSse(text).map((event) => event.event),
+                ["token", "done"]
+            );
+        });
+
+        test("the overall deadline passing inside the grace window is a 504 timeout", async () => {
+            process.env.CHAT_PRE_STREAM_WAIT_MS = "5000";
+            process.env.CHAT_MAX_DURATION_MS = "150";
+            setChatBackend(
+                scriptedBackend(async function* (payload, signal) {
+                    yield { type: "sources", sources: [] };
+                    await new Promise((resolve) => signal.addEventListener("abort", resolve));
+                })
+            );
+            await assertError(await post(valid()), 504, "timeout");
+        });
+
         test("a backend that throws mid-stream becomes an error event", async () => {
             setChatBackend(
                 scriptedBackend(async function* () {
@@ -605,6 +653,9 @@ describe("POST /api/chat (public widget endpoint)", () => {
             );
             const events = parseSse(await (await post(valid())).text());
             assert.equal(events[events.length - 1].event, "error");
+            // A cut connection is reported as such (the widget says so), and no internals reach the visitor.
+            assert.equal(events[events.length - 1].data.code, "stream_interrupted");
+            assert.ok(!JSON.stringify(events[events.length - 1].data).includes("socket hang up"));
             assert.ok(!events.some((event) => event.event === "done"));
         });
 

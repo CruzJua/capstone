@@ -1,11 +1,13 @@
 import { createSseParser } from "./sse.js";
 
 export class ChatError extends Error {
-    constructor(code, message, status) {
+    constructor(code, message, status, retryAfterSec) {
         super(message);
         this.name = "ChatError";
         this.code = code;
         this.status = status;
+        // Seconds from the Retry-After header of a 429, when the gateway sent one.
+        this.retryAfterSec = retryAfterSec;
     }
 }
 
@@ -27,7 +29,8 @@ async function readHttpError(response) {
     } catch {
         // non-JSON error body
     }
-    return new ChatError(code, message, response.status);
+    const retryAfter = Number(response.headers && response.headers.get && response.headers.get("retry-after"));
+    return new ChatError(code, message, response.status, Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined);
 }
 
 /**

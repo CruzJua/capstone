@@ -128,8 +128,11 @@ function sanitizeSources(sources) {
 
 const UNAVAILABLE_MESSAGE = "The support assistant is temporarily unavailable. Please try again shortly.";
 const GENERATION_FAILED_MESSAGE = "The assistant ran into a problem.";
+const INTERRUPTED_MESSAGE = "The connection was interrupted before the reply finished.";
 
-const ESCALATED_WITHOUT_REPLY = "(The assistant escalated without a reply.)";
+const STILL_WAITING = Symbol("still waiting for the first token");
+
+const ESCALATED_WITHOUT_REPLY ="(The assistant escalated without a reply.)";
 
 /**
  * Remembers a finished exchange for follow-up questions and, when the model escalated it, saves the
@@ -165,11 +168,12 @@ async function recordTurn({ tenantId, sessionId, message, answer, done, sources,
  * `first` is the already-pulled first iterator result (used to decide HTTP status before streaming).
  */
 async function consumeEvents(iterator, first, sink, isGone) {
-    let current = first;
+    let current = await first; // may be a promise for a result that is still pending
     while (true) {
         if (isGone()) return { completed: false };
         if (current.done) {
-            sink.onError("generation_failed", GENERATION_FAILED_MESSAGE);
+            // The backend closed the stream without a done event: the connection was cut short.
+            sink.onError("stream_interrupted", INTERRUPTED_MESSAGE);
             return { completed: false };
         }
         const event = current.value || {};
@@ -265,6 +269,10 @@ async function handleChat(req, res) {
     const failure = (code, text) =>
         timedOut ? { code: "timeout", message: "The assistant took too long to respond." } : { code, message: text };
 
+    // Retrieval details are never sent to the visitor. They are kept only to fill the human-review
+    // ticket when the model escalates, and even there only as doc_id, section and score.
+    let sources = [];
+    let pendingFirst = null; // set when the model is still working after the grace window
     let iterator = null;
     let heartbeat = null;
     const cleanup = async () => {
@@ -285,22 +293,45 @@ async function handleChat(req, res) {
         try {
             iterator = getChatBackend(process.env).chat(payload, { signal: controller.signal })[Symbol.asyncIterator]();
             first = await iterator.next();
+            // The backend reports retrieval first. Read past it, but only briefly: a model that cannot
+            // be reached fails within the grace window and gets a real HTTP status, while a slow model
+            // is not held back (the stream starts early and heartbeats keep it alive).
+            while (!first.done && first.value && first.value.type === "sources") {
+                sources = sanitizeSources(first.value.sources);
+                const nextResult = iterator.next();
+                let waitTimer;
+                const raced = await Promise.race([
+                    nextResult,
+                    new Promise((resolve) => {
+                        waitTimer = setTimeout(() => resolve(STILL_WAITING), config.preStreamWaitMs);
+                    }),
+                ]);
+                clearTimeout(waitTimer);
+                if (raced === STILL_WAITING) {
+                    pendingFirst = nextResult;
+                    break;
+                }
+                first = raced;
+            }
         } catch (error) {
             if (isGone()) return undefined;
-            console.error("[POST /api/chat] Backend unavailable:", error.name);
+            if (timedOut) return sendError(res, 504, "timeout", "The assistant took too long to respond.");
+            // Name and message only (the backend's own messages carry no secrets), so an operator can
+            // tell a wrong token from an unreachable service.
+            console.error("[POST /api/chat] Backend unavailable:", error.name, "-", error.message);
             return sendError(res, 503, "service_unavailable", UNAVAILABLE_MESSAGE);
         }
         if (isGone()) return undefined;
-        if (first.done || (first.value && first.value.type === "error")) {
+        if (timedOut) return sendError(res, 504, "timeout", "The assistant took too long to respond.");
+        if (!pendingFirst && (first.done || (first.value && first.value.type === "error"))) {
             // Nothing has been streamed yet, so a real HTTP status can still be returned.
+            const code = first.value && first.value.code ? ` (${String(first.value.code).slice(0, 40)})` : "";
+            console.error(`[POST /api/chat] Backend reported a failure before any reply${code}.`);
             return sendError(res, 503, "service_unavailable", UNAVAILABLE_MESSAGE);
         }
 
         let answer = "";
         let outcome;
-        // Retrieval details and the model's action are kept server-side. They are never sent to the
-        // visitor; they only feed the human-review ticket when the model escalates.
-        let sources = [];
         let doneEvent = null;
         const turn = () => ({
             tenantId: tenant.tenant_id,
@@ -316,7 +347,7 @@ async function handleChat(req, res) {
             let errorEvent = null;
             outcome = await consumeEvents(
                 iterator,
-                first,
+                pendingFirst || first,
                 {
                     onSources: (items) => {
                         sources = items;
@@ -368,7 +399,7 @@ async function handleChat(req, res) {
         try {
             outcome = await consumeEvents(
                 iterator,
-                first,
+                pendingFirst || first,
                 {
                     onSources: (items) => {
                         sources = items;
@@ -388,7 +419,8 @@ async function handleChat(req, res) {
         } catch (error) {
             if (!isGone()) {
                 console.error("[POST /api/chat] Generation failed:", error.name);
-                sendEvent("error", failure("generation_failed", GENERATION_FAILED_MESSAGE));
+                // A transport failure mid-reply (for example the chat service went away), not bad model output.
+                sendEvent("error", failure("stream_interrupted", INTERRUPTED_MESSAGE));
             }
             outcome = { completed: false };
         }

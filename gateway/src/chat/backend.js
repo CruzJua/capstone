@@ -49,7 +49,8 @@ function createHttpChatBackend({ url, token = "", fetchImpl = (...args) => fetch
                 throw new ChatBackendError("Chat backend is unreachable.");
             }
             if (!response.ok || !response.body) {
-                throw new ChatBackendError(`Chat backend returned status ${response.status}.`);
+                const hint = response.status === 401 ? " Check that CHAT_BACKEND_TOKEN matches the chat service." : "";
+                throw new ChatBackendError(`Chat backend returned status ${response.status}.${hint}`);
             }
 
             const decoder = new TextDecoder();

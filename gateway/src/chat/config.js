@@ -35,6 +35,10 @@ function getChatConfig(env = process.env) {
         rateLimitWindowMs: intFromEnv(env, "CHAT_RATE_LIMIT_WINDOW_MS", 60 * 1000),
         maxDurationMs: intFromEnv(env, "CHAT_MAX_DURATION_MS", 120 * 1000),
         heartbeatMs: intFromEnv(env, "CHAT_HEARTBEAT_MS", 10 * 1000),
+        // How long to wait for the first token before committing to a 200 stream. A backend that fails
+        // inside this window (for example the model server is down) gets a real 503 instead; a slow
+        // model is not held back, it just starts streaming with heartbeats. 0 commits immediately.
+        preStreamWaitMs: intFromEnv(env, "CHAT_PRE_STREAM_WAIT_MS", 3000, { min: 0, max: 60 * 1000 }),
         historyMaxMessages: intFromEnv(env, "CHAT_HISTORY_MAX_MESSAGES", 8, { max: 12 }),
         // Origins for tenants that have no allowed-origins list of their own. There is no built-in
         // default: when WIDGET_DEFAULT_ALLOWED_ORIGINS is unset or empty, such tenants reject every

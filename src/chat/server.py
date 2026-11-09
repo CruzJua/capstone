@@ -106,7 +106,23 @@ def build_orchestrator():
     from src.inference.client import SupportInferenceClient
     from src.rag.retriever import RAGRetriever
 
-    return ChatOrchestrator(RAGRetriever(env_file=ENV_FILE), SupportInferenceClient(env_file=ENV_FILE))
+    # The live service reads MONGODB_DB_NAME (the production database), never MONGODB_TRAINING_DB_NAME.
+    retriever = RAGRetriever(
+        env_file=ENV_FILE, server_selection_timeout_ms=server_selection_timeout_ms(os.environ)
+    )
+    return ChatOrchestrator(retriever, SupportInferenceClient(env_file=ENV_FILE))
+
+
+DEFAULT_SERVER_SELECTION_TIMEOUT_MS = 5000
+
+
+def server_selection_timeout_ms(env):
+    """How long retrieval waits for MongoDB before failing the request (MONGODB_SERVER_SELECTION_TIMEOUT_MS)."""
+    try:
+        value = int(env.get("MONGODB_SERVER_SELECTION_TIMEOUT_MS", ""))
+    except ValueError:
+        return DEFAULT_SERVER_SELECTION_TIMEOUT_MS
+    return value if value > 0 else DEFAULT_SERVER_SELECTION_TIMEOUT_MS
 
 
 def serve(host="127.0.0.1", port=8100, orchestrator=None):

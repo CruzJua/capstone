@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useTenant } from "@/context/TenantContext";
 import { fetchTenantConfig, updateTenantConfig } from "@/lib/api";
 import ConfigSlider from "@/components/ConfigSlider";
+import { originsToText, widgetConfigPayload } from "@/lib/origins.mjs";
 
 const TONE_PRESETS = [
     "Warm & Professional",
@@ -19,6 +20,8 @@ const INITIAL_FORM = {
     industry: "",
     contact_email: "",
     team_name: "",
+    // One origin per line, as typed (widget_config.allowed_origins).
+    allowed_origins: "",
     agent_config: {
         system_prompt: "",
         agent_tone: "Warm & Professional",
@@ -36,6 +39,7 @@ function normalizeDocToForm(doc) {
         industry: doc?.industry || "",
         contact_email: doc?.contact_email || "",
         team_name: doc?.team_name || "",
+        allowed_origins: originsToText(doc?.widget_config?.allowed_origins),
         agent_config: {
             system_prompt: doc?.agent_config?.system_prompt || "",
             agent_tone: doc?.agent_config?.agent_tone || "Warm & Professional",
@@ -168,11 +172,16 @@ export default function ProfilePage() {
 
         setSaving(true);
         try {
+            const widgetConfig = widgetConfigPayload(
+                form.allowed_origins,
+                savedSnapshot.allowed_origins
+            );
             const payload = {
                 name: form.name,
                 industry: form.industry,
                 contact_email: form.contact_email,
                 team_name: form.team_name,
+                ...(widgetConfig ? { widget_config: widgetConfig } : {}),
                 agent_config: {
                     system_prompt: form.agent_config.system_prompt,
                     agent_tone: form.agent_config.agent_tone,
@@ -210,6 +219,7 @@ export default function ProfilePage() {
             industry: form.industry,
             contact_email: form.contact_email,
             team_name: form.team_name,
+            allowed_origins: form.allowed_origins,
             agent_config: form.agent_config,
         }) !==
         JSON.stringify({
@@ -217,6 +227,7 @@ export default function ProfilePage() {
             industry: savedSnapshot.industry,
             contact_email: savedSnapshot.contact_email,
             team_name: savedSnapshot.team_name,
+            allowed_origins: savedSnapshot.allowed_origins,
             agent_config: savedSnapshot.agent_config,
         });
 
@@ -430,6 +441,44 @@ export default function ProfilePage() {
                                         className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 focus:border-zinc-600 focus:outline-none"
                                     />
                                 </div>
+                            </div>
+                        </section>
+
+                        {/* Card: Chat widget allowed origins */}
+                        <section className="rounded border border-zinc-800 bg-zinc-950">
+                            <div className="border-b border-zinc-800 px-5 py-3.5 bg-zinc-900/40">
+                                <h2 className="text-sm font-semibold text-zinc-100">
+                                    Chat Widget: Allowed Origins
+                                </h2>
+                                <p className="text-xs text-zinc-400">
+                                    Websites that may embed this tenant&apos;s chat widget.
+                                </p>
+                            </div>
+                            <div className="p-5">
+                                <label
+                                    htmlFor="allowed-origins"
+                                    className="block text-xs font-medium text-zinc-300 mb-1.5"
+                                >
+                                    Allowed origins (one per line)
+                                </label>
+                                <textarea
+                                    id="allowed-origins"
+                                    rows={4}
+                                    value={form.allowed_origins}
+                                    onChange={(e) =>
+                                        handleIdentityChange("allowed_origins", e.target.value)
+                                    }
+                                    placeholder="https://shop.example.com"
+                                    spellCheck={false}
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 font-mono text-xs text-zinc-100 focus:border-zinc-600 focus:outline-none"
+                                />
+                                <p className="text-xs text-zinc-500 mt-1.5">
+                                    Exact origins only: scheme, host and optional port, such as
+                                    https://shop.example.com. No wildcards or paths. A site that is
+                                    not listed gets &quot;not allowed&quot; when its visitors open
+                                    the chat. If this has never been set, the gateway&apos;s default
+                                    list applies; saving an empty list allows no site at all.
+                                </p>
                             </div>
                         </section>
 

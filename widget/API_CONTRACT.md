@@ -37,7 +37,10 @@ The request carries **no cookies and no `Authorization` header**. It is a public
 | :--- | :--- | :--- | :--- |
 | 1 | `token` | `{"text": "Items "}` | Zero or more. Text deltas; the widget concatenates them. |
 | 2 | `done` | `{}` | Terminates a successful reply. Always an empty object. |
-| any | `error` | `{"code": "generation_failed", "message": "..."}` | Terminal. Used when a failure happens after the `200` has been sent. No `done` follows. |
+| any | `error` | `{"code": "generation_failed", "message": "..."}` | Terminal. Used when a failure happens after the `200` has been sent. No `done` follows. Codes: `generation_failed` (the model failed or produced unusable output), `stream_interrupted` (the connection to the backend was cut mid-reply), `timeout` (the overall time limit passed). |
+
+The `message` text is for developers. The widget never shows it: it shows a fixed, safe sentence per `code`
+(see `src/lib/messages.js`) and offers Retry only when resending can help.
 
 The visitor receives **only the model's reply**. There is no `sources` event and the stream carries no
 document ids, sections, scores, chunk text, confidence or action (see "What visitors never receive" below).
@@ -118,7 +121,8 @@ JSON body, always this shape:
 | 403 | `origin_not_allowed` | Request `Origin` is not on the tenant's allowed list. |
 | 404 | `unknown_tenant` | `tenant_id` does not exist (or is not served by this deployment). |
 | 429 | `rate_limited` | Per-IP / per-session limit hit. Include `Retry-After`. |
-| 503 | `service_unavailable` | Inference engine or vector store unreachable. |
+| 503 | `service_unavailable` | Inference engine or vector store unreachable, or the backend failed before producing a reply. |
+| 504 | `timeout` | The overall time limit passed before the first token. |
 
 The widget shows `error.message` to the visitor verbatim, so keep messages visitor-safe (no stack traces,
 no internals).

@@ -164,6 +164,13 @@ class OrchestratorTests(unittest.TestCase):
         orchestrator = self.build()
         self.ollama.chat = Mock(side_effect=ConnectionError("http://internal:11434 refused"))
         events = list(orchestrator.stream(self.request()))
+        # An unreachable model server is told apart from bad model output, and no internals leak.
+        self.assertEqual(events[-1], {"type": "error", "code": "model_unavailable", "message": "The assistant ran into a problem."})
+
+    def test_other_model_failures_stay_generation_failed(self):
+        orchestrator = self.build()
+        self.ollama.chat = Mock(side_effect=RuntimeError("model crashed at /srv/internal"))
+        events = list(orchestrator.stream(self.request()))
         self.assertEqual(events[-1], {"type": "error", "code": "generation_failed", "message": "The assistant ran into a problem."})
 
     def test_answer_after_other_fields_still_streams(self):
@@ -259,6 +266,65 @@ class ServerTests(unittest.TestCase):
         url = self.start(orchestrator, token="s3cret")
         with self.post(url, {"tenant_id": "tenant_a", "query": "hello"}, {TOKEN_HEADER: "s3cret"}) as response:
             self.assertEqual(response.status, 200)
+
+
+class LiveServiceDatabaseTests(unittest.TestCase):
+    """The live chat service must read MONGODB_DB_NAME (production), never MONGODB_TRAINING_DB_NAME."""
+
+    ENV = {
+        "MONGODB_URI": "mongodb://db.invalid:27017",
+        "MONGODB_DB_NAME": "live_database_x",
+        "MONGODB_TRAINING_DB_NAME": "training_database_y",
+        "MONGODB_COLLECTION_NAME": "chunks_z",
+    }
+
+    def build_retriever(self, env=None, **kwargs):
+        from src.rag.retriever import RAGRetriever
+
+        with patch.dict(os.environ, env or self.ENV, clear=True), \
+                patch("src.rag.retriever.MongoClient") as mongo_client, \
+                patch("src.rag.retriever.SentenceTransformer"):
+            retriever = RAGRetriever(env_file=Path(tempfile.gettempdir()) / "no-such-dir" / ".env", **kwargs)
+        return retriever, mongo_client
+
+    def test_retriever_uses_the_live_database_when_both_variables_are_set(self):
+        retriever, mongo_client = self.build_retriever()
+        mongo_client.return_value.__getitem__.assert_called_once_with("live_database_x")
+        mongo_client.return_value.__getitem__.return_value.__getitem__.assert_called_once_with("chunks_z")
+        self.assertNotIn("training_database_y", str(mongo_client.mock_calls))
+
+    def test_the_chat_service_builds_its_retriever_without_a_database_override(self):
+        from src.chat import server
+
+        built = {}
+
+        class SpyRetriever:
+            def __init__(self, **kwargs):
+                built.update(kwargs)
+
+        with patch.dict(os.environ, self.ENV, clear=True), \
+                patch("src.rag.retriever.RAGRetriever", SpyRetriever), \
+                patch("src.inference.client.SupportInferenceClient", Mock()):
+            server.build_orchestrator()
+        self.assertNotIn("db_name", built)
+        self.assertEqual(built["server_selection_timeout_ms"], server.DEFAULT_SERVER_SELECTION_TIMEOUT_MS)
+
+    def test_selection_timeout_is_bounded_and_configurable(self):
+        from src.chat.server import DEFAULT_SERVER_SELECTION_TIMEOUT_MS, server_selection_timeout_ms
+
+        self.assertEqual(server_selection_timeout_ms({}), DEFAULT_SERVER_SELECTION_TIMEOUT_MS)
+        self.assertEqual(server_selection_timeout_ms({"MONGODB_SERVER_SELECTION_TIMEOUT_MS": "1500"}), 1500)
+        for bad in ("abc", "0", "-5"):
+            self.assertEqual(
+                server_selection_timeout_ms({"MONGODB_SERVER_SELECTION_TIMEOUT_MS": bad}),
+                DEFAULT_SERVER_SELECTION_TIMEOUT_MS,
+            )
+
+    def test_the_timeout_reaches_the_mongo_client(self):
+        _, mongo_client = self.build_retriever(server_selection_timeout_ms=1500)
+        self.assertEqual(mongo_client.call_args.kwargs, {"serverSelectionTimeoutMS": 1500})
+        _, default_client = self.build_retriever()
+        self.assertEqual(default_client.call_args.kwargs, {})
 
 
 class EnvLoadingTests(unittest.TestCase):

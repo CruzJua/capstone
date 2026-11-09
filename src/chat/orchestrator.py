@@ -157,7 +157,10 @@ class ChatOrchestrator:
             yield {"type": "error", "code": "generation_failed", "message": "The assistant ran into a problem."}
         except Exception as exc:
             logger.error("Generation failed (%s)", type(exc).__name__)
-            yield {"type": "error", "code": "generation_failed", "message": "The assistant ran into a problem."}
+            # A model server that cannot be reached is reported separately so operators (and the
+            # gateway's log) can tell "Ollama is down" from "the model produced bad output".
+            code = "model_unavailable" if isinstance(exc, ConnectionError) or "Connect" in type(exc).__name__ else "generation_failed"
+            yield {"type": "error", "code": code, "message": "The assistant ran into a problem."}
         finally:
             # Closing the Ollama stream disconnects from the server, which stops generation.
             close = getattr(stream, "close", None)

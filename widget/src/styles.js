@@ -128,6 +128,11 @@ export const WIDGET_CSS = `
     animation: cw-blink 1s steps(3, end) infinite;
 }
 @keyframes cw-blink { 50% { opacity: 0.25; } }
+.cw-slow {
+    margin-left: 6px;
+    font-size: 12px;
+    opacity: 0.7;
+}
 
 .cw-form {
     display: flex;
