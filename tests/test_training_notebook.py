@@ -199,13 +199,14 @@ class TrainingNotebookTests(unittest.TestCase):
         self.assertEqual(target["cited_sources"], [])
         self.assertIn("Grounded rule", example["messages"][1]["content"])
 
-    def test_serving_examples_match_existing_client_prompt(self):
-        from src.inference.client import SYSTEM_PROMPT, SupportInferenceClient
+    def test_serving_examples_preserve_training_policy_and_client_user_format(self):
+        from src.inference.client import SupportInferenceClient
 
         row = self.validated().iloc[0]
         examples = self.helpers["build_task_examples"](self.validated().iloc[:1], "label_only", True)
         serving = next(example for example in examples if example["task"] == "serving_label")
-        self.assertEqual(serving["messages"][0]["content"], SYSTEM_PROMPT)
+        # The archived training policy stays fixed when the runtime policy is refined.
+        self.assertEqual(serving["messages"][0]["content"], self.helpers["SUPPORT_SYSTEM_PROMPT"])
         context = self.helpers["format_evidence"](row["evidence"])
         self.assertEqual(serving["messages"][1]["content"],
                          SupportInferenceClient.build_user_prompt(row["customer_query"], context))

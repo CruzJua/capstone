@@ -1,14 +1,15 @@
-"""Retrieval + streamed generation for one visitor message.
+"""Retrieval and validated generation for one visitor message.
 
 ``ChatOrchestrator.stream`` is a generator of plain event dicts consumed by the Node gateway
 (see ``src/chat/server.py``). It reuses ``RAGRetriever`` (tenant pre-filtered ``$vectorSearch``)
-and the Ollama client from ``SupportInferenceClient``; it adds no retrieval or prompt logic of
-its own beyond applying the tenant's runtime configuration.
+and the Ollama client from ``SupportInferenceClient``. Visitor answer text is buffered until
+schema validation and the live product-capability safeguard complete.
 
 Event sequence for a successful reply::
 
     {"type": "sources", "sources": [{"doc_id", "section", "score"}, ...]}
-    {"type": "token", "text": "..."}            (zero or more)
+    {"type": "progress"}                       (content-free cancellation heartbeat)
+    {"type": "token", "text": "..."}            (one validated answer)
     {"type": "done", "action": "answer" | "escalate", "confidence": 0.9, "cited_sources": [...]}
 
 ``action``, ``confidence`` and ``cited_sources`` are consumed by the gateway to open a human-review
@@ -17,15 +18,17 @@ ticket on escalation; they are never shown to the visitor.
 A failure is reported as ``{"type": "error", "code": ..., "message": ...}`` and ends the stream.
 """
 
+import json
 import logging
 import threading
+import time
 from typing import Iterator, Literal
 
 from pydantic import BaseModel, Field, ValidationError
 
-from src.chat.answer_stream import AnswerStreamer
-from src.inference.client import SYSTEM_PROMPT, SupportInferenceClient
+from src.inference.client import SupportInferenceClient
 from src.inference.schema import SupportResponse
+from src.inference.policy import build_policy_prompt, requires_handoff_safeguard, SAFE_FOLLOWUP_ANSWER
 
 logger = logging.getLogger(__name__)
 
@@ -47,23 +50,24 @@ class ChatTurn(BaseModel):
     content: str = Field(min_length=1, max_length=8000)
 
 
+class BusinessContact(BaseModel):
+    """Public contact data supplied by the trusted gateway, never the visitor."""
+
+    email: str = Field(default="", max_length=254, pattern=r"^[^\r\n]*$")
+    phone: str = Field(default="", max_length=80, pattern=r"^[^\r\n]*$")
+
+
 class ChatServiceRequest(BaseModel):
     tenant_id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9][a-z0-9_-]*$")
     query: str = Field(min_length=1, max_length=2000)
     history: list[ChatTurn] = Field(default_factory=list, max_length=MAX_HISTORY_TURNS)
     agent_config: AgentConfig = Field(default_factory=AgentConfig)
+    business_contact: BusinessContact = Field(default_factory=BusinessContact)
 
 
 def build_system_prompt(config: AgentConfig) -> str:
-    """Keeps the trained base prompt verbatim and appends the tenant's instructions after it."""
-    extras = []
-    if config.system_prompt.strip():
-        extras.append(config.system_prompt.strip())
-    if config.agent_tone.strip():
-        extras.append(f"Tone: {config.agent_tone.strip()}")
-    if not extras:
-        return SYSTEM_PROMPT
-    return SYSTEM_PROMPT + "\n\nBusiness instructions:\n" + "\n".join(extras)
+    """Tenant instructions are customization, never a replacement for core policy."""
+    return build_policy_prompt(config.system_prompt, config.agent_tone)
 
 
 class ChatOrchestrator:
@@ -114,13 +118,20 @@ class ChatOrchestrator:
         }
 
         history = [turn.model_dump() for turn in request.history]
+        contact = request.business_contact
+        contact_text = ""
+        if contact.email or contact.phone:
+            # Gateway metadata is distinct from retrieved documents and conversation history.
+            contact_text = "\n\nVerified business contact information:\n" + json.dumps(
+                contact.model_dump(exclude_defaults=True), ensure_ascii=False, indent=4
+            )
         messages = [
             {"role": "system", "content": build_system_prompt(config)},
-            {"role": "user", "content": self.client.build_user_prompt(request.query, context, history)},
+            {"role": "user", "content": self.client.build_user_prompt(request.query, context, history) + contact_text},
         ]
-        streamer = AnswerStreamer()
         raw = []
         stream = None
+        last_progress = 0.0
         try:
             with self._model_lock:
                 stream = self.client.client.chat(
@@ -135,13 +146,25 @@ class ChatOrchestrator:
                     if not piece:
                         continue
                     raw.append(piece)
-                    delta = streamer.feed(piece)
-                    if delta:
-                        yield {"type": "token", "text": delta}
+                    now = time.monotonic()
+                    if now - last_progress >= 0.5:
+                        # No answer text: writes let the HTTP server detect an aborted visitor
+                        # and close this generator/Ollama stream during buffered generation.
+                        yield {"type": "progress"}
+                        last_progress = now
             response = SupportResponse.model_validate_json("".join(raw))
-            if not streamer.answer_started:
-                # The model emitted a valid object without streaming the answer incrementally.
-                yield {"type": "token", "text": response.answer}
+            raw_action = response.action
+            reason = "none"
+            if requires_handoff_safeguard(response.answer):
+                reason = "unsupported_handoff_promise"
+                response = SupportResponse(
+                    answer=SAFE_FOLLOWUP_ANSWER, action="escalate", confidence=0.0, cited_sources=[]
+                )
+            log_result = logger.warning if reason != "none" else logger.info
+            log_result("Support response raw_action=%s effective_action=%s safeguard=%s",
+                       raw_action, response.action, reason)
+            # Buffer until validation and capability checks finish: unsafe text cannot be retracted.
+            yield {"type": "token", "text": response.answer}
             # action / confidence / cited_sources are for the gateway only (human escalation review);
             # the gateway never forwards them to the visitor.
             yield {

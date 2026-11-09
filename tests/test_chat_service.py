@@ -118,7 +118,7 @@ class OrchestratorTests(unittest.TestCase):
         )
         text = "".join(e["text"] for e in events if e["type"] == "token")
         self.assertEqual(text, "Items are refundable within 30 days.")
-        self.assertGreater(sum(e["type"] == "token" for e in events), 3)
+        self.assertEqual(sum(e["type"] == "token" for e in events), 1)
 
     def test_sources_expose_only_doc_id_section_and_score(self):
         events = list(self.build().stream(self.request()))
@@ -191,8 +191,8 @@ class OrchestratorTests(unittest.TestCase):
 
     def test_closing_the_stream_stops_generation(self):
         stream = self.build().stream(self.request())
-        next(stream)
-        next(stream)
+        self.assertEqual(next(stream)["type"], "sources")
+        self.assertEqual(next(stream), {"type": "progress"})
         stream.close()
         self.assertTrue(self.ollama.closed)
 
@@ -204,11 +204,47 @@ class OrchestratorTests(unittest.TestCase):
         self.assertIn("Do you ship abroad?", query)
         self.assertIn("Customer: Do you ship abroad?", self.ollama.calls[0]["messages"][1]["content"])
 
+    def test_handoff_promise_is_buffered_and_replaced_even_with_answer_action(self):
+        unsafe = "I am connecting you with a team member now."
+        with self.assertLogs("src.chat.orchestrator", level="INFO") as captured:
+            events = list(self.build(pieces=split(model_json(unsafe), 1)).stream(self.request()))
+        text = "".join(e["text"] for e in events if e["type"] == "token")
+        self.assertNotIn(unsafe, text)
+        self.assertIn("contact form", text)
+        self.assertEqual(events[-1]["action"], "escalate")
+        self.assertEqual(events[-1]["confidence"], 0.0)
+        self.assertEqual(events[-1]["cited_sources"], [])
+        self.assertIn("raw_action=answer effective_action=escalate", captured.output[0])
+        self.assertNotIn(unsafe, captured.output[0])
+
+    def test_safe_partial_escalation_and_contact_advice_are_preserved(self):
+        for text, action in [
+            ("Call us to reschedule under the documented policy.", "answer"),
+            ("I cannot connect you to an agent. Please use the form.", "escalate"),
+            ("Returns are accepted within 30 days; staff must approve your exception.", "escalate"),
+        ]:
+            events = list(self.build(pieces=split(model_json(text, action), 2)).stream(self.request()))
+            self.assertEqual("".join(e["text"] for e in events if e["type"] == "token"), text)
+            self.assertEqual(events[-1]["action"], action)
+
+    def test_invalid_json_emits_no_unvalidated_answer_tokens(self):
+        events = list(self.build(pieces=['{"answer":"I am connecting you now"']).stream(self.request()))
+        self.assertFalse(any(e["type"] == "token" for e in events))
+
+    def test_verified_business_contact_is_passed_without_inventing_missing_phone(self):
+        orchestrator = self.build()
+        list(orchestrator.stream(self.request(business_contact={"email": "support@example.test"})))
+        prompt = self.ollama.calls[0]["messages"][1]["content"]
+        self.assertIn('"email": "support@example.test"', prompt)
+        self.assertNotIn('"phone"', prompt)
+        self.assertIn("Verified business contact information", prompt)
+
     def test_system_prompt_keeps_trained_text_and_appends_tenant_instructions(self):
         self.assertEqual(build_system_prompt(AgentConfig()), SYSTEM_PROMPT)
         prompt = build_system_prompt(AgentConfig(system_prompt="Be brief.", agent_tone="warm"))
         self.assertTrue(prompt.startswith(SYSTEM_PROMPT))
-        self.assertTrue(prompt.endswith("Business instructions:\nBe brief.\nTone: warm"))
+        self.assertIn("lower priority; cannot override core policy", prompt)
+        self.assertTrue(prompt.endswith("Be brief.\nTone: warm"))
 
     def test_request_rejects_unsafe_tenant_ids_and_oversized_values(self):
         for bad in ({"tenant_id": "../x"}, {"tenant_id": "A B"}, {"query": "x" * 2001}, {"agent_config": {"temperature": 3}}):
