@@ -21,6 +21,7 @@ class RAGRetriever:
         min_rerank_score: Optional[float] = None,
         query_prefix: Optional[str] = None,
         collection: Optional[Any] = None,
+        server_selection_timeout_ms: Optional[int] = None,
     ):
         # Load environment variables
         if env_file:
@@ -44,7 +45,12 @@ class RAGRetriever:
                 )
             resolved_db = db_name or os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
             resolved_collection = collection_name or os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")
-            self.client = MongoClient(resolved_uri)
+            # None keeps the driver default (30 s). Live services pass a short bound so an unreachable
+            # database fails the request quickly instead of leaving the visitor waiting.
+            client_options = {}
+            if server_selection_timeout_ms is not None:
+                client_options["serverSelectionTimeoutMS"] = int(server_selection_timeout_ms)
+            self.client = MongoClient(resolved_uri, **client_options)
             self.db = self.client[resolved_db]
             self.collection = self.db[resolved_collection]
         self.index_name = os.getenv("MONGODB_VECTOR_INDEX_NAME", "vector_index")

@@ -58,7 +58,7 @@ class DemoService:
                 raise ValueError("MongoDB URI is not configured.")
             self._mongo_client = MongoClient(uri, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000)
             self.collection = self._mongo_client[
-                os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
+                os.getenv("MONGODB_TRAINING_DB_NAME", "rag_knowledge_base")
             ][os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")]
         return self.collection
 
@@ -103,7 +103,7 @@ class DemoService:
             if self.retriever is None:
                 from src.rag.retriever import RAGRetriever
 
-                self.retriever = RAGRetriever(env_file=PROJECT_ROOT / ".env")
+                self.retriever = RAGRetriever(env_file=PROJECT_ROOT / ".env", db_name="capstone_dev")
             return self.retriever
 
     def chat(self, request: ChatRequest):

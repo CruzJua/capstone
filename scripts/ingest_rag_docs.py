@@ -57,6 +57,7 @@ def main():
         return
     if not args.execute:
         parser.error("Use --inspect-only for offline parsing or --execute to authorize replacing tenant vectors")
+    from src.rag.db_config import resolve_training_db_name
     from src.rag.ingestor import RAGDocumentIngestor
     mongo_uri = os.getenv("MONGODB_URI")
     if not mongo_uri or "<username>" in mongo_uri or "<password>" in mongo_uri:
@@ -65,11 +66,16 @@ def main():
         print("  MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/?retryWrites=true&w=majority")
         sys.exit(1)
 
-    db_name = os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
+    # The default mappings are the five development tenants, which belong in the training database.
+    # Explicit --tenant-dir tenants (e.g. the held-out demo business) keep the production database.
+    if args.tenant_dir:
+        db_name = os.getenv("MONGODB_DB_NAME", "rag_knowledge_base")
+    else:
+        db_name = resolve_training_db_name()
     collection_name = os.getenv("MONGODB_COLLECTION_NAME", "doc_vectors")
 
     print(f"Connecting to MongoDB (database: '{db_name}', collection: '{collection_name}')...")
-    ingestor = RAGDocumentIngestor(document_parser=args.document_parser)
+    ingestor = RAGDocumentIngestor(document_parser=args.document_parser, db_name=db_name)
 
     print("Verifying MongoDB Atlas Vector Search Index...")
     ingestor.ensure_vector_search_index()

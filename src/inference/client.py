@@ -6,17 +6,9 @@ from dotenv import load_dotenv, find_dotenv
 from ollama import Client
 
 from src.inference.schema import SupportResponse
+from src.inference.policy import SYSTEM_PROMPT
 
 GRAMMAR_PATH = Path(__file__).resolve().parent / "grammars" / "support_response.gbnf"
-
-SYSTEM_PROMPT = """You are a customer support assistant for a small business.
-Answer the customer's question using ONLY the provided context documents.
-
-Rules:
-- If the context contains the answer, set "action" to "answer" and list the exact document names you used in "cited_sources".
-- If the context does not contain the answer, or the request needs a human (emergencies, disputes, account changes), set "action" to "escalate", explain briefly in "answer", and set "cited_sources" to [].
-- "confidence" is a number between 0.0 and 1.0 reflecting how fully the context supports your answer.
-- Never invent policies, prices, or document names."""
 
 
 @dataclass

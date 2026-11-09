@@ -6,9 +6,9 @@ from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
 from datetime import datetime, timezone
 from pymongo import MongoClient
-from pymongo.operations import SearchIndexModel
 from sentence_transformers import SentenceTransformer
 from src.rag.table_parser import MarkdownTableParser
+from src.rag.vector_index import DEFAULT_INDEX_NAME, ensure_vector_index
 
 class RAGDocumentIngestor:
     def __init__(
@@ -54,56 +54,17 @@ class RAGDocumentIngestor:
             else self.model.get_sentence_embedding_dimension()
         )
 
-    def ensure_vector_search_index(self, index_name: Optional[str] = None):
-        """Ensures the MongoDB collection and Atlas Vector Search index exist with tenant filtering."""
-        # 1. Automatically create collection if it does not exist yet
-        if self.collection.name not in self.db.list_collection_names():
-            print(f"Creating collection '{self.collection.name}' in database '{self.db.name}'...")
-            self.db.create_collection(self.collection.name)
+    def ensure_vector_search_index(self, index_name: Optional[str] = None) -> Dict[str, Any]:
+        """Ensures the collection and the Atlas Vector Search index exist (idempotent, never waits for the build).
 
-        # 2. Check if search index already exists
-        resolved_index_name = index_name or os.getenv("MONGODB_VECTOR_INDEX_NAME", "vector_index")
-        try:
-            existing_indexes = list(self.collection.list_search_indexes())
-            if any(idx.get("name") == resolved_index_name for idx in existing_indexes):
-                print(f"Vector search index '{resolved_index_name}' already exists.")
-                return
-        except Exception:
-            pass
-
-        # 3. Create the Atlas Search Index model
-        definition = {
-            "fields": [
-                {
-                    "type": "vector",
-                    "path": "embedding",
-                    "numDimensions": self.num_dimensions,
-                    "similarity": "cosine"
-                },
-                {
-                    "type": "filter",
-                    "path": "tenant_id"
-                },
-                {
-                    "type": "filter",
-                    "path": "doc_id"
-                }
-            ]
-        }
-        search_index_model = SearchIndexModel(
-            definition=definition,
-            name=resolved_index_name,
-            type="vectorSearch"
+        Returns {"name", "state", "collection_created", "index_created"[, "message"]}; ``state`` is one of
+        missing/building/ready/failed/misconfigured. Raises VectorIndexPermissionError with a clear message
+        when the database user may not create collections or search indexes.
+        """
+        resolved_index_name = index_name or os.getenv("MONGODB_VECTOR_INDEX_NAME", DEFAULT_INDEX_NAME)
+        return ensure_vector_index(
+            self.db, self.collection.name, resolved_index_name, self.num_dimensions
         )
-        try:
-            self.collection.create_search_index(model=search_index_model)
-            print(f"Vector search index '{resolved_index_name}' successfully submitted to Atlas.")
-        except Exception as e:
-            # Handle duplicate or in-progress index creation gracefully
-            if "already exists" in str(e).lower() or "duplicate" in str(e).lower():
-                print(f"Vector search index '{resolved_index_name}' is already being built.")
-            else:
-                raise
 
     def _chunk_text(self, text: str) -> List[str]:
         words = text.split()

@@ -17,6 +17,7 @@ import {
 import { useTenant } from "@/context/TenantContext";
 import { useAuth } from "@/context/AuthContext";
 import { fetchGatewayHealth } from "@/lib/api";
+import { describeVectorIndex, nextHealthPollDelay } from "@/lib/health.mjs";
 
 function cn(...inputs) {
     return twMerge(clsx(inputs));
@@ -62,16 +63,37 @@ export default function Sidebar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
     const [health, setHealth] = useState(null);
+    const [healthUnreachable, setHealthUnreachable] = useState(false);
+    const vectorIndex = describeVectorIndex(health);
 
+    // Poll the gateway: every few seconds while the vector index is not ready (it can take a minute
+    // to build) or the gateway is unreachable, and once a minute when everything is ready.
     useEffect(() => {
         let cancelled = false;
-        fetchGatewayHealth()
-            .then((data) => {
-                if (!cancelled) setHealth(data);
-            })
-            .catch(() => {});
+        let timer = null;
+
+        async function check() {
+            let data = null;
+            let failed = false;
+            try {
+                data = await fetchGatewayHealth();
+            } catch {
+                failed = true;
+            }
+            if (cancelled) return;
+            if (failed) {
+                setHealthUnreachable(true);
+            } else {
+                setHealth(data);
+                setHealthUnreachable(false);
+            }
+            timer = setTimeout(check, nextHealthPollDelay(data, failed));
+        }
+
+        check();
         return () => {
             cancelled = true;
+            clearTimeout(timer);
         };
     }, [activeTenantId]);
 
@@ -293,15 +315,26 @@ export default function Sidebar() {
                             <span
                                 className={cn(
                                     "h-2 w-2 rounded-full shrink-0",
-                                    error
+                                    error || healthUnreachable
                                         ? "bg-red-500"
                                         : loading
                                         ? "bg-amber-400"
                                         : "bg-emerald-500"
                                 )}
                             />
-                            <span className="truncate">
-                                {error ? "gateway: err" : "gateway: ready"}
+                            <span
+                                className="truncate"
+                                title={
+                                    healthUnreachable
+                                        ? "The gateway did not answer its health check. Retrying every few seconds."
+                                        : undefined
+                                }
+                            >
+                                {healthUnreachable
+                                    ? "gateway: unreachable"
+                                    : error
+                                    ? "gateway: err"
+                                    : "gateway: ready"}
                             </span>
                         </div>
 
@@ -315,19 +348,20 @@ export default function Sidebar() {
                         </button>
                     </div>
 
-                    {health && (
+                    {health && vectorIndex && (
                         <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between font-mono text-[10px] text-zinc-500">
                             <span
-                                className={
-                                    health.vector_index_ready
-                                        ? "text-emerald-400"
-                                        : "text-amber-400"
-                                }
+                                data-testid="vector-index-state"
+                                title={vectorIndex.message || undefined}
+                                className={cn(
+                                    vectorIndex.tone === "ok" && "text-emerald-400",
+                                    vectorIndex.tone === "pending" &&
+                                        "text-amber-400 animate-pulse",
+                                    vectorIndex.tone === "error" && "text-red-400",
+                                    vectorIndex.tone === "unknown" && "text-zinc-400"
+                                )}
                             >
-                                vector_index:{" "}
-                                {health.vector_index_ready
-                                    ? "ready"
-                                    : "not_ready"}
+                                vector_index: {vectorIndex.label}
                             </span>
                             <span
                                 className={
@@ -345,6 +379,20 @@ export default function Sidebar() {
                                     : "offline"}
                             </span>
                         </div>
+                    )}
+
+                    {vectorIndex && !vectorIndex.ready && vectorIndex.message && (
+                        <p
+                            data-testid="vector-index-message"
+                            className={cn(
+                                "text-[11px] leading-snug",
+                                vectorIndex.tone === "error"
+                                    ? "text-red-300"
+                                    : "text-zinc-400"
+                            )}
+                        >
+                            {vectorIndex.message}
+                        </p>
                     )}
                 </div>
             </aside>

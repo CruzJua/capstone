@@ -513,6 +513,23 @@ describe("Sprint 4 Slice 4: Authentication, Mode Isolation & Tenant Authorizatio
         assert.equal(healthBody.database, undefined);
     });
 
+    test("signup rejects malformed and overlong administrator/support emails before writes", async () => {
+        for (const email of ["a..b@example.com", "a@localhost", "a@example.com\r\nBcc: x@example.com", "a".repeat(255) + "@example.com"]) {
+            for (const field of ["email", "contact_email"]) {
+                const response = await fetch(`${baseUrl}/api/auth/signup`, {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ admin_name: "Test Admin", email: "admin@example.com",
+                        password: "secure-test-password", business_name: "Email Test Business", industry: "Retail",
+                        contact_email: "support@example.com", [field]: email }),
+                });
+                assert.equal(response.status, 400, `${field}: ${email}`);
+            }
+        }
+        const db = cluster.getDbForName("standard_prod_db");
+        assert.equal(db.collection("businesses").docs.length, 0);
+        assert.equal(db.collection("admin_users").docs.length, 0);
+    });
+
     test("2. Standard Mode Isolation: Seeds Nothing, Hides Pre-Existing Preset Records, Rejects Demo-Login", async () => {
         const stdDb = cluster.getDbForName("standard_prod_db");
         assert.equal(stdDb.collection("businesses").docs.length, 0);

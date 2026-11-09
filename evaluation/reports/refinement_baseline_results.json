@@ -1,0 +1,940 @@
+{
+    "purpose": "Unchanged current-model development baseline and validation; no refinement candidate or measured improvement.",
+    "generated_at_utc": "2026-11-09T05:34:32.507122+00:00",
+    "model": "llama3.2:3b-qlora-hardneg-full01-q4",
+    "execution_status": "completed",
+    "total_requested_responses": 160,
+    "total_completed_responses": 160,
+    "paid_api_calls": 0,
+    "api_spend_usd": 0.0,
+    "commands": [
+        {
+            "split": "dev",
+            "dry_run": "env HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python scripts/run_baselines.py --finetuned-models llama3.2:3b-qlora-hardneg-full01-q4 --teacher-provider none --context-mode both --benchmark-file data/evaluation/refinement_dev.json --output-dir logs/refinement/baseline_dev --dry-run",
+            "dry_run_exit_code": 0,
+            "execution": "env HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python scripts/run_baselines.py --finetuned-models llama3.2:3b-qlora-hardneg-full01-q4 --teacher-provider none --context-mode both --benchmark-file data/evaluation/refinement_dev.json --output-dir logs/refinement/baseline_dev",
+            "execution_exit_code": 0
+        },
+        {
+            "split": "validation",
+            "dry_run": "env HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python scripts/run_baselines.py --finetuned-models llama3.2:3b-qlora-hardneg-full01-q4 --teacher-provider none --context-mode both --benchmark-file data/evaluation/refinement_validation.json --output-dir logs/refinement/baseline_validation --dry-run",
+            "dry_run_exit_code": 0,
+            "execution": "env HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python scripts/run_baselines.py --finetuned-models llama3.2:3b-qlora-hardneg-full01-q4 --teacher-provider none --context-mode both --benchmark-file data/evaluation/refinement_validation.json --output-dir logs/refinement/baseline_validation",
+            "execution_exit_code": 0
+        }
+    ],
+    "limitations": [
+        "Training-exposed tickets and tenants; these results do not measure unseen-example or unseen-tenant generalization.",
+        "No prompt, decoding, training, contact-info, or application behavior changes were tested.",
+        "Absent-answer action proxy is not a factual hallucination measurement; no independent answer-quality judging was performed.",
+        "Ground-truth context and live Atlas retrieval are separate modes, never pooled for quality metrics.",
+        "No frozen held-out benchmark execution was performed.",
+        "Cost per 1000 queries denotes local token/API cost only; hardware, electricity, hosting and Atlas costs were not measured.",
+        "Measured latency is for this sequential local run; production load/peak memory were not measured."
+    ],
+    "execution_notes": [
+        "Dry-run planning passed for both 40-question fixtures before inference.",
+        "Network socket sandbox required precise escalation for local Ollama inventory and authorized local inference/read-only Atlas retrieval.",
+        "Development ran before validation with only one inference runner active.",
+        "HF_HUB_OFFLINE=1 and TRANSFORMERS_OFFLINE=1 used cached BGE weights without model downloads.",
+        "Services were not restarted or reconfigured; no credentials were printed.",
+        "Model MISS means a completed response with incorrect action, not execution failure."
+    ],
+    "source_hashes_captured_after_runs": {
+        "scripts/run_baselines.py": "a0db26cd0078eca9547d00cd861b1143fafc6c885349555b8cb8a47b713c4a57",
+        "src/evaluation/comparison.py": "ea7a2cb51d05f7387a6e9224c5168cccbd9696ccfff941bd1a8eb0912888a1fb",
+        "src/evaluation/generation.py": "ba6bac39fbda183ad1422b53a94d1a6109bfcfb7ba4edd565f80874badeca351",
+        "src/inference/client.py": "0865795dfc67432a77fd9202785fa18e8f4f8abd4dc22277489ed9434bca5331",
+        "src/inference/schema.py": "4b02f62b08eeeabb9132e1be28cf037a17741da8046924d76c106f86b6fa76db",
+        "src/rag/retriever.py": "4be8b199137ff508d361c93c04f25654ea95cc7d54897dfec737b64f195c341f",
+        "src/rag/db_config.py": "58ccae60c853c85f256d6ea63b1d16ac13ba96bd6465108fa08225908c3179a9",
+        "data/evaluation/refinement_dev.json": "f38adfb221915558a6415892a95cf6aa7228a39ac8252e1fa537429131761522",
+        "data/evaluation/refinement_validation.json": "04e62aefd43a539a277e4a09947fe6a5fd08835900247f7052564e96f22ff430",
+        "data/cleaned/train_tickets.csv": "a025d7005aa4ec88f1a537f8e666ab6ac1a2c182d0f0db2e8faed1a3c992fe79",
+        "data/evaluation/held_out_benchmark.json": "656bd369b60b6db973078f2674f771ce75132d46a77938bcb5648ac7b1e9d261"
+    },
+    "runs": [
+        {
+            "split": "dev",
+            "context_mode": "ground_truth",
+            "log_path": "logs/refinement/baseline_dev/baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_ground_truth_20261109_053012.json",
+            "log_sha256": "dc301e7d12d03c63e6b51392e28e9ffaeab0728fd076b6f3b1a017ae81687be5",
+            "fixture_path": "data/evaluation/refinement_dev.json",
+            "fixture_sha256": "f38adfb221915558a6415892a95cf6aa7228a39ac8252e1fa537429131761522",
+            "run_status": "completed",
+            "requested_records": 40,
+            "completed_records": 40,
+            "counts": {
+                "TP": 12,
+                "FP": 0,
+                "FN": 8,
+                "TN": 20,
+                "total_eval": 40,
+                "schema_valid": 40,
+                "schema_invalid": 0,
+                "absent_total": 12,
+                "absent_hallucinated": 0,
+                "invalid_absent": 0
+            },
+            "per_stratum": {
+                "supported_answer": {
+                    "records": 20,
+                    "action_correct": 20,
+                    "action_answer": 20,
+                    "action_escalate": 0,
+                    "schema_valid": 20,
+                    "schema_invalid": 0
+                },
+                "absent_escalation": {
+                    "records": 12,
+                    "action_correct": 12,
+                    "action_answer": 0,
+                    "action_escalate": 12,
+                    "schema_valid": 12,
+                    "schema_invalid": 0
+                },
+                "human_required": {
+                    "records": 8,
+                    "action_correct": 0,
+                    "action_answer": 8,
+                    "action_escalate": 0,
+                    "schema_valid": 8,
+                    "schema_invalid": 0
+                }
+            },
+            "action_accuracy": 0.8,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 1.0,
+            "escalation_recall": 0.6,
+            "escalation_f1": 0.7499999999999999,
+            "absent_answer_action_proxy": {
+                "numerator": 0,
+                "denominator": 12,
+                "rate": 0.0,
+                "legacy_metric_key": "hallucination_rate",
+                "interpretation": "Answer action on an absent-information question; not factual fabrication."
+            },
+            "generation_latency_distribution": {
+                "p50_ms": 1351.37,
+                "p90_ms": 1721.88,
+                "p95_ms": 1955.34,
+                "mean_ms": 1437.92,
+                "min_ms": 1003.49,
+                "max_ms": 3951.64,
+                "sample_count": 40
+            },
+            "e2e_latency_distribution": {
+                "p50_ms": 1354.29,
+                "p90_ms": 1725.25,
+                "p95_ms": 1959.13,
+                "mean_ms": 1440.94,
+                "min_ms": 1005.53,
+                "max_ms": 3955.47,
+                "sample_count": 40
+            },
+            "token_cost_metrics": {
+                "total_prompt_tokens": 12215,
+                "total_completion_tokens": 3516,
+                "total_tokens": 15731,
+                "avg_prompt_tokens": 305.38,
+                "avg_completion_tokens": 87.9,
+                "avg_total_tokens": 393.27,
+                "cost_per_1k_queries": 0.0,
+                "pricing_source": "Local inference (0.00 USD token cost)",
+                "pricing_date": "2026-10-25",
+                "is_local": true
+            },
+            "generation_settings": {
+                "temperature": 0.2,
+                "system_prompt_sha256": "9226c10e1656f98964d74f9e8b3379980b4c017dbb34c010b91ac64544ba69f9",
+                "prompt_template": "SupportInferenceClient.build_user_prompt/v1",
+                "response_schema": {
+                    "properties": {
+                        "answer": {
+                            "description": "Direct, grounded answer to the customer inquiry",
+                            "title": "Answer",
+                            "type": "string"
+                        },
+                        "cited_sources": {
+                            "description": "List of source file names cited",
+                            "items": {
+                                "type": "string"
+                            },
+                            "title": "Cited Sources",
+                            "type": "array"
+                        },
+                        "confidence": {
+                            "description": "Confidence score between 0.0 and 1.0",
+                            "maximum": 1.0,
+                            "minimum": 0.0,
+                            "title": "Confidence",
+                            "type": "number"
+                        },
+                        "action": {
+                            "description": "Action decision: answer or escalate",
+                            "enum": [
+                                "answer",
+                                "escalate"
+                            ],
+                            "title": "Action",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "answer",
+                        "confidence",
+                        "action"
+                    ],
+                    "title": "SupportResponse",
+                    "type": "object"
+                }
+            },
+            "serving_settings": {
+                "provider": "ollama",
+                "model_requested": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "template_sha256": "fed11cc8e8bab8b22c624d4174160140a2671721cfec1e06e871ce7777ae1354",
+                "request_options": {
+                    "temperature": 0.2
+                },
+                "model_parameters": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "effective_options": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "context_length": 4096,
+                "context_length_source": "observed_runtime",
+                "limitations": [
+                    "Unreported server sampling defaults are not measured; resident VRAM is not peak memory."
+                ],
+                "capture_errors": {},
+                "model_details": {
+                    "parent_model": "",
+                    "format": "gguf",
+                    "family": "llama",
+                    "families": [
+                        "llama"
+                    ],
+                    "parameter_size": "3.2B",
+                    "quantization_level": "Q4_K_M"
+                },
+                "model_capacity_context_length": 131072,
+                "model_resolved": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "runtime_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "runtime_identity_mismatch": false,
+                "resident_size_vram_bytes": 2554708622,
+                "capture_status": "recorded",
+                "initial_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "identity_changed_during_run": false
+            },
+            "retrieval_settings": {},
+            "retriever_settings_sidecar": null,
+            "retriever_settings_sidecar_path": null,
+            "retriever_settings_sidecar_sha256": null,
+            "hardware": {
+                "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+                "python_version": "3.14.6",
+                "os_name": "Linux",
+                "architecture": "x86_64",
+                "cpu_count_logical": 22,
+                "cpu_model": "Intel(R) Core(TM) Ultra 7 165H",
+                "ram_total_bytes": 32514674688,
+                "ram_total_human": "30.28 GiB",
+                "gpu_info": [
+                    "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 595.91.07"
+                ],
+                "scope": "evaluation client host; remote inference hardware and measured peak memory are not established"
+            }
+        },
+        {
+            "split": "dev",
+            "context_mode": "retriever",
+            "log_path": "logs/refinement/baseline_dev/baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_retriever_20261109_053132.json",
+            "log_sha256": "e59832a2b8cedb1e6ed3b952f3908ae3c6bffa0eb54a56a06093b6bec063f983",
+            "fixture_path": "data/evaluation/refinement_dev.json",
+            "fixture_sha256": "f38adfb221915558a6415892a95cf6aa7228a39ac8252e1fa537429131761522",
+            "run_status": "completed",
+            "requested_records": 40,
+            "completed_records": 40,
+            "counts": {
+                "TP": 9,
+                "FP": 0,
+                "FN": 11,
+                "TN": 20,
+                "total_eval": 40,
+                "schema_valid": 40,
+                "schema_invalid": 0,
+                "absent_total": 12,
+                "absent_hallucinated": 5,
+                "invalid_absent": 0
+            },
+            "per_stratum": {
+                "supported_answer": {
+                    "records": 20,
+                    "action_correct": 20,
+                    "action_answer": 20,
+                    "action_escalate": 0,
+                    "schema_valid": 20,
+                    "schema_invalid": 0
+                },
+                "absent_escalation": {
+                    "records": 12,
+                    "action_correct": 7,
+                    "action_answer": 5,
+                    "action_escalate": 7,
+                    "schema_valid": 12,
+                    "schema_invalid": 0
+                },
+                "human_required": {
+                    "records": 8,
+                    "action_correct": 2,
+                    "action_answer": 6,
+                    "action_escalate": 2,
+                    "schema_valid": 8,
+                    "schema_invalid": 0
+                }
+            },
+            "action_accuracy": 0.725,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 1.0,
+            "escalation_recall": 0.45,
+            "escalation_f1": 0.6206896551724138,
+            "absent_answer_action_proxy": {
+                "numerator": 5,
+                "denominator": 12,
+                "rate": 0.4166666666666667,
+                "legacy_metric_key": "hallucination_rate",
+                "interpretation": "Answer action on an absent-information question; not factual fabrication."
+            },
+            "generation_latency_distribution": {
+                "p50_ms": 1670.33,
+                "p90_ms": 2037.16,
+                "p95_ms": 2118.8,
+                "mean_ms": 1717.02,
+                "min_ms": 1277.03,
+                "max_ms": 2542.88,
+                "sample_count": 40
+            },
+            "e2e_latency_distribution": {
+                "p50_ms": 1935.67,
+                "p90_ms": 2298.34,
+                "p95_ms": 2429.53,
+                "mean_ms": 1992.12,
+                "min_ms": 1459.11,
+                "max_ms": 2752.61,
+                "sample_count": 40
+            },
+            "token_cost_metrics": {
+                "total_prompt_tokens": 40280,
+                "total_completion_tokens": 3823,
+                "total_tokens": 44103,
+                "avg_prompt_tokens": 1007.0,
+                "avg_completion_tokens": 95.58,
+                "avg_total_tokens": 1102.58,
+                "cost_per_1k_queries": 0.0,
+                "pricing_source": "Local inference (0.00 USD token cost)",
+                "pricing_date": "2026-10-25",
+                "is_local": true
+            },
+            "generation_settings": {
+                "temperature": 0.2,
+                "system_prompt_sha256": "9226c10e1656f98964d74f9e8b3379980b4c017dbb34c010b91ac64544ba69f9",
+                "prompt_template": "SupportInferenceClient.build_user_prompt/v1",
+                "response_schema": {
+                    "properties": {
+                        "answer": {
+                            "description": "Direct, grounded answer to the customer inquiry",
+                            "title": "Answer",
+                            "type": "string"
+                        },
+                        "cited_sources": {
+                            "description": "List of source file names cited",
+                            "items": {
+                                "type": "string"
+                            },
+                            "title": "Cited Sources",
+                            "type": "array"
+                        },
+                        "confidence": {
+                            "description": "Confidence score between 0.0 and 1.0",
+                            "maximum": 1.0,
+                            "minimum": 0.0,
+                            "title": "Confidence",
+                            "type": "number"
+                        },
+                        "action": {
+                            "description": "Action decision: answer or escalate",
+                            "enum": [
+                                "answer",
+                                "escalate"
+                            ],
+                            "title": "Action",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "answer",
+                        "confidence",
+                        "action"
+                    ],
+                    "title": "SupportResponse",
+                    "type": "object"
+                }
+            },
+            "serving_settings": {
+                "provider": "ollama",
+                "model_requested": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "template_sha256": "fed11cc8e8bab8b22c624d4174160140a2671721cfec1e06e871ce7777ae1354",
+                "request_options": {
+                    "temperature": 0.2
+                },
+                "model_parameters": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "effective_options": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "context_length": 4096,
+                "context_length_source": "observed_runtime",
+                "limitations": [
+                    "Unreported server sampling defaults are not measured; resident VRAM is not peak memory."
+                ],
+                "capture_errors": {},
+                "model_details": {
+                    "parent_model": "",
+                    "format": "gguf",
+                    "family": "llama",
+                    "families": [
+                        "llama"
+                    ],
+                    "parameter_size": "3.2B",
+                    "quantization_level": "Q4_K_M"
+                },
+                "model_capacity_context_length": 131072,
+                "model_resolved": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "runtime_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "runtime_identity_mismatch": false,
+                "resident_size_vram_bytes": 2554708622,
+                "capture_status": "recorded",
+                "initial_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "identity_changed_during_run": false
+            },
+            "retrieval_settings": {
+                "index_name": "vector_index",
+                "top_k": 4,
+                "max_per_doc": 2,
+                "num_candidates": 100,
+                "embedding_model": "BAAI/bge-small-en-v1.5",
+                "database": "capstone_dev",
+                "collection": "doc_vectors"
+            },
+            "retriever_settings_sidecar": {
+                "log_file": "baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_retriever_20261109_053132.json",
+                "model": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "backend": "MongoDB Atlas",
+                "database": "capstone_dev",
+                "collection": "doc_vectors",
+                "index_name": "vector_index",
+                "query_prefix": "Represent this sentence for searching relevant passages: ",
+                "query_prefix_enabled": true,
+                "reranker": "off",
+                "min_rerank_score": null,
+                "relevance_cutoff": "none",
+                "top_k": 4,
+                "max_per_doc": 2,
+                "num_candidates": 100
+            },
+            "retriever_settings_sidecar_path": "logs/refinement/baseline_dev/baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_retriever_20261109_053132.retriever_settings.json",
+            "retriever_settings_sidecar_sha256": "20b4469b1849b6f7f5d339eb3a12e0b08ca9035ea1f51eb1d86ff66317a3cf09",
+            "hardware": {
+                "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+                "python_version": "3.14.6",
+                "os_name": "Linux",
+                "architecture": "x86_64",
+                "cpu_count_logical": 22,
+                "cpu_model": "Intel(R) Core(TM) Ultra 7 165H",
+                "ram_total_bytes": 32514674688,
+                "ram_total_human": "30.28 GiB",
+                "gpu_info": [
+                    "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 595.91.07"
+                ],
+                "scope": "evaluation client host; remote inference hardware and measured peak memory are not established"
+            }
+        },
+        {
+            "split": "validation",
+            "context_mode": "ground_truth",
+            "log_path": "logs/refinement/baseline_validation/baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_ground_truth_20261109_053243.json",
+            "log_sha256": "11386ecc079896b07e0523e96a783c5ce1b2d0c987b9fb988234268d5ce5fb86",
+            "fixture_path": "data/evaluation/refinement_validation.json",
+            "fixture_sha256": "04e62aefd43a539a277e4a09947fe6a5fd08835900247f7052564e96f22ff430",
+            "run_status": "completed",
+            "requested_records": 40,
+            "completed_records": 40,
+            "counts": {
+                "TP": 13,
+                "FP": 0,
+                "FN": 7,
+                "TN": 20,
+                "total_eval": 40,
+                "schema_valid": 40,
+                "schema_invalid": 0,
+                "absent_total": 12,
+                "absent_hallucinated": 0,
+                "invalid_absent": 0
+            },
+            "per_stratum": {
+                "supported_answer": {
+                    "records": 20,
+                    "action_correct": 20,
+                    "action_answer": 20,
+                    "action_escalate": 0,
+                    "schema_valid": 20,
+                    "schema_invalid": 0
+                },
+                "absent_escalation": {
+                    "records": 12,
+                    "action_correct": 12,
+                    "action_answer": 0,
+                    "action_escalate": 12,
+                    "schema_valid": 12,
+                    "schema_invalid": 0
+                },
+                "human_required": {
+                    "records": 8,
+                    "action_correct": 1,
+                    "action_answer": 7,
+                    "action_escalate": 1,
+                    "schema_valid": 8,
+                    "schema_invalid": 0
+                }
+            },
+            "action_accuracy": 0.825,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 1.0,
+            "escalation_recall": 0.65,
+            "escalation_f1": 0.787878787878788,
+            "absent_answer_action_proxy": {
+                "numerator": 0,
+                "denominator": 12,
+                "rate": 0.0,
+                "legacy_metric_key": "hallucination_rate",
+                "interpretation": "Answer action on an absent-information question; not factual fabrication."
+            },
+            "generation_latency_distribution": {
+                "p50_ms": 1369.41,
+                "p90_ms": 1655.89,
+                "p95_ms": 1697.99,
+                "mean_ms": 1419.46,
+                "min_ms": 1036.59,
+                "max_ms": 1919.67,
+                "sample_count": 40
+            },
+            "e2e_latency_distribution": {
+                "p50_ms": 1372.81,
+                "p90_ms": 1659.41,
+                "p95_ms": 1700.43,
+                "mean_ms": 1422.56,
+                "min_ms": 1038.73,
+                "max_ms": 1923.83,
+                "sample_count": 40
+            },
+            "token_cost_metrics": {
+                "total_prompt_tokens": 12478,
+                "total_completion_tokens": 3629,
+                "total_tokens": 16107,
+                "avg_prompt_tokens": 311.95,
+                "avg_completion_tokens": 90.72,
+                "avg_total_tokens": 402.67,
+                "cost_per_1k_queries": 0.0,
+                "pricing_source": "Local inference (0.00 USD token cost)",
+                "pricing_date": "2026-10-25",
+                "is_local": true
+            },
+            "generation_settings": {
+                "temperature": 0.2,
+                "system_prompt_sha256": "9226c10e1656f98964d74f9e8b3379980b4c017dbb34c010b91ac64544ba69f9",
+                "prompt_template": "SupportInferenceClient.build_user_prompt/v1",
+                "response_schema": {
+                    "properties": {
+                        "answer": {
+                            "description": "Direct, grounded answer to the customer inquiry",
+                            "title": "Answer",
+                            "type": "string"
+                        },
+                        "cited_sources": {
+                            "description": "List of source file names cited",
+                            "items": {
+                                "type": "string"
+                            },
+                            "title": "Cited Sources",
+                            "type": "array"
+                        },
+                        "confidence": {
+                            "description": "Confidence score between 0.0 and 1.0",
+                            "maximum": 1.0,
+                            "minimum": 0.0,
+                            "title": "Confidence",
+                            "type": "number"
+                        },
+                        "action": {
+                            "description": "Action decision: answer or escalate",
+                            "enum": [
+                                "answer",
+                                "escalate"
+                            ],
+                            "title": "Action",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "answer",
+                        "confidence",
+                        "action"
+                    ],
+                    "title": "SupportResponse",
+                    "type": "object"
+                }
+            },
+            "serving_settings": {
+                "provider": "ollama",
+                "model_requested": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "template_sha256": "fed11cc8e8bab8b22c624d4174160140a2671721cfec1e06e871ce7777ae1354",
+                "request_options": {
+                    "temperature": 0.2
+                },
+                "model_parameters": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "effective_options": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "context_length": 4096,
+                "context_length_source": "observed_runtime",
+                "limitations": [
+                    "Unreported server sampling defaults are not measured; resident VRAM is not peak memory."
+                ],
+                "capture_errors": {},
+                "model_details": {
+                    "parent_model": "",
+                    "format": "gguf",
+                    "family": "llama",
+                    "families": [
+                        "llama"
+                    ],
+                    "parameter_size": "3.2B",
+                    "quantization_level": "Q4_K_M"
+                },
+                "model_capacity_context_length": 131072,
+                "model_resolved": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "runtime_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "runtime_identity_mismatch": false,
+                "resident_size_vram_bytes": 2554708622,
+                "capture_status": "recorded",
+                "initial_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "identity_changed_during_run": false
+            },
+            "retrieval_settings": {},
+            "retriever_settings_sidecar": null,
+            "retriever_settings_sidecar_path": null,
+            "retriever_settings_sidecar_sha256": null,
+            "hardware": {
+                "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+                "python_version": "3.14.6",
+                "os_name": "Linux",
+                "architecture": "x86_64",
+                "cpu_count_logical": 22,
+                "cpu_model": "Intel(R) Core(TM) Ultra 7 165H",
+                "ram_total_bytes": 32514674688,
+                "ram_total_human": "30.28 GiB",
+                "gpu_info": [
+                    "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 595.91.07"
+                ],
+                "scope": "evaluation client host; remote inference hardware and measured peak memory are not established"
+            }
+        },
+        {
+            "split": "validation",
+            "context_mode": "retriever",
+            "log_path": "logs/refinement/baseline_validation/baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_retriever_20261109_053406.json",
+            "log_sha256": "42735b8b25f0df2da36a7957a7420d13ecd15587835ba2786eae6ac42ba4b8c3",
+            "fixture_path": "data/evaluation/refinement_validation.json",
+            "fixture_sha256": "04e62aefd43a539a277e4a09947fe6a5fd08835900247f7052564e96f22ff430",
+            "run_status": "completed",
+            "requested_records": 40,
+            "completed_records": 40,
+            "counts": {
+                "TP": 15,
+                "FP": 1,
+                "FN": 5,
+                "TN": 19,
+                "total_eval": 40,
+                "schema_valid": 40,
+                "schema_invalid": 0,
+                "absent_total": 12,
+                "absent_hallucinated": 1,
+                "invalid_absent": 0
+            },
+            "per_stratum": {
+                "supported_answer": {
+                    "records": 20,
+                    "action_correct": 19,
+                    "action_answer": 19,
+                    "action_escalate": 1,
+                    "schema_valid": 20,
+                    "schema_invalid": 0
+                },
+                "absent_escalation": {
+                    "records": 12,
+                    "action_correct": 11,
+                    "action_answer": 1,
+                    "action_escalate": 11,
+                    "schema_valid": 12,
+                    "schema_invalid": 0
+                },
+                "human_required": {
+                    "records": 8,
+                    "action_correct": 4,
+                    "action_answer": 4,
+                    "action_escalate": 4,
+                    "schema_valid": 8,
+                    "schema_invalid": 0
+                }
+            },
+            "action_accuracy": 0.85,
+            "schema_validity_rate": 1.0,
+            "escalation_precision": 0.9375,
+            "escalation_recall": 0.75,
+            "escalation_f1": 0.8333333333333334,
+            "absent_answer_action_proxy": {
+                "numerator": 1,
+                "denominator": 12,
+                "rate": 0.08333333333333333,
+                "legacy_metric_key": "hallucination_rate",
+                "interpretation": "Answer action on an absent-information question; not factual fabrication."
+            },
+            "generation_latency_distribution": {
+                "p50_ms": 1740.25,
+                "p90_ms": 2000.03,
+                "p95_ms": 2197.54,
+                "mean_ms": 1745.19,
+                "min_ms": 1310.03,
+                "max_ms": 2215.11,
+                "sample_count": 40
+            },
+            "e2e_latency_distribution": {
+                "p50_ms": 1955.04,
+                "p90_ms": 2455.78,
+                "p95_ms": 2632.96,
+                "mean_ms": 2036.83,
+                "min_ms": 1497.59,
+                "max_ms": 3174.09,
+                "sample_count": 40
+            },
+            "token_cost_metrics": {
+                "total_prompt_tokens": 41995,
+                "total_completion_tokens": 3850,
+                "total_tokens": 45845,
+                "avg_prompt_tokens": 1049.88,
+                "avg_completion_tokens": 96.25,
+                "avg_total_tokens": 1146.12,
+                "cost_per_1k_queries": 0.0,
+                "pricing_source": "Local inference (0.00 USD token cost)",
+                "pricing_date": "2026-10-25",
+                "is_local": true
+            },
+            "generation_settings": {
+                "temperature": 0.2,
+                "system_prompt_sha256": "9226c10e1656f98964d74f9e8b3379980b4c017dbb34c010b91ac64544ba69f9",
+                "prompt_template": "SupportInferenceClient.build_user_prompt/v1",
+                "response_schema": {
+                    "properties": {
+                        "answer": {
+                            "description": "Direct, grounded answer to the customer inquiry",
+                            "title": "Answer",
+                            "type": "string"
+                        },
+                        "cited_sources": {
+                            "description": "List of source file names cited",
+                            "items": {
+                                "type": "string"
+                            },
+                            "title": "Cited Sources",
+                            "type": "array"
+                        },
+                        "confidence": {
+                            "description": "Confidence score between 0.0 and 1.0",
+                            "maximum": 1.0,
+                            "minimum": 0.0,
+                            "title": "Confidence",
+                            "type": "number"
+                        },
+                        "action": {
+                            "description": "Action decision: answer or escalate",
+                            "enum": [
+                                "answer",
+                                "escalate"
+                            ],
+                            "title": "Action",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "answer",
+                        "confidence",
+                        "action"
+                    ],
+                    "title": "SupportResponse",
+                    "type": "object"
+                }
+            },
+            "serving_settings": {
+                "provider": "ollama",
+                "model_requested": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "template_sha256": "fed11cc8e8bab8b22c624d4174160140a2671721cfec1e06e871ce7777ae1354",
+                "request_options": {
+                    "temperature": 0.2
+                },
+                "model_parameters": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "effective_options": {
+                    "num_ctx": 4096,
+                    "stop": [
+                        "<|eot_id|>",
+                        "<|end_of_text|>",
+                        "<|eom_id|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>"
+                    ],
+                    "temperature": 0.2
+                },
+                "context_length": 4096,
+                "context_length_source": "observed_runtime",
+                "limitations": [
+                    "Unreported server sampling defaults are not measured; resident VRAM is not peak memory."
+                ],
+                "capture_errors": {},
+                "model_details": {
+                    "parent_model": "",
+                    "format": "gguf",
+                    "family": "llama",
+                    "families": [
+                        "llama"
+                    ],
+                    "parameter_size": "3.2B",
+                    "quantization_level": "Q4_K_M"
+                },
+                "model_capacity_context_length": 131072,
+                "model_resolved": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "runtime_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "runtime_identity_mismatch": false,
+                "resident_size_vram_bytes": 2554708622,
+                "capture_status": "recorded",
+                "initial_model_digest": "782d8b899e9170e1ff3715c58710cdfbefcf0fdbdcbb0c0efacecc067450511d",
+                "identity_changed_during_run": false
+            },
+            "retrieval_settings": {
+                "index_name": "vector_index",
+                "top_k": 4,
+                "max_per_doc": 2,
+                "num_candidates": 100,
+                "embedding_model": "BAAI/bge-small-en-v1.5",
+                "database": "capstone_dev",
+                "collection": "doc_vectors"
+            },
+            "retriever_settings_sidecar": {
+                "log_file": "baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_retriever_20261109_053406.json",
+                "model": "llama3.2:3b-qlora-hardneg-full01-q4",
+                "backend": "MongoDB Atlas",
+                "database": "capstone_dev",
+                "collection": "doc_vectors",
+                "index_name": "vector_index",
+                "query_prefix": "Represent this sentence for searching relevant passages: ",
+                "query_prefix_enabled": true,
+                "reranker": "off",
+                "min_rerank_score": null,
+                "relevance_cutoff": "none",
+                "top_k": 4,
+                "max_per_doc": 2,
+                "num_candidates": 100
+            },
+            "retriever_settings_sidecar_path": "logs/refinement/baseline_validation/baseline_eval_llama3.2_3b-qlora-hardneg-full01-q4_retriever_20261109_053406.retriever_settings.json",
+            "retriever_settings_sidecar_sha256": "69f604bf0e5e364892c5b9df9bf22c1063089bc7b90f6e3d27bac496efb45a22",
+            "hardware": {
+                "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+                "python_version": "3.14.6",
+                "os_name": "Linux",
+                "architecture": "x86_64",
+                "cpu_count_logical": 22,
+                "cpu_model": "Intel(R) Core(TM) Ultra 7 165H",
+                "ram_total_bytes": 32514674688,
+                "ram_total_human": "30.28 GiB",
+                "gpu_info": [
+                    "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 595.91.07"
+                ],
+                "scope": "evaluation client host; remote inference hardware and measured peak memory are not established"
+            }
+        }
+    ]
+}

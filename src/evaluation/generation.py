@@ -65,7 +65,13 @@ def build_ground_truth_context(evidence_json) -> str:
     )
 
 
-def initialize_services(model_name: str | None = None, use_retriever: bool = False):
+def initialize_services(model_name: str | None = None, use_retriever: bool = False,
+                        query_prefix: str | None = None, db_name: str | None = None):
+    """Build the inference client and optional retriever.
+
+    query_prefix=None keeps the retriever default (BGE query prefix on); "" turns it off,
+    which is only meant for reproducing historical runs made before the prefix existed.
+    """
     from src.inference.client import SupportInferenceClient
 
     client = SupportInferenceClient(model=model_name)
@@ -73,7 +79,7 @@ def initialize_services(model_name: str | None = None, use_retriever: bool = Fal
     if use_retriever:
         from src.rag.retriever import RAGRetriever
 
-        retriever = RAGRetriever()
+        retriever = RAGRetriever(query_prefix=query_prefix, db_name=db_name)
     return client, retriever
 
 

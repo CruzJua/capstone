@@ -1,5 +1,6 @@
-# Ollama template for a Llama-3.2-3B GGUF export; copy to Modelfile.local and set FROM.
-FROM /absolute/path/to/your/Llama-3.2-3B-Instruct.Q4_K_M.gguf
+# Ollama template for a Llama-3.2-3B GGUF export. Paths are relative to this file.
+# If copying elsewhere, adjust FROM for the new file location.
+FROM ../models/hardneg_full01/Llama-3.2-3B-Instruct.Q4_K_M.gguf
 
 # Text-only branch of tokenizer.chat_template, including its fixed default date.
 # The demo sends system/user text without tools. GGUF add_bos_token=true;

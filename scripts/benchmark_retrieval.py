@@ -37,6 +37,7 @@ from src.evaluation.retrieval_metrics import (
     parse_ground_truth_evidence,
     verify_tenant_isolation,
 )
+from src.rag.db_config import resolve_training_db_name
 from src.rag.retriever import RAGRetriever
 
 
@@ -309,7 +310,7 @@ def run_benchmark(retriever: RAGRetriever, args) -> Dict[str, Any]:
 def main():
     args = parse_args()
     print("Loading retriever...")
-    retriever = RAGRetriever()
+    retriever = RAGRetriever(db_name=resolve_training_db_name())
     try:
         run_benchmark(retriever, args)
     finally:

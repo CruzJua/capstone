@@ -1,3 +1,12 @@
+# Build the embeddable chat widget (served by the gateway at GET /widget.js).
+FROM node:22-bookworm-slim AS widget-build
+WORKDIR /widget
+COPY widget/package.json widget/package-lock.json ./
+RUN npm ci
+COPY widget/vite.config.js ./
+COPY widget/src ./src
+RUN npm run build:embed
+
 FROM node:22-bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -24,6 +33,10 @@ RUN python3 -m venv /opt/venv && \
 RUN /opt/venv/bin/pip install --no-cache-dir --timeout 120 --retries 10 \
     sentence-transformers "pymongo>=4.16.0" "python-dotenv>=1.2.2"
 
+# Extra dependencies of the internal chat service (src/chat/, scripts/run_chat_service.py).
+RUN /opt/venv/bin/pip install --no-cache-dir --timeout 120 --retries 10 \
+    "ollama>=0.6.3" "pydantic>=2.14.1"
+
 WORKDIR /app
 
 COPY gateway/package*.json /app/gateway/
@@ -38,6 +51,7 @@ COPY data/harbor_view /app/data/harbor_view
 COPY data/iron_and_oak /app/data/iron_and_oak
 COPY data/kettle_and_loom /app/data/kettle_and_loom
 COPY data/northstar_auto /app/data/northstar_auto
+COPY --from=widget-build /widget/dist/widget.js /app/widget/dist/widget.js
 
 RUN mkdir -p /tmp/capstone_demo_uploads /app/logs /cache/huggingface
 

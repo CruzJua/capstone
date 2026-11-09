@@ -58,6 +58,10 @@ optimizer.pt
 scheduler.pt
 rng_state*.pth
 
-# Original machine-specific Ollama imports and download verification
-/evaluation/colab_full01/
-/evaluation/kaggle_full01/
+# Keep portable Ollama recipes; other local import/download artifacts stay ignored.
+/evaluation/colab_full01/*
+!/evaluation/colab_full01/Modelfile
+/evaluation/kaggle_full01/*
+!/evaluation/kaggle_full01/Modelfile
+!/evaluation/kaggle_full01/Modelfile.q5_k_m
+!/evaluation/kaggle_full01/Modelfile.q8_0
