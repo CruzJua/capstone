@@ -1,0 +1,908 @@
+{
+    "metadata": {
+        "purpose": "runtime_refinement_development_only",
+        "split": "dev",
+        "training_exposure": "Sampled from training tickets on training-exposed tenants; not an unseen-tenant or unseen-training-example evaluation.",
+        "usage": "Use dev for adjustments; freeze decisions before validation. Do not use harbor_view or the frozen held-out benchmark for tuning.",
+        "source": "data/cleaned/train_tickets.csv",
+        "source_sha256": "a025d7005aa4ec88f1a537f8e666ab6ac1a2c182d0f0db2e8faed1a3c992fe79",
+        "seed": 390,
+        "tenants": [
+            "cinder_and_salt",
+            "iron_and_oak",
+            "kettle_and_loom",
+            "northstar_auto"
+        ],
+        "excluded_tenants": [
+            "harbor_view"
+        ],
+        "disjoint_split_rule": "Ticket IDs, tenant+batch_key groups, and normalized exact customer queries are disjoint across both splits; semantic paraphrase overlap is not assessed.",
+        "total_questions": 40,
+        "answer_present_count": 28,
+        "provably_absent_count": 12,
+        "stratum_counts": {
+            "absent_escalation": 12,
+            "human_required": 8,
+            "supported_answer": 20
+        },
+        "tenant_counts": {
+            "cinder_and_salt": 10,
+            "iron_and_oak": 10,
+            "northstar_auto": 10,
+            "kettle_and_loom": 10
+        },
+        "per_tenant_stratum_quotas": {
+            "supported_answer": 5,
+            "absent_escalation": 3,
+            "human_required": 2
+        }
+    },
+    "questions": [
+        {
+            "ticket_id": "cinder_and_salt-0050_t0",
+            "batch_key": "cinder_and_salt-0050",
+            "tenant": "cinder_and_salt",
+            "category": "catering_and_events",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "I booked our wedding cake with you and paid the deposit, but nowhere in my contract does it mention cake cutting sets or if your staff actually cuts and plates the cake during the reception! Do you provide cake cutting and plating services at the venue, or do we have to hire our caterer for that? I really need to know right now so we can finalize staffing.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether our staff provides cake cutting and plating services, as that is not covered in our event policies. I am escalating your request to our catering coordinator right away so they can clarify this for your reception.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "iron_and_oak-0030_t1",
+            "batch_key": "iron_and_oak-0030",
+            "tenant": "iron_and_oak",
+            "category": "damaged_items",
+            "refinement_stratum": "human_required",
+            "customer_query": "My box just arrived completely torn open and the jacket inside is terribly ripped, what do I do?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "I am so sorry to hear your package arrived damaged. Please send us clear photos of the damaged box and jacket right away; as long as you contact us within 14 days of delivery, we will take care of a full replacement or refund at no cost to you, including free return shipping. I am escalating your details directly to a team member to manage your replacement immediately.",
+            "evidence_json": [
+                {
+                    "source": "RETURNS_AND_EXCHANGES.md",
+                    "quote": "If you receive the wrong item or one damaged in transit, contact us within **14 days** of delivery with photos. We ship a replacement or refund in full, with free return shipping."
+                },
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "\"question\": \"My package arrived damaged or with the wrong item.\",\n            \"answer\": \"Contact us within 14 days of delivery with photos. We ship a replacement or refund in full with free return shipping.\",\n            \"escalate_to_human\": true"
+                }
+            ],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "iron_and_oak-0050_t1",
+            "batch_key": "iron_and_oak-0050",
+            "tenant": "iron_and_oak",
+            "category": "orders_and_shipping",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "Does your Standard Ground shipping use UPS, FedEx, or USPS for order deliveries?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm which specific carrier is used for standard ground shipping, as that information is not available in our documentation. I can connect you with our support team to verify the carrier details.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "cinder_and_salt-0081_t0",
+            "batch_key": "cinder_and_salt-0081",
+            "tenant": "cinder_and_salt",
+            "category": "bread_storage",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "Can I use an air fryer instead of the oven to revive my day-old sourdough boule?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I don't have instructions or recommended settings for reviving our bread in an air fryer, as our guide only covers standard oven methods. I would be happy to check with our baking team to see what they advise.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "northstar_auto-0043_t1",
+            "batch_key": "northstar_auto-0043",
+            "tenant": "northstar_auto",
+            "category": "winterization_services",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "Hello. I am preparing my SUV for winter and would like to know if you offer engine block heater installations. If so, could you share the pricing for that service?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I apologize, but our documentation does not provide information or pricing regarding engine block heater installations. I would be glad to connect you with one of our service advisors to check our capabilities and provide an accurate quote.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "northstar_auto-0044_t2",
+            "batch_key": "northstar_auto-0044",
+            "tenant": "northstar_auto",
+            "category": "warranty_claim",
+            "refinement_stratum": "human_required",
+            "customer_query": "Hello dear, the water pump you fixed for me broke down while I'm visiting my sister three states away.",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Please stop driving if there is an overheating or safety issue, and make sure to have your original invoice number handy. Because you are traveling and more than 25 miles from NorthStar, you must contact our nationwide warranty hotline or our shop before authorizing any repairs so your claim can be validated at a participating facility. I am connecting you with a representative right away to help start this warranty process.",
+            "evidence_json": [
+                {
+                    "source": "WARRANTY_AND_REPAIR_POLICY.md",
+                    "quote": "If you are more than 25 miles from NorthStar, call the warranty hotline before authorizing any repair so the claim can be validated."
+                },
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "Call us or the nationwide warranty hotline before authorizing any repair, and have your invoice number ready. If you are at a participating facility, they diagnose the failure, and a covered repair costs you $0 for parts and labor."
+                }
+            ],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "cinder_and_salt-0233_t2",
+            "batch_key": "cinder_and_salt-0233",
+            "tenant": "cinder_and_salt",
+            "category": "catering",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Good morning. We are in the preliminary stages of organizing our wedding reception for next summer and would like detailed information regarding your wedding cake tasting boxes. Specifically, could you clarify the exact cost of the box, what cake and flavor options are included, the designated pickup schedule and reservation requirement, and whether that tasting fee can be applied toward our ultimate catering invoice?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Our tasting boxes cost $45.00 and include 4 sourdough cake options along with 3 seasonal buttercreams or preserves. They are prepared on the 1st and 3rd Saturday of each month and are available for pickup between 10:00 AM and 1:00 PM (unclaimed boxes are not held past 1:00 PM). You must reserve your box at least 7 days in advance. The $45.00 fee is fully credited toward any final catering contract exceeding $300.00.",
+            "evidence_json": [
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "A tasting box is $45.00 and includes 4 sourdough cake options and 3 seasonal buttercreams or preserves. Boxes are prepared on the 1st and 3rd Saturday of each month and are available for pickup from 10:00 AM to 1:00 PM. The fee is credited toward any final catering contract over $300.00."
+                },
+                {
+                    "source": "CATERING_AND_CUSTOM_CAKES.md",
+                    "quote": "Tasting boxes must be reserved at least 7 days in advance. Unclaimed boxes are not held past 1:00 PM."
+                }
+            ],
+            "cited_sources": [
+                "faq_support_knowledgebase.json",
+                "CATERING_AND_CUSTOM_CAKES.md"
+            ]
+        },
+        {
+            "ticket_id": "northstar_auto-0033_t1",
+            "batch_key": "northstar_auto-0033",
+            "tenant": "northstar_auto",
+            "category": "winterization",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Hello dear, winter is coming up and my son told me I need to get my car looked at. He mentioned the green fluid under the hood and tires, but I don't really know what any of that means. How cold can that fluid handle before it freezes up, and how do I know if my tires are too worn down for driving in the snow? I have an old quarter coin if that helps check them.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "A standard 50/50 coolant mixture protects your engine against freezing down to -34°F (-37°C). For snow driving, tires need at least 4/32 inch of tread depth. You can easily test this with your quarter: insert it upside down into the tread groove with George Washington's head facing down. If the top of his head is visible, your tread is below 4/32 inch and the tires should be replaced.",
+            "evidence_json": [
+                {
+                    "source": "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md",
+                    "quote": "50/50 ethylene glycol and deionized water mixture providing freeze protection down to -34°F (-37°C)."
+                },
+                {
+                    "source": "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md",
+                    "quote": "All-season tires require a minimum of 4/32 inch tread depth for snow traction (replacing normal 2/32 inch legal limit)."
+                },
+                {
+                    "source": "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md",
+                    "quote": "Insert a quarter upside down with Washington's head into the groove. If the top of his head is visible, you are below 4/32 inch."
+                }
+            ],
+            "cited_sources": [
+                "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "kettle_and_loom-0122_t1",
+            "batch_key": "kettle_and_loom-0122",
+            "tenant": "kettle_and_loom",
+            "category": "botanical_disinfectant_scents",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "hey quick question about the bio shield hospital disinfectant you use i know it uses botanical thyme extract but my roommate really hates the smell of natural thyme and wanted to know if you have an alternative scent version like lavender or peppermint for that same bio shield disinfectant formulation",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "While our documentation notes that Bio-Shield Hospital Disinfectant uses botanical thyme extract and that we offer unscented options upon request, it does not confirm whether alternative scented varieties such as lavender or peppermint are available. I would be glad to hand this over to our operations team to confirm our specific product scent options for your visit.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "kettle_and_loom-0317_t2",
+            "batch_key": "kettle_and_loom-0317",
+            "tenant": "kettle_and_loom",
+            "category": "chemical_safety",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Hi! Quick question, what active ingredients are in your Bio-Shield disinfectant and OxyPure cleaner?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Bio-Shield Disinfectant uses 0.05% thymol (botanical thyme extract), and OxyPure Multi-Surface Cleaner uses stabilized 3% hydrogen peroxide.",
+            "evidence_json": [
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "Bio-Shield Disinfectant uses 0.05% thymol, OxyPure uses stabilized 3% hydrogen peroxide, Citrus-Loom Descaler uses 8% food-grade citric acid, and PureLoom Floor Wash is a saponified coconut and olive oil soap."
+                }
+            ],
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "kettle_and_loom-0154_t2",
+            "batch_key": "kettle_and_loom-0154",
+            "tenant": "kettle_and_loom",
+            "category": "initial_deep_clean",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "got it. how long does that baseline visit usually take?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "The initial deep clean typically takes 2.0x to 2.5x the standard maintenance time for your home's square footage. For example, a 2,000-square-foot home that usually takes 150 minutes for maintenance will require about 5 to 6.25 hours of technician time for the baseline deep clean.",
+            "evidence_json": [
+                {
+                    "source": "WALKTHROUGH_AND_INTAKE_SOP.md",
+                    "quote": "Typically 2.0x to 2.5x the standard maintenance time for the same square footage (for example, a 2,000 sq ft home that takes 150 minutes for maintenance will take about 5 to 6.25 hours of technician time for the deep clean)."
+                }
+            ],
+            "cited_sources": [
+                "WALKTHROUGH_AND_INTAKE_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "northstar_auto-0122_t0",
+            "batch_key": "northstar_auto-0122",
+            "tenant": "northstar_auto",
+            "category": "estimate_approval",
+            "refinement_stratum": "human_required",
+            "customer_query": "Hello dear, I do not have one of those smart cell phones to click, how can I say okay to the repairs?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "You don't need a smartphone to approve your repairs. Customers without a smartphone can approve work in person at our front desk or over the phone directly with a service advisor, who will record the approval with your consent. I am connecting you with a service advisor right now so they can review the estimate with you directly.",
+            "evidence_json": [
+                {
+                    "source": "ESTIMATE_AND_AUTHORIZATION_POLICY.md",
+                    "quote": "Customers without a smartphone can approve in person or by phone with the advisor, and we record the call with consent."
+                }
+            ],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "kettle_and_loom-0134_t0",
+            "batch_key": "kettle_and_loom-0134",
+            "tenant": "kettle_and_loom",
+            "category": "post_construction_touchup",
+            "refinement_stratum": "human_required",
+            "customer_query": "You finished the post-construction clean on Thursday, but fine dust has settled back onto the counters.",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Fine dust often resettles for several days after construction work wraps up. We offer a touch-up visit within 7 days of your final clean and can review any punch list items. I am escalating your request to our scheduling team now so we can get your touch-up visit booked.",
+            "evidence_json": [
+                {
+                    "source": "POST_CONSTRUCTION_REMEDIATION_GUIDE.md",
+                    "quote": "Dust can resettle for several days after finishing, which is why a short touch-up visit is offered."
+                },
+                {
+                    "source": "POST_CONSTRUCTION_REMEDIATION_GUIDE.md",
+                    "quote": "Touch-up visit | Within 7 days of the final clean, if needed"
+                },
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "Fine dust can resettle for several days after finishing. We offer a touch-up visit within 7 days of the final clean, and will walk the punch list with you or your contractor within 48 hours."
+                }
+            ],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "kettle_and_loom-0115_t0",
+            "batch_key": "kettle_and_loom-0115",
+            "tenant": "kettle_and_loom",
+            "category": "service_scope",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Hey, for our upcoming routine bi-weekly maintenance clean, we really need the inside of the refrigerator and our oven cleaned out as well. Could you tell me how much technician time those add-ons usually require so I know what to expect on our schedule? Thanks!",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Each interior oven or refrigerator add-on is estimated at 30 minutes of technician time. Adding both to your routine visit will add approximately 60 technician minutes in total.",
+            "evidence_json": [
+                {
+                    "source": "service_scope_matrix.json",
+                    "quote": "Interior oven or refrigerator\",\n            \"estimated_minutes_each\": 30"
+                }
+            ],
+            "cited_sources": [
+                "service_scope_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "cinder_and_salt-0282_t0",
+            "batch_key": "cinder_and_salt-0282",
+            "tenant": "cinder_and_salt",
+            "category": "catering_and_events",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "hi how much notice do you need to make a celebratory cake for a birthday party?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "We require a minimum of 14 days advance notice for bespoke celebratory cakes. We cannot take rush requests inside this window because our sourdough layers need 18–36 hours of fermentation before decorating.",
+            "evidence_json": [
+                {
+                    "source": "CATERING_AND_CUSTOM_CAKES.md",
+                    "quote": "Bespoke Celebratory Cakes: Minimum 14 days notice required."
+                }
+            ],
+            "cited_sources": [
+                "CATERING_AND_CUSTOM_CAKES.md"
+            ]
+        },
+        {
+            "ticket_id": "northstar_auto-0177_t2",
+            "batch_key": "northstar_auto-0177",
+            "tenant": "northstar_auto",
+            "category": "fleet_services",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Okay, that sounds great, but since our drivers finish late at night, I'm confused about how the night drop works. If someone drops off the van in the middle of the night using your drop box, what exact time is it officially counted as received for that guarantee, and where do they leave the keys?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Keys should be placed into the tamper-evident dual-locking night drop safe located on the Bay 1 exterior wall inside a completed work order envelope. Any vehicle dropped after-hours is treated as received at 6:30 AM for turnaround guarantee purposes.",
+            "evidence_json": [
+                {
+                    "source": "FLEET_SERVICE_SOP.md",
+                    "quote": "Deposit key into the tamper-evident dual-locking night drop safe located at the Bay 1 exterior wall."
+                },
+                {
+                    "source": "FLEET_SERVICE_SOP.md",
+                    "quote": "Any vehicle dropped after-hours is treated as received at 06:30 AM for SLA purposes."
+                }
+            ],
+            "cited_sources": [
+                "FLEET_SERVICE_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "northstar_auto-0176_t0",
+            "batch_key": "northstar_auto-0176",
+            "tenant": "northstar_auto",
+            "category": "estimates_and_authorization",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "how long do I have before the quote you sent expires?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Estimates are valid for 14 days. After that period, parts prices may change.",
+            "evidence_json": [
+                {
+                    "source": "ESTIMATE_AND_AUTHORIZATION_POLICY.md",
+                    "quote": "Estimates are valid for **14 days**. Parts prices may change after that."
+                }
+            ],
+            "cited_sources": [
+                "ESTIMATE_AND_AUTHORIZATION_POLICY.md"
+            ]
+        },
+        {
+            "ticket_id": "cinder_and_salt-0307_t1",
+            "batch_key": "cinder_and_salt-0307",
+            "tenant": "cinder_and_salt",
+            "category": "product_availability",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Oh wonderful! How much do you charge for that Spelt one, and what time in the morning does it go into the oven?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "The Spelt Boule is $11.00 at retail. Its bake begins early at 2:00 AM, so it will be freshly baked and ready for you when we open in the morning.",
+            "evidence_json": [
+                {
+                    "source": "daily_bake_matrix.json",
+                    "quote": "\"sku\": \"BRD-SB-003\",\n            \"item_name\": \"Spelt Boule\",\n            \"category\": \"Bread\",\n            \"flour_profile\": \"100% Stone-Milled Whole Spelt\",\n            \"hydration_percentage\": 72,\n            \"bulk_fermentation_hours\": 4.5,\n            \"cold_hours\": 24,\n            \"bake_schedule\": {\n                \"bake_start\": \"02:00\",\n                \"oven_temp_f\": 460,\n                \"oven_temp_c\": 238,\n                \"bake_minutes\": 40,\n                \"production_block\": \"Pure / Seedless\"\n            },\n            \"target_baked_weight_grams\": 800,\n            \"allergens\": [\"Wheat (Spelt)\"],\n            \"active_bake_days\": [\"Wednesday\", \"Friday\", \"Saturday\", \"Sunday\"],\n            \"base_retail_price\": 11.00"
+                }
+            ],
+            "cited_sources": [
+                "daily_bake_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "northstar_auto-0258_t1",
+            "batch_key": "northstar_auto-0258",
+            "tenant": "northstar_auto",
+            "category": "shuttle_car_seats",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "Hello dear, can your local shuttle van accommodate a booster seat for my five-year-old grandson?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our shuttle van's car seat or booster seat accommodations from our documented policies. Let me connect you directly with our front desk team so they can check the vehicle and assist you.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "iron_and_oak-0069_t1",
+            "batch_key": "iron_and_oak-0069",
+            "tenant": "iron_and_oak",
+            "category": "wholesale_international_terms",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "Good morning. Our retail company in Vancouver is looking to establish a wholesale relationship with Iron & Oak. We plan to order 120 units across your outerwear collection under Tier 2 pricing, and we would like to confirm your international wholesale customs clearance procedures, specifically whether Canadian customs duties and brokerage fees can be billed directly to our commercial account on Net-30 terms.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "Thank you for reaching out. While our Tier 2 wholesale discount of 48% applies to orders of 100 to 499 units, our documentation does not provide details on Canadian customs clearance, brokerage handling, or whether cross-border duties can be billed via Net-30 terms. I would be glad to route your inquiry to our Wholesale Account Manager to provide the correct international commercial shipping guidelines.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "cinder_and_salt-0006_t0",
+            "batch_key": "cinder_and_salt-0006",
+            "tenant": "cinder_and_salt",
+            "category": "catering_and_events",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Hi, I'm trying to plan my sister's wedding for this coming fall and someone recommended your bakery. I'm really confused about how your cake tasting boxes work. How much does one cost, when can we actually pick it up, and do we get any of that money back if we end up booking our wedding cake with you?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "A tasting box costs $45.00 and includes 4 sourdough cake options with 3 seasonal buttercreams or preserves. Boxes are available for pickup on the 1st and 3rd Saturday of every month between 10:00 AM and 1:00 PM, and they must be reserved at least 7 days in advance. The $45.00 fee will be credited toward your final catering contract if it exceeds $300.00.",
+            "evidence_json": [
+                {
+                    "source": "CATERING_AND_CUSTOM_CAKES.md",
+                    "quote": "Fee: $45.00 per tasting box (includes 4 sourdough cake options and 3 seasonal buttercreams/preserves)."
+                },
+                {
+                    "source": "CATERING_AND_CUSTOM_CAKES.md",
+                    "quote": "Credit: The $45.00 fee is credited toward any final catering contract exceeding $300.00."
+                },
+                {
+                    "source": "CATERING_AND_CUSTOM_CAKES.md",
+                    "quote": "Pickup Schedule: Boxes are prepared on the 1st and 3rd Saturday of every month and are available for pickup between 10:00 AM and 1:00 PM."
+                },
+                {
+                    "source": "CATERING_AND_CUSTOM_CAKES.md",
+                    "quote": "Reservation: Tasting boxes must be reserved at least 7 days in advance."
+                }
+            ],
+            "cited_sources": [
+                "CATERING_AND_CUSTOM_CAKES.md"
+            ]
+        },
+        {
+            "ticket_id": "iron_and_oak-0087_t0",
+            "batch_key": "iron_and_oak-0087",
+            "tenant": "iron_and_oak",
+            "category": "sizing_and_fit",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "I ordered your field boots and they are way too narrow across the toe box. Do you offer an EE or wide width option for your boot lineup? I need to know right now before I pack these up.",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether wide or EE widths are available in our boot lineup, as our sizing guide only notes to order your normal width. I would be glad to connect you with our support team to verify our width options and help you with your order.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "iron_and_oak-0131_t0",
+            "batch_key": "iron_and_oak-0131",
+            "tenant": "iron_and_oak",
+            "category": "sizing_and_fit",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Alright, but what if they still feel tight after that? If I wear them for two weeks, can I still send them back under your trial period or will you refuse it?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "You have up to 45 days from delivery to test your gear. Light try-on and trail testing is fine, but to be eligible for a return or exchange, the pants must remain unwashed, unstained, undamaged, and have their original tags attached.",
+            "evidence_json": [
+                {
+                    "source": "sizing_specs.json",
+                    "quote": "Order your trouser waist size. Canvas relaxes about 0.5 inch after the first 2 weeks of wear."
+                },
+                {
+                    "source": "RETURNS_AND_EXCHANGES.md",
+                    "quote": "Test your gear for up to 45 days from the delivery date. Items returned in unwashed, original condition with tags attached receive full refunds to the original payment method."
+                },
+                {
+                    "source": "RETURNS_AND_EXCHANGES.md",
+                    "quote": "Light try-on and trail testing is fine."
+                },
+                {
+                    "source": "RETURNS_AND_EXCHANGES.md",
+                    "quote": "Washed, soiled, stained, or damaged items."
+                }
+            ],
+            "cited_sources": [
+                "sizing_specs.json",
+                "RETURNS_AND_EXCHANGES.md"
+            ]
+        },
+        {
+            "ticket_id": "cinder_and_salt-0051_t2",
+            "batch_key": "cinder_and_salt-0051",
+            "tenant": "cinder_and_salt",
+            "category": "retail_orders",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "I'm super stressed about finding parking near your shop, so do you offer curbside pickup where an employee runs my pre-ordered bread out to my car?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm whether we offer curbside pickup service, as that information is not available in our documentation. I would be glad to connect you with our counter staff so they can confirm our pickup accommodations for you.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "northstar_auto-0277_t1",
+            "batch_key": "northstar_auto-0277",
+            "tenant": "northstar_auto",
+            "category": "winterization",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Hello dear, my grandson mentioned I ought to check my car tires before the snow starts falling. How deep does the tread need to be so I don't slide around, and is there an easy trick with a coin to tell?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "For winter snow traction, all-season tires require a minimum of 4/32 inch tread depth. You can easily test this by inserting a quarter upside down into the tire groove with Washington's head facing down; if the top of his head is visible, your tread is below 4/32 inch.",
+            "evidence_json": [
+                {
+                    "source": "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md",
+                    "quote": "All-season tires require a minimum of 4/32 inch tread depth for snow traction (replacing normal 2/32 inch legal limit)."
+                },
+                {
+                    "source": "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md",
+                    "quote": "Insert a quarter upside down with Washington's head into the groove. If the top of his head is visible, you are below 4/32 inch."
+                }
+            ],
+            "cited_sources": [
+                "WINTERIZATION_AND_PREVENTATIVE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "iron_and_oak-0228_t2",
+            "batch_key": "iron_and_oak-0228",
+            "tenant": "iron_and_oak",
+            "category": "product_care",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "I took my chore coat out on the trail and it got completely caked in thick, dried mud. A friend told me to just throw it in the washing machine on delicate with some regular detergent, but that feels risky for waxed canvas. Can you tell me exactly how to clean off the mud without ruining the wax, and whether detergent is safe to use?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Do not put it in the washing machine or use detergent, as soap and detergents strip the protective wax. Instead, brush off the dry mud using a soft brush. For any remaining spots, clean with cold water and a soft brush or sponge, then hang the jacket to air dry away from direct heat.",
+            "evidence_json": [
+                {
+                    "source": "CARE_GUIDE.md",
+                    "quote": "Brush off dry mud and dust with a soft brush."
+                },
+                {
+                    "source": "CARE_GUIDE.md",
+                    "quote": "Spot clean with cold water and a soft brush or sponge. Do not use soap, detergent, or solvents, because they strip the wax."
+                },
+                {
+                    "source": "CARE_GUIDE.md",
+                    "quote": "Never machine wash, dry clean, or tumble dry."
+                }
+            ],
+            "cited_sources": [
+                "CARE_GUIDE.md"
+            ]
+        },
+        {
+            "ticket_id": "northstar_auto-0080_t1",
+            "batch_key": "northstar_auto-0080",
+            "tenant": "northstar_auto",
+            "category": "appointments_and_loaners",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Hi there, I've never used your shop before and need to get some extensive work done on my car. Do you provide loaner cars or a shuttle so I can still get around? I don't really know how that works.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "We offer complimentary local shuttle rides within a 10-mile radius. In addition, complimentary courtesy loaner cars are available upon reservation request for repairs exceeding $600 or taking longer than 24 hours, subject to driver's license and insurance verification.",
+            "evidence_json": [
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "We offer complimentary local shuttle rides within a 10-mile radius. For repairs exceeding $600 or taking longer than 24 hours, complimentary courtesy loaner cars are available upon reservation request (subject to driver license and insurance verification)."
+                }
+            ],
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "cinder_and_salt-0241_t2",
+            "batch_key": "cinder_and_salt-0241",
+            "tenant": "cinder_and_salt",
+            "category": "allergen_reaction",
+            "refinement_stratum": "human_required",
+            "customer_query": "I am writing in a complete panic because my 6-year-old son just took several bites of a pastry we bought from your shop this morning, and his lips have started swelling and he is coughing and saying his throat feels tight. We know he has a mild sensitivity to certain ingredients, but we didn't expect this at all. What is going on, and what steps should I take immediately regarding this reaction?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Please seek medical attention immediately, and call 911 right now if there is any swelling, coughing, or difficulty breathing. Once your child is safe and receiving care, please reply with the specific product name, purchase time, and any batch code so our Quality Lead can immediately investigate and quarantine the batch.",
+            "evidence_json": [
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "Please seek medical attention immediately, and call 911 if there is any trouble breathing, swelling, or other signs of anaphylaxis. Once your child is safe, contact us with the product name, purchase time, and any batch code so our Quality Lead can investigate and quarantine the batch."
+                },
+                {
+                    "source": "ALLERGEN_SAFETY_PROTOCOL.md",
+                    "quote": "Advise the customer to seek medical attention immediately, and call 911 for breathing difficulty or anaphylaxis.\n   - Record the product, purchase time, and batch code.\n   - Escalate to the Quality Lead within 1 hour. Pull and quarantine remaining units from the same batch."
+                }
+            ],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "kettle_and_loom-0042_t2",
+            "batch_key": "kettle_and_loom-0042",
+            "tenant": "kettle_and_loom",
+            "category": "service_requirements",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Why am I being forced to pay for an expensive deep clean before I can even start regular bi-weekly cleaning? Can't we just skip that and start immediately with standard maintenance?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "All recurring service contracts require an Initial Deep Clean because our botanical cleaning products cannot lift old synthetic wax residues, limescale, and pre-existing chemical buildup on their own. This baseline visit removes that prior buildup and establishes a measurable standard for all future maintenance visits.",
+            "evidence_json": [
+                {
+                    "source": "WALKTHROUGH_AND_INTAKE_SOP.md",
+                    "quote": "All recurring service contracts must undergo a foundational Initial Deep Clean. This baseline visit removes pre-existing buildup, limescale, and synthetic wax residues from previous chemical cleaners before beginning botanical maintenance."
+                },
+                {
+                    "source": "WALKTHROUGH_AND_INTAKE_SOP.md",
+                    "quote": "Why It Is Mandatory: Botanical chemistry cannot lift old synthetic residues on its own, and the baseline sets a measurable standard for every visit after it."
+                }
+            ],
+            "cited_sources": [
+                "WALKTHROUGH_AND_INTAKE_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "iron_and_oak-0320_t0",
+            "batch_key": "iron_and_oak-0320",
+            "tenant": "iron_and_oak",
+            "category": "warranty_and_repair",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "hey there my chore coat blew out a seam along the side after about a year of hard work on the property and one of the front brass snaps came clean off too just wondering if this kind of stuff is covered under your guarantee or if i gotta pay out of pocket and also how long does a fix usually take once it gets to your shop thanks",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Structural seam splits and broken brass rivets or snaps from regular field use are fully covered under our Heritage Guarantee for the lifetime of the product, with no repair cost for labor or materials. Once your item arrives at our bench workshop, our average repair turnaround is 10 to 14 business days (plus up to 5 additional business days during peak periods from October through December). You'll just need to cover incoming shipping to the workshop, and we return it via complimentary ground shipping.",
+            "evidence_json": [
+                {
+                    "source": "REPAIR_POLICY.md",
+                    "quote": "Structural seam splits and blown stitching"
+                },
+                {
+                    "source": "REPAIR_POLICY.md",
+                    "quote": "Broken brass rivets, snaps, and buckles"
+                },
+                {
+                    "source": "REPAIR_POLICY.md",
+                    "quote": "Average repair cycle is 10–14 business days from receipt."
+                },
+                {
+                    "source": "REPAIR_POLICY.md",
+                    "quote": "Peak periods (October through December) can add up to 5 additional business days"
+                }
+            ],
+            "cited_sources": [
+                "REPAIR_POLICY.md"
+            ]
+        },
+        {
+            "ticket_id": "iron_and_oak-0309_t1",
+            "batch_key": "iron_and_oak-0309",
+            "tenant": "iron_and_oak",
+            "category": "wholesale_branding",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "That sounds great and very straightforward. What are the maximum size dimensions we can use for the logo on both the belts and the notebooks, and what temperature are those stamps pressed at?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "The maximum deboss area is 2.5 in. × 1.25 in. on belts and 3 in. × 3 in. on notebooks. The stamps are applied at roughly 230°F–260°F (110°C–127°C).",
+            "evidence_json": [
+                {
+                    "source": "WHOLESALE_SOP.md",
+                    "quote": "Maximum deboss area is 2.5 in. × 1.25 in. on belts and 3 in. × 3 in. on notebooks and wallets. Minimum line weight is 0.5 pt (1 mm gap between elements)."
+                },
+                {
+                    "source": "WHOLESALE_SOP.md",
+                    "quote": "Stamps are applied at roughly 230°F–260°F (110°C–127°C)."
+                }
+            ],
+            "cited_sources": [
+                "WHOLESALE_SOP.md"
+            ]
+        },
+        {
+            "ticket_id": "iron_and_oak-0201_t2",
+            "batch_key": "iron_and_oak-0201",
+            "tenant": "iron_and_oak",
+            "category": "returns_policy",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "I sent my jacket back a week ago and haven't heard anything yet. How long is this inspection supposed to take once it gets to your warehouse? Also, how much will you be taking off my refund for the domestic return shipping?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Return inspections are processed within 3 business days of receipt at our warehouse. A flat return shipping fee of $7.95 is deducted from your refund for domestic returns.",
+            "evidence_json": [
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "There are no restocking fees, and inspections are done within 3 business days of receipt. Domestic return shipping is $7.95 deducted from the refund, except for exchanges and defects."
+                }
+            ],
+            "cited_sources": [
+                "faq_support_knowledgebase.json"
+            ]
+        },
+        {
+            "ticket_id": "cinder_and_salt-0234_t2",
+            "batch_key": "cinder_and_salt-0234",
+            "tenant": "cinder_and_salt",
+            "category": "allergens",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "My son has severe Celiac Disease and I get so nervous buying bread anywhere. I read that your long fermentation breaks down gluten, so would your plain sourdough boule be safe for him to eat? We really want to try it but I can't take any risks with his condition.",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "No, our bread is not safe for someone with Celiac Disease. While our cold fermentation makes bread gentler to digest for some, it does not reduce gluten to celiac-safe levels. Because we operate an active stone mill on-site, fine flour particles remain airborne 24 hours a day, our facility is not celiac-safe, and customers with Celiac Disease should not consume our products.",
+            "evidence_json": [
+                {
+                    "source": "ALLERGEN_SAFETY_PROTOCOL.md",
+                    "quote": "Celiac Disclaimer: While some items are prepared without gluten-containing ingredients, our facility is NOT celiac-safe. We do not produce certified gluten-free products. Customers with Celiac Disease, severe gluten intolerance, or wheat allergy should not consume our products."
+                },
+                {
+                    "source": "ALLERGEN_SAFETY_PROTOCOL.md",
+                    "quote": "Fermentation Is Not a Safety Claim: Our 24–36 hour cold fermentation breaks down some starches and phytic acid and makes bread gentler for many people. It does not reduce gluten to a celiac-safe level (the regulatory threshold is under 20 ppm). We never market it as doing so."
+                },
+                {
+                    "source": "ALLERGEN_SAFETY_PROTOCOL.md",
+                    "quote": "Gluten Presence: Fine flour particles remain airborne throughout the facility 24 hours a day. No wall, bench, or schedule fully removes them."
+                }
+            ],
+            "cited_sources": [
+                "ALLERGEN_SAFETY_PROTOCOL.md"
+            ]
+        },
+        {
+            "ticket_id": "kettle_and_loom-0068_t0",
+            "batch_key": "kettle_and_loom-0068",
+            "tenant": "kettle_and_loom",
+            "category": "post_construction_dust",
+            "refinement_stratum": "human_required",
+            "customer_query": "Hi, we wrapped up our remodel and your team completed the final post-construction cleaning pass three days ago. Everything looked great on walkthrough day, but I'm checking the house between meetings and noticed a fine layer of dust has resettled over the dining room table and baseboards. Since we're still within the week of the clean, can someone come back out for a touch-up visit to take care of this?",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Fine dust can resettle for several days after construction wraps up. We offer a touch-up visit within 7 days of the final clean, and we will walk through the punch list with you or your contractor within 48 hours. I am escalating your request to our scheduling team right now so they can book your touch-up visit.",
+            "evidence_json": [
+                {
+                    "source": "POST_CONSTRUCTION_REMEDIATION_GUIDE.md",
+                    "quote": "Dust can resettle for several days after finishing, which is why a short touch-up visit is offered."
+                },
+                {
+                    "source": "POST_CONSTRUCTION_REMEDIATION_GUIDE.md",
+                    "quote": "Touch-up visit | Within 7 days of the final clean, if needed"
+                },
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "Fine dust can resettle for several days after finishing. We offer a touch-up visit within 7 days of the final clean, and will walk the punch list with you or your contractor within 48 hours."
+                }
+            ],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "kettle_and_loom-0131_t2",
+            "batch_key": "kettle_and_loom-0131",
+            "tenant": "kettle_and_loom",
+            "category": "technician_wages",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "I noticed in your documentation that commercial office janitorial services and baseline estimates are billed at a base rate of $55.00 per technician-hour, and that your cleaners are W-2 employees of the cooperative. What exact percentage or hourly portion of that $55.00 rate is paid out directly as take-home base wages to the individual technician performing the work?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm the specific portion or percentage of our $55.00 hourly billing rate that goes toward technician base wages, as that financial breakdown is not provided in our client documentation. I would be glad to hand this off to our collective management team to address your inquiry.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "iron_and_oak-0221_t0",
+            "batch_key": "iron_and_oak-0221",
+            "tenant": "iron_and_oak",
+            "category": "damaged_goods",
+            "refinement_stratum": "human_required",
+            "customer_query": "My order just showed up today and the box looks like it was run over by the carrier truck. I opened it and the Timberline coat inside has a complete tear down the sleeve and grease on the canvas. I paid good money for this outerwear and cannot wear something that arrived completely ruined. I need a clean replacement sent out immediately or my entire order refunded.",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "I am very sorry your Timberline coat arrived damaged. Because it was damaged in transit, please share a couple of photos of the torn sleeve and outer packaging with us. We will arrange a free return and issue a full refund or send an immediate replacement. I am escalating this directly to our support team now so they can review the details and take care of this for you right away.",
+            "evidence_json": [
+                {
+                    "source": "RETURNS_AND_EXCHANGES.md",
+                    "quote": "If you receive the wrong item or one damaged in transit, contact us within 14 days of delivery with photos. We ship a replacement or refund in full, with free return shipping."
+                },
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "Contact us within 14 days of delivery with photos. We ship a replacement or refund in full with free return shipping."
+                }
+            ],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "kettle_and_loom-0166_t0",
+            "batch_key": "kettle_and_loom-0166",
+            "tenant": "kettle_and_loom",
+            "category": "post_construction_services",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "hey we just finished remodeling and need post construction cleaning but want you guys to clean out all the hvac ducts too since there is drywall dust inside do your cleaners do full duct cleaning and what machine do you hook up to the vents",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "Our post-construction remediation covers wiping diffusers and vents and replacing the system filter, but duct cleaning is not included in this service. I cannot confirm if we offer specialized HVAC duct cleaning or what equipment would be used, so I will connect you with our team to discuss your options.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "northstar_auto-0137_t0",
+            "batch_key": "northstar_auto-0137",
+            "tenant": "northstar_auto",
+            "category": "service_pricing",
+            "refinement_stratum": "absent_escalation",
+            "customer_query": "Good morning. I am reviewing the manufacturer maintenance requirements for my vehicle, which has reached 50,000 miles. I notice you offer structured packages such as Tier 3 at 30,000 miles and Tier 4 at 45,000 miles. However, I require an individual standalone flat-rate labor quote specifically for replacing the cabin micro-dust air filter independently of an oil change package. Could you provide your precise standalone labor charge and time allocation for just a cabin air filter installation?",
+            "ground_truth_action": "escalate",
+            "is_answerable": false,
+            "escalation_reason": "not_in_docs",
+            "ground_truth_answer": "I cannot confirm our standalone labor charge or time allocation for an individual cabin micro-dust filter replacement, as that specific item is not detailed outside our bundled service packages in our documented rates. I will connect you with a service advisor who can provide an exact quote for you.",
+            "evidence_json": [],
+            "cited_sources": []
+        },
+        {
+            "ticket_id": "kettle_and_loom-0123_t0",
+            "batch_key": "kettle_and_loom-0123",
+            "tenant": "kettle_and_loom",
+            "category": "add_on_services",
+            "refinement_stratum": "supported_answer",
+            "customer_query": "Hi there! We are getting ready to book our standard residential cleaning and I was wondering about a couple of extra tasks. We'd love to add cleaning the inside of our refrigerator and our kitchen cabinets, plus we have about 4 standard interior windows that could really use a wipe-down. Could you tell me approximately how much technician time those add-ons usually take according to your schedule?",
+            "ground_truth_action": "answer",
+            "is_answerable": true,
+            "escalation_reason": "none",
+            "ground_truth_answer": "Here is the estimated technician time for those add-on services: cleaning an interior refrigerator is estimated at 30 minutes, interior kitchen cabinets take about 45 minutes for the kitchen, and standard interior windows take approximately 8 minutes each (about 32 minutes total for 4 windows).",
+            "evidence_json": [
+                {
+                    "source": "service_scope_matrix.json",
+                    "quote": "\"name\": \"Interior oven or refrigerator\",\n            \"estimated_minutes_each\": 30"
+                },
+                {
+                    "source": "service_scope_matrix.json",
+                    "quote": "\"name\": \"Interior windows (per standard window)\",\n            \"estimated_minutes_each\": 8"
+                },
+                {
+                    "source": "service_scope_matrix.json",
+                    "quote": "\"name\": \"Interior cabinets (per kitchen)\",\n            \"estimated_minutes_each\": 45"
+                }
+            ],
+            "cited_sources": [
+                "service_scope_matrix.json"
+            ]
+        },
+        {
+            "ticket_id": "cinder_and_salt-0173_t1",
+            "batch_key": "cinder_and_salt-0173",
+            "tenant": "cinder_and_salt",
+            "category": "wholesale_damage_claim",
+            "refinement_stratum": "human_required",
+            "customer_query": "Our 5:00 AM delivery had 4 crushed Country Sourdough Boules (SKU BRD-CS-001); here are the cross-section photos.",
+            "ground_truth_action": "escalate",
+            "is_answerable": true,
+            "escalation_reason": "docs_require_human",
+            "ground_truth_answer": "Thank you for sending the cross-section photos within the 12-hour window. I have logged your report for the 4 damaged Country Sourdough Boules and escalated it to our wholesale team to approve and apply credit to your next invoice.",
+            "evidence_json": [
+                {
+                    "source": "WHOLESALE_ORDERING_GUIDE.md",
+                    "quote": "Quality Claims: Missing, damaged, or unsatisfactory items must be reported within 12 hours of delivery drop with cross-section photos. Approved claims are credited to the next invoice."
+                },
+                {
+                    "source": "faq_support_knowledgebase.json",
+                    "quote": "Report missing, damaged, or unsatisfactory items within 12 hours of the delivery drop, and include cross-section photos. Approved claims are credited to your next invoice. Claims made after 12 hours cannot be accepted."
+                }
+            ],
+            "cited_sources": []
+        }
+    ]
+}

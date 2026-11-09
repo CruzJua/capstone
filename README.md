@@ -46,18 +46,29 @@ cp .env.example .env
 
 Configure `.env` with `MONGODB_URI`, `MONGODB_DB_NAME`, `MONGODB_COLLECTION_NAME`, `MONGODB_VECTOR_INDEX_NAME`, `EMBEDDING_MODEL_NAME`, `OLLAMA_HOST`, and `OLLAMA_MODEL`. Keep credentials local. Recorded retrieval used `capstone_dev.doc_vectors`, index `vector_index`, and `BAAI/bge-small-en-v1.5`; the embedding model must match the existing index. Optional `HF_TOKEN` supplies Hugging Face authentication. When embeddings are cached, `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1` prevents downloads.
 
-Ollama must be running (`ollama serve` if needed). The repo does not contain or download model weights. To import your downloaded Kaggle GGUF, copy the portable template, edit its `FROM` path to the actual file, then create the local tag:
+Ollama must be running (`ollama serve` if needed). Fine-tuned GGUF weights are downloaded separately and kept under the ignored `models/` directory. There is no dedicated script that downloads these exports; `ollama create` imports an existing GGUF, while `ollama pull llama3.2:3b` separately installs the untuned base model. Embedding libraries may download their own models when a local cache is unavailable.
+
+The portable Modelfiles resolve `FROM` relative to their own location. Supply the matching downloaded files in this layout on each machine; model weights remain outside Git:
+
+| Export | Ignored weight directory | Portable recipes |
+| :--- | :--- | :--- |
+| Original Colab full01 | `models/colab_full01/` | `evaluation/colab_full01/Modelfile` (Q4_K_M) |
+| Original Kaggle full01 | `models/kaggle_full01/` | `evaluation/kaggle_full01/Modelfile` (Q4_K_M), `Modelfile.q5_k_m` (Q5_K_M), `Modelfile.q8_0` (Q8_0) |
+| Hard-negative full01 | `models/hardneg_full01/` | `evaluation/hardneg_full01/Modelfile` (Q4_K_M), `Modelfile.q8_0` (Q8_0) |
+
+Weight filenames are `Llama-3.2-3B-Instruct.Q4_K_M.gguf`, `Llama-3.2-3B-Instruct.Q5_K_M.gguf`, or `Llama-3.2-3B-Instruct.Q8_0.gguf`, as applicable. Each recipe retains its recorded chat template, stop tokens, context window and temperature. `evaluation/Modelfile.example` defaults to the hard-negative Q4 path; moving or copying that example to another directory requires adjusting its relative `FROM` path.
+
+From the repository root, register the hard-negative Q4 model using the supplied recipe:
 
 ```bash
-cp evaluation/Modelfile.example Modelfile.local
-# Edit FROM in Modelfile.local before running ollama create.
-ollama create llama3.2:3b-qlora-kaggle-full01-q4 -f Modelfile.local
+ollama create llama3.2:3b-qlora-hardneg-full01-q4 \
+  -f evaluation/hardneg_full01/Modelfile
 ollama list
-OLLAMA_MODEL=llama3.2:3b-qlora-kaggle-full01-q4 \
+OLLAMA_MODEL=llama3.2:3b-qlora-hardneg-full01-q4 \
   .venv/bin/python scripts/run_chat_demo.py --port 8000
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000). Select a business and ask a question; the page displays retrieved evidence, context, answer, citations, action, confidence and timing. **Check connections** refreshes readiness. This is an unauthenticated loopback development demo. Run model and embedding jobs sequentially when compute is available. Repeat the import with the correct Q5/Q8 files and matching `...-q5` / `...-q8` tags before evaluating all three formats. Base-model comparisons also require `llama3.2:3b` installed separately.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). Select a business and ask a question; the page displays retrieved evidence, context, answer, citations, action, confidence and timing. **Check connections** refreshes readiness. This is an unauthenticated loopback development demo. Run model and embedding jobs sequentially when compute is available. For the historical Kaggle comparisons below, import the original Kaggle recipes with matching `llama3.2:3b-qlora-kaggle-full01-q4`, `-q5`, and `-q8` tags. The hard-negative Q8 recipe uses `llama3.2:3b-qlora-hardneg-full01-q8`. Base-model comparisons require `llama3.2:3b` installed separately. Moving the downloaded exports does not change existing registered Ollama tags; re-import is only needed to register or deliberately replace a tag.
 
 ## Data, parser and index checks
 

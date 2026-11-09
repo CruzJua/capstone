@@ -1,0 +1,183 @@
+{
+    "description": "Held-out benchmark (harbor_view, 100 questions) results for Kaggle run llama32_3b_hardneg_full01 vs the sprint-3 control. Ground-truth-context and live-retrieval results are reported separately and never pooled. Judge-free metrics are the headline; judge-based numbers use gpt-5.4-mini and are NOT comparable to the historical Gemma-judged sprint-3 numbers.",
+    "benchmark": {
+        "file": "data/evaluation/held_out_benchmark.json",
+        "sha256_expected": "656bd369b60b6db973078f2674f771ce75132d46a77938bcb5648ac7b1e9d261",
+        "sha256_before_and_after": "verified identical at every check",
+        "composition": "50 unanswerable (expect escalate), 46 answerable (expect answer), 4 answerable but docs_require_human (expect escalate)"
+    },
+    "live_retrieval_settings": {
+        "backend": "MongoDB Atlas",
+        "database": "capstone_dev (= MONGODB_TRAINING_DB_NAME)",
+        "query_prefix": "BGE query prefix ON (default); P3 run had it OFF",
+        "reranker": "off",
+        "relevance_cutoff": "none",
+        "top_k": 4,
+        "max_per_doc": 2,
+        "num_candidates": 100
+    },
+    "judge_free_live_retrieval": {
+        "llama3.2:3b-qlora-hardneg-full01-q4": {
+            "unanswerable_50": {"escalated": 21, "answered": 29},
+            "answerable_46": {"answered": 46, "over_escalated": 0},
+            "docs_require_human_4_escalated": 1,
+            "action_accuracy": 0.68, "escalation_precision": 1.0, "escalation_recall": 0.4074, "escalation_f1": 0.5789,
+            "schema_valid": 100, "latency_ms_p50": 2013, "latency_ms_p95": 2666
+        },
+        "llama3.2:3b-qlora-hardneg-full01-q8": {
+            "unanswerable_50": {"escalated": 30, "answered": 20},
+            "answerable_46": {"answered": 44, "over_escalated": 2},
+            "docs_require_human_4_escalated": 1,
+            "action_accuracy": 0.75, "escalation_precision": 0.9394, "escalation_recall": 0.5741, "escalation_f1": 0.7126,
+            "schema_valid": 100, "latency_ms_p50": 3852, "latency_ms_p95": 5018
+        },
+        "llama3.2:3b-qlora-kaggle-full01-q4 (control)": {
+            "unanswerable_50": {"escalated": 0, "answered": 50},
+            "answerable_46": {"answered": 46, "over_escalated": 0},
+            "docs_require_human_4_escalated": 0,
+            "action_accuracy": 0.46, "escalation_precision": 0.0, "escalation_recall": 0.0, "escalation_f1": 0.0,
+            "schema_valid": 100, "latency_ms_p50": 2697, "latency_ms_p95": 3502
+        },
+        "llama3.2:3b-qlora-kaggle-full01-q8 (control)": {
+            "unanswerable_50": {"escalated": 0, "answered": 50},
+            "answerable_46": {"answered": 46, "over_escalated": 0},
+            "docs_require_human_4_escalated": 0,
+            "action_accuracy": 0.46, "escalation_precision": 0.0, "escalation_recall": 0.0, "escalation_f1": 0.0,
+            "schema_valid": 100, "latency_ms_p50": 2781, "latency_ms_p95": 3551
+        },
+        "P3 llama3.2:3b-qlora-kaggle-full01-q4, query prefix OFF": {
+            "unanswerable_50": {"escalated": 0, "answered": 50},
+            "answerable_46": {"answered": 46, "over_escalated": 0},
+            "note": "Reproduces the sprint-3 judge-free failure (all unanswerable answered); the prefix makes no difference for the old model."
+        }
+    },
+    "judge_free_ground_truth_context": {
+        "llama3.2:3b-qlora-hardneg-full01-q4": {
+            "unanswerable_50": {"escalated": 50, "answered": 0}, "answerable_46": {"answered": 46, "over_escalated": 0},
+            "docs_require_human_4_escalated": 0, "action_accuracy": 0.96, "escalation_precision": 1.0, "escalation_recall": 0.9259,
+            "latency_ms_p50": 1379, "latency_ms_p95": 1778
+        },
+        "llama3.2:3b-qlora-hardneg-full01-q8": {
+            "unanswerable_50": {"escalated": 50, "answered": 0}, "answerable_46": {"answered": 46, "over_escalated": 0},
+            "docs_require_human_4_escalated": 1, "action_accuracy": 0.97, "escalation_precision": 1.0, "escalation_recall": 0.9444,
+            "latency_ms_p50": 2919, "latency_ms_p95": 4071
+        },
+        "llama3.2:3b-qlora-kaggle-full01-q4 (sprint-3 saved log, re-judged)": {
+            "action_accuracy": 0.89, "escalation_recall": 0.7963, "absent_answered_rate": 0.14, "docs_require_human_4_escalated": 0
+        },
+        "llama3.2:3b-qlora-kaggle-full01-q8 (sprint-3 saved log, re-judged)": {
+            "action_accuracy": 0.91, "escalation_recall": 0.8333, "absent_answered_rate": 0.10, "docs_require_human_4_escalated": 0
+        },
+        "llama3.2:3b-qlora-kaggle-full01-q4 (fresh rerun today, not judged)": {
+            "unanswerable_50": {"escalated": 40, "answered": 10}, "action_accuracy": 0.86
+        },
+        "llama3.2:3b-qlora-kaggle-full01-q8 (fresh rerun today, not judged)": {
+            "unanswerable_50": {"escalated": 45, "answered": 5}, "action_accuracy": 0.91
+        },
+        "gemini-3.8-flash teacher (context-matched)": {
+            "unanswerable_50": {"escalated": 50, "answered": 0}, "answerable_46": {"answered": 42, "over_escalated": 4},
+            "docs_require_human_4_escalated": 3, "action_accuracy": 0.95, "escalation_precision": 0.93, "escalation_recall": 0.9815,
+            "latency_ms_p50": 3487
+        },
+        "note": "The old model's ground-truth results differ between the sprint-3 saved log and today's rerun (14% vs 20% of unanswerable answered for q4), so run-to-run variation exists at this n."
+    },
+    "retrieval_current_retriever_50_answerable": {
+        "hit_at_1": 0.32, "hit_at_3": 0.84, "hit_at_4": 0.92, "hit_at_5": 0.92,
+        "evidence_hit_at_4": 0.64, "evidence_span_coverage_at_4": 0.445,
+        "mean_latency_ms": 58.3,
+        "sprint3_reference_prefix_off": {"hit_at_4": 0.90, "evidence_hit_at_4": 0.66},
+        "logs": "logs/hardneg_full01_eval/retrieval_summary.json"
+    },
+    "judge_based": {
+        "judge": "openai/gpt-5.4-mini, temperature 0.0, strict json_schema, rubric evaluation/judge_rubric.md v1.0",
+        "warning": "Different judge from the historical sprint-3 Gemma numbers (live q4 18/100, q8 21/100; ground truth q4 82/100, q8 85/100). Do not mix them.",
+        "passed_of_100 (strict, unjudged count as fail) / records judged": {
+            "live new q4": "45 / 97",
+            "live new q8": "53 / 98",
+            "live old q4 (control)": "23 / 95",
+            "live old q8 (control)": "21 / 98",
+            "live old q4 prefix OFF (P3)": "22 / 95",
+            "ground truth new q4": "67 / 100",
+            "ground truth new q8": "71 / 99",
+            "ground truth old q4 (sprint-3 log)": "61 / 100",
+            "ground truth old q8 (sprint-3 log)": "61 / 100",
+            "ground truth teacher gemini-3.8-flash": "84 / 100"
+        },
+        "unjudged_records_total": 18,
+        "per_file_detail": "logs/judged/*__judge-gpt-5.4-mini__rubric-1.0.json"
+    },
+    "recovery_vs_teacher_ground_truth_judge_based": {
+        "teacher_passed": 84,
+        "new_q4": {"passed": 67, "fraction_of_teacher": 0.80},
+        "new_q8": {"passed": 71, "fraction_of_teacher": 0.85},
+        "old_q4": {"passed": 61, "fraction_of_teacher": 0.73},
+        "old_q8": {"passed": 61, "fraction_of_teacher": 0.73},
+        "live_mode": "not measured: the saved teacher live run used the old retriever's contexts and is not context-matched"
+    },
+    "action_vs_text_heuristic_live": {
+        "note": "Crude text matching, not judged: among unanswerable questions the model labelled action=answer, how many answer texts say the information is missing or hand off to a team member.",
+        "new_q4": {"labelled_answer": 29, "text_says_missing_or_hands_off": 26},
+        "new_q8": {"labelled_answer": 20, "text_says_missing_or_hands_off": 16},
+        "old_q4": {"labelled_answer": 50, "text_says_missing_or_hands_off": 4}
+    },
+    "cost_per_1000_queries_usd": {
+        "local_students": 0.0,
+        "local_students_note": "No per-query API cost; hardware and electricity are not counted.",
+        "teacher_ground_truth": 1.5153,
+        "teacher_live_old_retriever_contexts": 2.8714,
+        "teacher_live_rerun_with_current_retriever_estimate": "about 0.29 USD per 100 queries (about 2.9 per 1,000); not run"
+    },
+    "api_spend": {
+        "judge": "gpt-5.4-mini",
+        "judge_calls_total": 1154,
+        "tokens_total": {"prompt": 3402951, "completion": 145826},
+        "cost_usd_total": 3.208,
+        "cost_basis": "token counts from the judged files times verified list prices (0.75 input / 4.50 output USD per 1M tokens); not an invoice",
+        "cap_usd": 7.0
+    },
+    "added_base_and_teacher_live_runs": {
+        "note": "Fields appended after the first version of this file; no earlier value was changed. These supersede the earlier statements that teacher live and base-model runs were 'not measured' or 'not run'.",
+        "logs": {
+            "base_ground_truth": "logs/hardneg_full01_base_eval/baseline_eval_llama3.2_3b_ground_truth_20261109_021301.json",
+            "base_live": "logs/hardneg_full01_base_eval/baseline_eval_llama3.2_3b_retriever_20261109_021634.json",
+            "teacher_live_current_retriever": "logs/teacher_live_current_retriever/baseline_eval_gemini-3.8-flash_retriever_20261109_023400.json"
+        },
+        "context_match_with_earlier_live_runs": {"base_live": "100 of 100", "teacher_live": "100 of 100"},
+        "judge_free": {
+            "base_ground_truth": {
+                "absent_50": {"escalated": 50, "answered": 0}, "answerable_46": {"answered": 39, "over_escalated": 7},
+                "docs_require_human_4_escalated": 3, "action_accuracy": 0.92, "escalation_precision": 0.8833, "escalation_recall": 0.9815
+            },
+            "base_live": {
+                "absent_50": {"escalated": 26, "answered": 24}, "answerable_46": {"answered": 44, "over_escalated": 2},
+                "docs_require_human_4_escalated": 3, "action_accuracy": 0.73, "escalation_precision": 0.9355, "escalation_recall": 0.5370
+            },
+            "teacher_live": {
+                "absent_50": {"escalated": 50, "answered": 0}, "answerable_46": {"answered": 39, "over_escalated": 7},
+                "docs_require_human_4_escalated": 4, "action_accuracy": 0.93, "escalation_precision": 0.8852, "escalation_recall": 1.0
+            }
+        },
+        "judge_based_gpt_5_4_mini": {
+            "passed_of_100_strict": {"base_ground_truth": 63, "base_live": 47, "teacher_live": 88},
+            "judged": {"base_ground_truth": 96, "base_live": 95, "teacher_live": 100},
+            "unjudged": {"base_ground_truth": 4, "base_live": 5, "teacher_live": 0},
+            "unjudged_note": "All 9 are answer_present, inconsistent_verdict, 2 attempts each; not re-judged (not approved)."
+        },
+        "standard_recovery_strict_pass": {
+            "formula": "(student - base) / (teacher - base), strict pass counts, base = untuned llama3.2:3b",
+            "ground_truth": {"new_q4": 0.1905, "new_q8": 0.3810, "old_q4": -0.0952, "old_q8": -0.0952},
+            "live": {"new_q4": -0.0488, "new_q8": 0.1463, "old_q4": -0.5854, "old_q8": -0.6341}
+        },
+        "latency_ms_generation": {
+            "base_ground_truth": {"p50": 1066, "p90": 1445, "p95": 1567},
+            "base_live": {"p50": 1837, "p90": 2357, "p95": 2508},
+            "teacher_live": {"p50": 4454, "p90": 7578, "p95": 8833, "max": 96609}
+        },
+        "cost_per_1000_queries_usd": {"base_local": 0.0, "teacher_live_current_retriever_list_price": 3.1514},
+        "new_spend_usd": {
+            "openai_judge_base_ground_truth": 0.236, "openai_judge_base_live": 0.338, "openai_judge_teacher_live": 0.299,
+            "gemini_teacher_live_list_price": 0.315, "total_new": 1.188, "cap_for_this_task": 2.0,
+            "basis": "judge: token counts times list prices; Gemini: recorded list-price estimate from the project pricing file; neither is an invoice"
+        }
+    }
+}

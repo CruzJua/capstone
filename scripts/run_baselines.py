@@ -50,6 +50,7 @@ from src.evaluation.comparison import (
     run_baseline_evaluation,
     validate_teacher_runtime,
 )
+from src.rag.db_config import resolve_training_db_name
 from src.evaluation.generation import (
     load_benchmark,
     initialize_services,
@@ -114,6 +115,9 @@ def parse_args():
         action="store_true",
         help="Automatically generate a comparison table across evaluated runs upon completion",
     )
+    parser.add_argument("--no-query-prefix", action="store_true",
+                        help="Retriever mode only: disable the BGE query prefix to reproduce pre-prefix (sprint-3) "
+                             "runs. The default stays prefix-on.")
     parser.add_argument("--allow-paid-api", action="store_true", help="Explicitly authorize teacher API requests and sending benchmark data.")
     parser.add_argument("--pricing-file", help="Verified pricing catalog JSON with source/date; optional, otherwise paid cost is unmeasured.")
     parser.add_argument("--teacher-timeout", type=float, default=60.0,
@@ -227,6 +231,33 @@ def display_dry_run_plan(
     print("To execute for real, run again without the --dry-run flag.\n")
 
 
+def describe_retriever_settings(retriever: Any) -> Dict[str, Any]:
+    """Effective retriever settings that the evaluation log itself does not capture."""
+    return {
+        "backend": "offline in-memory index, not Atlas" if getattr(retriever, "client", True) is None else "MongoDB Atlas",
+        "database": getattr(getattr(retriever, "db", None), "name", None),
+        "collection": getattr(getattr(retriever, "collection", None), "name", None),
+        "index_name": getattr(retriever, "index_name", None),
+        "query_prefix": getattr(retriever, "query_prefix", None),
+        "query_prefix_enabled": bool(getattr(retriever, "query_prefix", "")),
+        "reranker": getattr(retriever, "reranker_model_name", None) or "off",
+        "min_rerank_score": getattr(retriever, "min_rerank_score", None),
+        "relevance_cutoff": "none",
+        "top_k": 4,
+        "max_per_doc": 2,
+        "num_candidates": 100,
+    }
+
+
+def write_retriever_settings_sidecar(log_path: Path, retriever: Any, model_name: str) -> Path:
+    """Write settings next to a finished log; exclusive mode so nothing is ever overwritten."""
+    sidecar = log_path.with_name(f"{log_path.stem}.retriever_settings.json")
+    payload = {"log_file": log_path.name, "model": model_name, **describe_retriever_settings(retriever)}
+    with sidecar.open("x", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, indent=4) + "\n")
+    return sidecar
+
+
 def build_teacher_adapter(provider: str, model_name: Optional[str], *,
                           timeout_seconds: float = 60.0, max_attempts: int = 1):
     if provider == "mock":
@@ -290,7 +321,12 @@ def main():
         for mode in modes:
             use_retriever = (mode == "retriever")
             print(f"\n>>> Running Evaluation: Model={model_name} | Mode={mode} | Questions={len(questions)}")
-            client, retriever = initialize_services(model_name=model_name, use_retriever=use_retriever)
+            client, retriever = initialize_services(
+                model_name=model_name, use_retriever=use_retriever,
+                query_prefix="" if (use_retriever and args.no_query_prefix) else None,
+                # Dev/eval scripts use the training DB; MONGODB_DB_NAME is the production database.
+                db_name=resolve_training_db_name() if use_retriever else None,
+            )
             try:
                 pricing = (pricing_catalog or {}).get(model_name) or ModelPricing(model_name=model_name)
                 metrics, records, log_path = run_baseline_evaluation(
@@ -306,10 +342,12 @@ def main():
                 )
                 print_scorecard(metrics, model_name, len(records))
                 print(f"Log written safely to: {log_path}")
+                if retriever is not None:
+                    print(f"Retriever settings: {write_retriever_settings_sidecar(log_path, retriever, model_name)}")
                 completed_log_paths.append(log_path)
                 completed_log_payloads.append(json.loads(log_path.read_text(encoding="utf-8")))
             finally:
-                if retriever is not None and hasattr(retriever, "client"):
+                if retriever is not None and getattr(retriever, "client", None) is not None:
                     retriever.client.close()
 
     # 2. Run Teacher Model (if enabled)
@@ -331,7 +369,7 @@ def main():
             retriever = None
             if use_retriever:
                 from src.rag.retriever import RAGRetriever
-                retriever = RAGRetriever()
+                retriever = RAGRetriever(db_name=resolve_training_db_name())
 
             try:
                 pricing = get_model_pricing(adapter.model, pricing_catalog)
