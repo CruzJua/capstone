@@ -1,9 +1,0 @@
-{
-    "gemini-3.8-flash": {
-        "prompt_cost_per_million": 0.75,
-        "completion_cost_per_million": 3.75,
-        "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.8-flash ; Standard paid tier, text input and output including thinking; introductory rates through December 31, 2026; list-price estimate excludes cache discounts and taxes",
-        "pricing_date": "2026-10-27",
-        "is_local": false
-    }
-}

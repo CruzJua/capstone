@@ -1,5 +1,6 @@
-# Original Colab full01 GGUF; keep llama3.2:3b as a separate base model.
-FROM ../../models/colab_full01/Llama-3.2-3B-Instruct.Q4_K_M.gguf
+# Hard-negative full01 Q4_K_M (Kaggle run llama32_3b_hardneg_full_01, retrieved-context training data).
+# GGUF chat template, BOS/EOS and control tokens are identical to the sprint-3 kaggle_full01 export.
+FROM ./Llama-3.2-3B-Instruct.Q4_K_M.gguf
 
 # Text-only branch of tokenizer.chat_template, including its fixed default date.
 # The demo sends system/user text without tools. GGUF add_bos_token=true;

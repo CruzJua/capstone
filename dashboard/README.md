@@ -2,7 +2,7 @@
 
 An open-source, multi-tenant administrative dashboard for managing business knowledge bases, configuring fine-tuned local customer support agents, and reviewing grounded model interactions.
 
-Built as a core component of the **Antigravity 2.0 / Capstone Self-Hosted AI Customer Support System**.
+Part of the self-hosted customer support application, alongside the gateway, local inference service, and embeddable widget.
 
 ---
 
@@ -10,23 +10,25 @@ Built as a core component of the **Antigravity 2.0 / Capstone Self-Hosted AI Cus
 
 * **Tenant & Profile Configuration (`/profile`):**
   * Manage business identity, sector/industry, contact information, and team metadata.
-  * Real-time tuning of LLM inference parameters: System Prompt, Temperature, Max Context Chunks, and Vector Similarity Threshold.
+  * View the application-managed core assistant policy, which administrators cannot edit.
+  * Edit subordinate Business Instructions, agent tone, temperature, context chunk count, and vector similarity threshold.
+  * Configure widget origins and validated public support email and phone details, with country selection and an optional phone extension.
   * Persisted directly to MongoDB Atlas (`businesses` collection).
 * **Document Ingestion Hub (`/`):**
   * Drag-and-drop file uploader supporting Markdown (`.md`) and JSON (`.json`) knowledge documents.
   * Triggers backend chunking, section extraction, and 384-dimension vector embedding via `BAAI/bge-small-en-v1.5`.
-  * Read-only raw document viewer with one-click re-indexing and document overwriting.
-* **Knowledge Base & Chunk Explorer (Stretch Goal Preview):**
+  * Read-only raw document viewer, document replacement, and re-indexing.
+* **Knowledge Base & Chunk Explorer:**
   * Interactive inspector for individual vector chunks stored in Atlas (`doc_vectors`).
   * Real-time token and character length validation bounded by the model's 512-token limit.
-  * Architecture prepared for manual chunk curation and instant policy hotfixes.
 * **Ticket Review Queue (`/tickets`):**
   * Centralized queue to audit customer support interactions.
   * Inspect fine-tuned model answers (`[label]`), chain-of-thought explanations (`[rationale]`), and cited ground-truth context chunks.
   * Human-in-the-loop review actions: Approve answers or flag queries for policy updates.
+  * Review visitor contact details submitted through the widget after an escalation and prepare an email response. Follow-up is asynchronous; the widget does not connect visitors to a live agent.
 * **"Get to Know You" Onboarding Wizard (`/signup`):**
   * Automated tenant onboarding that converts business legal names into normalized `tenant_id` slugs.
-  * Auto-curates grounded default system prompts tailored to the company's specific industry.
+  * Offers default business instructions tailored to the company's industry; these remain subordinate to the core assistant policy.
 
 ---
 
@@ -67,7 +69,7 @@ The dashboard connects the frontend administrator to the local inference and ret
 
 ### Prerequisites
 
-* **Node.js:** v18.0.0 or later (v26+ supported)
+* **Node.js:** v22 or later (the Docker image uses Node.js 22)
 * **npm:** v9.0.0 or later
 * Running **Express Gateway** on port `4000` (see `gateway/README.md`)
 * Valid root `.env` configured using `.env.example` with `MONGODB_URI` and `MONGODB_DB_NAME`
@@ -97,6 +99,13 @@ To verify that all pages compile cleanly with zero errors:
 
 ```bash
 npm run build
+```
+
+Run the dashboard's validation and configuration tests and its lint checks with:
+
+```bash
+npm test
+npm run lint
 ```
 
 To run the optimized production server:

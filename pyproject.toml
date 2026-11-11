@@ -1,14 +1,11 @@
 [project]
 name = "pro390"
 version = "0.1.0"
-description = "Local customer support with QLoRA training, tenant-filtered RAG, and structured-output evaluation."
+description = "Self-hosted customer support with tenant-filtered RAG and local model inference."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "google-genai>=2.30.1",
-    "ipykernel>=7.4.0",
     "ollama>=0.6.3",
-    "pandas>=3.0.6",
     "pydantic>=2.14.1",
     "pymongo>=4.19.0",
     "python-dotenv>=1.2.4",
