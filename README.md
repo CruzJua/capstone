@@ -12,7 +12,8 @@ A self-hosted, multi-tenant customer support system with a management dashboard,
 | `src/chat/` | Internal chat service and retrieval/generation orchestration |
 | `src/inference/` | Local inference client, structured response schema, and shared support policy |
 | `src/rag/`, `src/documents/` | Tenant-filtered retrieval, parsing, document ingestion, and index support |
-| `src/demo_setup/`, `data/fixtures/` | Deterministic fixtures for the isolated Docker demo |
+| `examples/client-training/` | Optional, separately launched client-training Docker sandbox |
+| `src/demo_setup/`, `data/fixtures/` | Shared training-sandbox seeding logic and preset metadata |
 | `scripts/` | CLI entry points for application services, document ingestion, and demo setup |
 | `deployment/ollama/` | Current fine-tuned model import recipe |
 
@@ -72,19 +73,24 @@ Set `OLLAMA_MODEL=llama3.2:3b-qlora-hardneg-full01-q4` in `.env`. Existing impor
 
 Embedding libraries may download their model when it is not cached. When cached, `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1` prevents Hugging Face downloads.
 
-## Isolated Docker demo
+## Optional client-training demo
 
-The existing Docker setup demonstrates the dashboard, gateway, internal chat service, and local MongoDB vector search with five preset businesses. It is a development demo; final production deployment work remains separate. Inference uses host Ollama by default. See [gateway Docker details](gateway/README.md).
+The optional [client-training example](examples/client-training/README.md) is a self-contained Docker sandbox with the dashboard, gateway, internal chat service, local MongoDB vector search, and five seeded preset businesses. It is for training and demonstrations, not the standard or production deployment, and the standard application never starts it. Run all commands from the repository root:
 
 ```bash
-bash scripts/setup_demo.sh
-bash scripts/setup_demo.sh status
-bash scripts/setup_demo.sh stop
-bash scripts/setup_demo.sh restart
-bash scripts/setup_demo.sh logs
+# Build, seed, and start (chat uses Ollama running on the host)
+bash examples/client-training/scripts/setup.sh
+
+# Fully self-contained: bundled Ollama container plus a model download into it
+bash examples/client-training/scripts/setup.sh --with-ollama
+bash examples/client-training/scripts/setup.sh pull-model --with-ollama
+
+bash examples/client-training/scripts/setup.sh status
+bash examples/client-training/scripts/setup.sh stop
+bash examples/client-training/scripts/setup.sh logs
 ```
 
-Default demo endpoints are [dashboard:3001](http://localhost:3001/login), [gateway:4001](http://localhost:4001/api/health), and MongoDB on `127.0.0.1:27018`. Demo configuration and data volumes are isolated from the standard instance. The setup downloads container images and may download embeddings. `bash scripts/setup_demo.sh reset` intentionally removes the demo's database volumes; use it only when those records are disposable.
+Endpoints: [dashboard:3001](http://localhost:3001/login), [gateway:4001](http://localhost:4001/api/health), MongoDB on `127.0.0.1:27018`. Configuration, logs, images, volumes, database, and session cookie are isolated under the `capstone_client_training` Compose project, so it can run beside the standard stack. Setup downloads container images and may download embeddings. `setup.sh reset` deletes the demo's database volumes; use it only when those records are disposable. The full image build and startup have not been verified end to end. See the [example README](examples/client-training/README.md) for the service list, commands, and configuration.
 
 ## Document ingestion
 

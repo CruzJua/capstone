@@ -451,7 +451,7 @@ describe("vector index setup (mocked driver, no real database)", () => {
             assert.equal(body.status, "ok");
         });
 
-        test("vector_index_ready is always a boolean (compose, setup_demo.sh and the dashboard rely on it)", async () => {
+        test("vector_index_ready is always a boolean (client-training setup and the dashboard rely on it)", async () => {
             for (const options of [{}, { indexes: [readyIndex()] }, { listError: permissionError() }, { noSearchSupport: true }]) {
                 useDb(options);
                 assert.equal(typeof (await health()).vector_index_ready, "boolean");

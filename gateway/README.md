@@ -69,20 +69,22 @@ npm run dev
 
 ---
 
-## 3B. Self-Contained Docker Local Demo (No Atlas Account Required)
+## 3B. Optional Client-Training Docker Sandbox
 
-To run the complete local demo stack (`mongodb/mongodb-atlas-local:8.0` with local `$vectorSearch`, deterministic fixture seeding from `data/fixtures/demo_manifest.json`, `gateway-demo`, and `dashboard-demo`) isolated from any standard instance on ports `3001` / `4001` / `27018`:
+To run the complete local demo stack (`mongodb/mongodb-atlas-local:8.0` with local `$vectorSearch`, deterministic fixture seeding from `data/fixtures/demo_manifest.json`, `gateway-demo`, and `dashboard-demo`) from `examples/client-training/` isolated from any standard instance on ports `3001` / `4001` / `27018`:
 
 ```bash
 # From the repository root:
-bash scripts/setup_demo.sh
+bash examples/client-training/scripts/setup.sh
 
 # Check health, vector index readiness, and Ollama reachability:
 curl -s http://localhost:4001/api/health | python3 -m json.tool
 
 # Reset only the local demo containers and volumes (never touches standard/Atlas data):
-bash scripts/setup_demo.sh reset
+bash examples/client-training/scripts/setup.sh reset
 ```
+
+Pass `--with-ollama` to run a bundled Ollama container inside the demo project instead of using host Ollama (see [examples/client-training/README.md](../examples/client-training/README.md) for all commands). This gateway has no Dockerfile of its own; the demo image is built from `examples/client-training/Dockerfile.gateway`.
 
 The containerized demo uses `SESSION_COOKIE_NAME=capstone_demo_session` and `UPLOAD_STAGING_DIR=/tmp/capstone_demo_uploads` so it can run side-by-side with a standard instance on `:3000` / `:4000` without session or file staging collisions.
 

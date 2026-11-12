@@ -1,7 +1,10 @@
 # Secrets and environment files
 .env
 .env.*
-!.env.demo.example
+**/.env
+**/.env.*
+examples/client-training/.docker-client
+examples/client-training/logs
 .docker-demo-config
 
 # Version control and IDE
@@ -30,4 +33,3 @@ evaluation
 notebooks
 docs
 tests
-

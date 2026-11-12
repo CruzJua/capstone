@@ -11,7 +11,8 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DEMO_ROOT = PROJECT_ROOT / "examples" / "client-training"
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -41,8 +42,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--env-file",
-        default=str(PROJECT_ROOT / ".env.demo.local"),
-        help="Path to the dedicated demo environment file (defaults to .env.demo.local; never loads root .env).",
+        default=str(DEMO_ROOT / ".env.local"),
+        help="Path to the dedicated demo environment file (defaults to examples/client-training/.env.local; never loads root .env).",
     )
     parser.add_argument(
         "--manifest",
@@ -62,7 +63,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--summary-out",
-        default=str(PROJECT_ROOT / "logs" / "demo_seed_summary.json"),
+        default=str(DEMO_ROOT / "logs" / "seed_summary.json"),
         help="Path to write the 4-space indented machine-readable seed summary JSON.",
     )
     return parser
@@ -72,7 +73,7 @@ def resolve_demo_config(env_file_path: Path, *, allow_example_fallback: bool = F
     file_vars: dict[str, str] = {}
     target_path = env_file_path
     if not target_path.is_file() and allow_example_fallback:
-        example_path = PROJECT_ROOT / ".env.demo.example"
+        example_path = DEMO_ROOT / ".env.example"
         if example_path.is_file():
             target_path = example_path
     if target_path.is_file():

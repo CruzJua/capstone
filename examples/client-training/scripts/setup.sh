@@ -2,11 +2,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-COMPOSE_FILE="${PROJECT_ROOT}/docker-compose.demo.yml"
-COMPOSE_PROJECT="capstone_local_demo"
-ENV_FILE="${PROJECT_ROOT}/.env.demo.local"
-SUMMARY_FILE="${PROJECT_ROOT}/logs/demo_seed_summary.json"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+DEMO_ROOT="${PROJECT_ROOT}/examples/client-training"
+COMPOSE_FILE="${DEMO_ROOT}/compose.yaml"
+COMPOSE_PROJECT="capstone_client_training"
+ENV_FILE="${DEMO_ROOT}/.env.local"
+SUMMARY_FILE="${DEMO_ROOT}/logs/seed_summary.json"
 
 cd "${PROJECT_ROOT}"
 
@@ -24,19 +25,19 @@ ensure_docker() {
     local user_docker_cfg="${HOME}/.docker/config.json"
     if [ -f "${user_docker_cfg}" ] && grep -q '"credsStore"[[:space:]]*:[[:space:]]*"desktop"' "${user_docker_cfg}" 2>/dev/null; then
         if ! command -v docker-credential-desktop >/dev/null 2>&1; then
-            mkdir -p "${PROJECT_ROOT}/.docker-demo-config"
-            printf '{\n    "auths": {}\n}\n' > "${PROJECT_ROOT}/.docker-demo-config/config.json"
-            export DOCKER_CONFIG="${PROJECT_ROOT}/.docker-demo-config"
+            mkdir -p "${DEMO_ROOT}/.docker-client"
+            printf '{\n    "auths": {}\n}\n' > "${DEMO_ROOT}/.docker-client/config.json"
+            export DOCKER_CONFIG="${DEMO_ROOT}/.docker-client"
         fi
     fi
 }
 
 ensure_env_file() {
-    mkdir -p "${PROJECT_ROOT}/logs/.hf_cache_empty"
+    mkdir -p "${DEMO_ROOT}/logs/.hf_cache_empty"
     if [ -d "${HOME}/.cache/huggingface" ]; then
         export HOST_HF_CACHE_DIR="${HOME}/.cache/huggingface"
     else
-        export HOST_HF_CACHE_DIR="${PROJECT_ROOT}/logs/.hf_cache_empty"
+        export HOST_HF_CACHE_DIR="${DEMO_ROOT}/logs/.hf_cache_empty"
     fi
 
     if [ ! -f "${ENV_FILE}" ]; then
@@ -49,7 +50,7 @@ ensure_env_file() {
 
         cat > "${ENV_FILE}" <<EOF
 # Auto-generated local demo configuration (gitignored).
-# Safe to delete and regenerate via: bash scripts/setup_demo.sh reset
+# Safe to delete and regenerate via: bash examples/client-training/scripts/setup.sh reset
 APP_MODE="preset_training"
 MONGODB_DB_NAME="rag_knowledge_base"
 MONGODB_TRAINING_DB_NAME="capstone_demo"
@@ -73,7 +74,7 @@ EMBEDDING_MODEL_NAME="BAAI/bge-small-en-v1.5"
 OLLAMA_HOST="http://host.docker.internal:11434"
 OLLAMA_MODEL="llama3.2:3b"
 EOF
-        echo "[Demo Setup] Generated isolated local demo config at .env.demo.local"
+        echo "[Demo Setup] Generated isolated client-training settings at examples/client-training/.env.local"
     fi
 
     set -a
@@ -95,7 +96,9 @@ wait_for_ready() {
     echo "[Demo Setup] Waiting for MongoDB Atlas Local, seed job, gateway, and dashboard to become healthy..."
     while [ "${elapsed}" -lt "${max_wait}" ]; do
         local seed_status
-        seed_status="$(docker inspect -f '{{.State.Status}}:{{.State.ExitCode}}' capstone_demo_seed 2>/dev/null || echo 'missing')"
+        local seed_id
+        seed_id="$(compose_cmd ps -a -q demo-seed)"
+        seed_status="$(docker inspect -f '{{.State.Status}}:{{.State.ExitCode}}' "${seed_id}" 2>/dev/null || echo 'missing')"
         if [[ "${seed_status}" == exited:* ]] && [[ "${seed_status}" != "exited:0" ]]; then
             echo "[Demo Setup] ERROR: demo-seed container failed (${seed_status}). Logs:" >&2
             compose_cmd logs demo-seed >&2
@@ -174,6 +177,27 @@ shift || true
 ensure_docker
 ensure_env_file
 
+# --with-ollama runs a bundled, project-scoped Ollama container instead of the host Ollama,
+# so the whole sandbox lives inside the capstone_client_training project.
+WITH_OLLAMA=0
+REMAINING_ARGS=()
+for arg in "$@"; do
+    if [ "${arg}" = "--with-ollama" ]; then
+        WITH_OLLAMA=1
+    else
+        REMAINING_ARGS+=("${arg}")
+    fi
+done
+set -- "${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}"
+
+if [ "${WITH_OLLAMA}" -eq 1 ]; then
+    export OLLAMA_HOST="http://ollama-demo:11434"
+fi
+# The profile is always enabled for stop/reset/status/logs so a bundled Ollama is never orphaned.
+if [ "${WITH_OLLAMA}" -eq 1 ] || [[ "${ACTION}" =~ ^(stop|reset|status|logs|pull-model)$ ]]; then
+    export COMPOSE_PROFILES="ollama"
+fi
+
 case "${ACTION}" in
     setup)
         echo "[Demo Setup] Building and starting isolated local demo stack (${COMPOSE_PROJECT})..."
@@ -206,6 +230,11 @@ case "${ACTION}" in
     logs)
         compose_cmd logs "$@"
         ;;
+    pull-model)
+        # Downloads OLLAMA_MODEL into the bundled Ollama container (requires a prior setup/start --with-ollama).
+        echo "[Demo Setup] Pulling '${OLLAMA_MODEL:-llama3.2:3b}' into the bundled Ollama container..."
+        compose_cmd exec ollama-demo ollama pull "${OLLAMA_MODEL:-llama3.2:3b}"
+        ;;
     reset)
         echo "[Demo Setup] Resetting ONLY local demo containers and volumes for project '${COMPOSE_PROJECT}'..."
         compose_cmd down -v --remove-orphans
@@ -221,7 +250,7 @@ case "${ACTION}" in
         fi
         ;;
     *)
-        echo "Usage: bash scripts/setup_demo.sh [setup|start|stop|restart|status|logs|reset [--rebuild]]" >&2
+        echo "Usage: bash examples/client-training/scripts/setup.sh [setup|start|stop|restart|status|logs|pull-model|reset [--rebuild]] [--with-ollama]" >&2
         exit 1
         ;;
 esac

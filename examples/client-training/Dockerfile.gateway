@@ -45,6 +45,7 @@ RUN cd /app/gateway && npm ci --omit=dev
 COPY gateway /app/gateway
 COPY src /app/src
 COPY scripts /app/scripts
+COPY examples/client-training/scripts /app/examples/client-training/scripts
 COPY data/fixtures /app/data/fixtures
 COPY data/cinder_and_salt /app/data/cinder_and_salt
 COPY data/harbor_view /app/data/harbor_view

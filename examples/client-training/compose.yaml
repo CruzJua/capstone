@@ -1,9 +1,8 @@
-name: capstone_local_demo
+name: capstone_client_training
 
 services:
   mongodb-demo:
     image: mongodb/mongodb-atlas-local:8.0
-    container_name: capstone_demo_mongodb
     restart: unless-stopped
     ports:
       - "127.0.0.1:${DEMO_MONGO_PORT:-27018}:27017"
@@ -24,9 +23,8 @@ services:
       - demo_net
 
   demo-seed:
-    image: capstone-demo-gateway:local
+    image: capstone-client-training-gateway:local
     pull_policy: never
-    container_name: capstone_demo_seed
     working_dir: /app
     depends_on:
       mongodb-demo:
@@ -50,16 +48,15 @@ services:
         if [ -d /host_hf_cache/hub ] && [ ! -d /cache/huggingface/hub ]; then
           cp -rn /host_hf_cache/. /cache/huggingface/ 2>/dev/null || true;
         fi &&
-        /opt/venv/bin/python scripts/seed_demo.py --execute --summary-out /app/logs/demo_seed_summary.json
+        /opt/venv/bin/python examples/client-training/scripts/seed.py --execute --summary-out /app/logs/seed_summary.json
     networks:
       - demo_net
 
   gateway-demo:
     build:
-      context: .
-      dockerfile: gateway/Dockerfile
-    image: capstone-demo-gateway:local
-    container_name: capstone_demo_gateway
+      context: ../..
+      dockerfile: examples/client-training/Dockerfile.gateway
+    image: capstone-client-training-gateway:local
     restart: unless-stopped
     depends_on:
       mongodb-demo:
@@ -107,9 +104,8 @@ services:
 
   # Internal bridge from the gateway's POST /api/chat to retrieval and Ollama. Not published on the host.
   chat-service-demo:
-    image: capstone-demo-gateway:local
+    image: capstone-client-training-gateway:local
     pull_policy: never
-    container_name: capstone_demo_chat_service
     restart: unless-stopped
     working_dir: /app
     depends_on:
@@ -149,12 +145,11 @@ services:
 
   dashboard-demo:
     build:
-      context: .
-      dockerfile: dashboard/Dockerfile
+      context: ../..
+      dockerfile: examples/client-training/Dockerfile.dashboard
       args:
         NEXT_PUBLIC_GATEWAY_URL: ${NEXT_PUBLIC_GATEWAY_URL:-http://localhost:4001}
-    image: capstone-demo-dashboard:local
-    container_name: capstone_demo_dashboard
+    image: capstone-client-training-dashboard:local
     restart: unless-stopped
     depends_on:
       gateway-demo:
@@ -175,7 +170,6 @@ services:
 
   ollama-demo:
     image: ollama/ollama:0.5.7
-    container_name: capstone_demo_ollama
     profiles:
       - ollama
     restart: unless-stopped

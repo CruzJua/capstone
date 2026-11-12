@@ -96,7 +96,7 @@ async function checkDatabaseAndVectorReadiness(env = process.env) {
     return {
         database_ready: databaseReady,
         // Stays a boolean (true only when the index is queryable): the compose healthcheck,
-        // scripts/setup_demo.sh and the dashboard all read it as one. The detailed state is
+        // the client-training launcher and dashboard read it as one. The detailed state is
         // exposed separately as vector_index_state / vector_index.
         vector_index_ready: status.state === "ready",
         vector_index: {

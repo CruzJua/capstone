@@ -114,13 +114,13 @@ To run the optimized production server:
 npm run start
 ```
 
-### 4. Self-Contained Docker Demo Stack (No Atlas Required)
+### 4. Optional Client-Training Docker Sandbox
 
 To launch the dashboard, gateway, and local MongoDB Atlas (`$vectorSearch`) together in isolated containers on `http://localhost:3001`:
 
 ```bash
 # Run from the repository root:
-bash scripts/setup_demo.sh
+bash examples/client-training/scripts/setup.sh
 ```
 
 In `preset_training` mode (`http://localhost:3001/login`), the login screen displays one-click demo buttons for the 5 preset businesses (`cinder_and_salt`, `harbor_view`, `iron_and_oak`, `kettle_and_loom`, `northstar_auto`) and enables the sidebar workspace switcher, while `standard` mode hides preset controls and uses standard email/password authentication.
