@@ -73,6 +73,130 @@ Set `OLLAMA_MODEL=llama3.2:3b-qlora-hardneg-full01-q4` in `.env`. Existing impor
 
 Embedding libraries may download their model when it is not cached. When cached, `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1` prevents Hugging Face downloads.
 
+## Standard Docker stack (Sprint 6)
+
+`compose.yaml` runs a separate standard-mode installation with MongoDB Vector Search,
+Ollama, model initialization, the internal chat service, gateway, and dashboard.
+It does not seed the preset businesses. The default browser ports are 3002 and 4002;
+database, inference, and internal chat ports are not published.
+
+Generate private installation settings once, using your external GGUF directory and
+its verified checksum. This helper uses only Python's standard library and refuses to
+overwrite an existing configuration:
+
+```bash
+python3 scripts/setup_stack.py \
+  --model-dir /absolute/path/to/external/hardneg_full01 \
+  --model-sha256 YOUR_VERIFIED_64_CHARACTER_SHA256
+docker compose --env-file .env.compose.local -f compose.yaml config --quiet
+docker compose --env-file .env.compose.local -f compose.yaml build gateway dashboard
+docker compose --env-file .env.compose.local -f compose.yaml up -d --wait --wait-timeout 900
+```
+
+Alternatively, copy `.env.compose.example` to `.env.compose.local` and replace every
+placeholder with installation-specific values. Keep that private file across restarts:
+it holds database credentials and the stable contact-form secret. Do not use rendered
+Compose configuration as a shareable log because it contains those values.
+
+The first image build downloads public dependencies; first chat startup may download
+the BGE embedding model. The standard image uses Python 3.14 and CPU Torch for
+embeddings. Ollama requires NVIDIA GPU access through NVIDIA Container Toolkit; it does
+not silently start without the requested device reservation. The initializer checks the supplied GGUF checksum and
+recipe, imports the exact selected model, and checks installed identity before reusing
+its saved state. It does not silently fall back to the base model. Mounts read only the
+external GGUF and the checked-in import recipe; model files are not baked into images.
+
+Open [the dashboard](http://localhost:3002/signup) to create a business. Configure the
+exact widget origin before embedding `http://localhost:4002/widget.js`. The dashboard
+API URL is embedded at build time; changing `NEXT_PUBLIC_GATEWAY_URL` requires rebuilding
+the dashboard. Use the same hostname for its API and dashboard during local testing.
+
+```bash
+docker compose --env-file .env.compose.local -f compose.yaml ps
+docker compose --env-file .env.compose.local -f compose.yaml logs --tail=100 gateway chat-service dashboard
+docker compose --env-file .env.compose.local -f compose.yaml down
+```
+
+Named volumes retain the database, the database's replica-set keyfile, vector-search
+state, imported model, and embedding cache during ordinary recreation. `down --volumes`
+deletes that installation's stored data and is not a restart command. Use a different
+Compose project name and ports for independent installations. Atlas Local is the
+local-development database target; client production database suitability remains a
+separate deployment decision.
+
+Atlas Local names its replica set after the container hostname and generates its keyfile
+under `/data/configdb`. `compose.yaml` therefore pins `hostname: mongodb` and names the
+`mongodb_config` volume. Removing either lets `down` followed by `up` leave the database
+permanently unhealthy even though the data volume survived. A database volume created by an
+earlier revision without these settings cannot be reattached; use a new Compose project name
+(or export and re-import the data) instead of deleting it blindly.
+
+Operating notes from the tested single-machine setup (Ubuntu, RTX 4060 with 8 GB VRAM):
+
+- The first reply after the stack starts or the model has been idle took about 40 seconds in
+  testing; later replies took 2 to 5 seconds. This is cold-start cost from loading the model
+  onto the GPU and from the first embedding use; the split between them was not measured.
+  Ollama's default 5-minute keep-alive is not overridden in `compose.yaml`, so an idle model
+  unloads and the next visitor pays the cold start again.
+- The gateway keeps conversation history and rate limits in memory, so they reset when it is
+  recreated. Business records, documents, vectors, tickets, saved contact details, and the
+  imported model persist. A follow-up form opened before a recreation still works afterward
+  because `CHAT_FOLLOW_UP_SECRET` is stable.
+- A missing GGUF directory or a checksum mismatch stops `model-init` with a nonzero exit; the
+  stack never falls back to the base model.
+- Browser chat is rejected from any origin not listed for the business. The check applies to
+  browsers; requests without an `Origin` header (curl, server-side clients) are not blocked by it.
+
+If Docker Engine still references an unavailable `docker-credential-desktop` helper,
+public pulls can use an isolated client configuration without editing your saved one:
+
+```bash
+export DOCKER_CONFIG="$(mktemp -d /tmp/support-docker-client.XXXXXX)"
+printf '{"auths": {}}\n' > "$DOCKER_CONFIG/config.json"
+```
+
+This temporary configuration has no registry login; use it only for the public images
+in this setup.
+
+Verified on the development machine (NVIDIA GPU, standard mode, Compose project `capstone_verify`):
+image builds from the hashed CPU lock; model import and exact-tag selection; 100% GPU inference
+(`ollama ps`, 29 of 29 layers offloaded); signup, saved settings, Markdown upload, grounded answer,
+safe escalation, contact capture, ticket review and New chat in a real browser on a separate
+storefront origin; tenant isolation in both directions; recreation with persisted data; and
+single-service outages with recovery. Not yet verified: a different machine or a cold Docker
+cache, GPUs other than the RTX 4060, other browsers, and sustained or concurrent load.
+
+### NVIDIA prerequisite on Ubuntu
+
+Host `nvidia-smi` must work, then install and configure NVIDIA Container Toolkit using
+[NVIDIA's installation guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+These commands require your terminal's interactive sudo authentication. Finish any
+active image builds before restarting Docker; restarting its daemon interrupts them.
+
+```bash
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends ca-certificates curl gnupg2
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \
+  | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+curl -fsSL https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \
+  | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \
+  | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list >/dev/null
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+```
+
+After the image is pulled and Docker is configured, verify container access before
+starting the whole stack:
+
+```bash
+docker compose --env-file .env.compose.local -f compose.yaml run --rm --no-deps --entrypoint nvidia-smi ollama
+```
+
+Then verify an actual response uses the GPU with Ollama's `ps` output and GPU monitoring.
+A successful `nvidia-smi` test alone does not prove model layers are running on the GPU.
+
 ## Optional client-training demo
 
 The optional [client-training example](examples/client-training/README.md) is a self-contained Docker sandbox with the dashboard, gateway, internal chat service, local MongoDB vector search, and five seeded preset businesses. It is for training and demonstrations, not the standard or production deployment, and the standard application never starts it. Run all commands from the repository root:
