@@ -12,6 +12,10 @@ examples/client-training/logs
 .gitignore
 .vscode
 .idea
+.aws
+.agents
+.codex
+AGENTS.md
 
 # Heavy local environments and caches
 .venv
