@@ -1,18 +1,14 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { TenantProvider } from "@/context/TenantContext";
 import AppShell from "@/components/AppShell";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
+// Fonts ship inside the "geist" package, so builds never fetch them from Google Fonts.
+// They expose the same --font-geist-sans / --font-geist-mono variables globals.css uses.
+const geistSans = GeistSans;
+const geistMono = GeistMono;
 
 export const metadata = {
     title: "Support Admin Console | Multi-Tenant RAG Gateway",
