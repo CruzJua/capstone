@@ -1,0 +1,168 @@
+name: capstone_sprint6
+
+x-runtime-environment: &runtime-environment
+  MONGODB_URI: mongodb://${MONGO_ROOT_USER:?Set MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD}@mongodb:27017/?directConnection=true&authSource=admin
+  MONGODB_DB_NAME: ${MONGODB_DB_NAME:-rag_knowledge_base}
+  MONGODB_COLLECTION_NAME: doc_vectors
+  MONGODB_VECTOR_INDEX_NAME: vector_index
+  EMBEDDING_MODEL_NAME: BAAI/bge-small-en-v1.5
+  HF_HOME: /cache/huggingface
+  OLLAMA_HOST: http://ollama:11434
+  OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b-qlora-hardneg-full01-q4}
+  CHAT_BACKEND_TOKEN: ${CHAT_BACKEND_TOKEN:?Set CHAT_BACKEND_TOKEN}
+  MONGODB_SERVER_SELECTION_TIMEOUT_MS: "5000"
+  TOKENIZERS_PARALLELISM: "false"
+
+services:
+  mongodb:
+    image: mongodb/mongodb-atlas-local:8.0
+    restart: unless-stopped
+    # Atlas Local names its replica set after the container hostname. A fixed hostname keeps the
+    # persisted replica-set configuration valid when the container is recreated; the default
+    # random container ID does not, and the database then never becomes healthy.
+    hostname: mongodb
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:?Set MONGO_ROOT_USER}
+      MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD}
+      DO_NOT_TRACK: "1"
+    volumes:
+      - mongodb_data:/data/db
+      - mongot_data:/data/mongot
+      # The image generates its replica-set keyfile here on first start. Without a named volume
+      # Compose attaches a new empty anonymous volume after `down`, mongod cannot find the keyfile
+      # that the persisted data was initialized with, and the database never becomes healthy.
+      - mongodb_config:/data/configdb
+    healthcheck:
+      test: ["CMD", "runner", "healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+
+  ollama:
+    image: ${OLLAMA_IMAGE:-ollama/ollama:0.40.16}
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_NO_CLOUD: "1"
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  model-init:
+    image: ${OLLAMA_IMAGE:-ollama/ollama:0.40.16}
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b-qlora-hardneg-full01-q4}
+      MODEL_GGUF_SHA256: ${MODEL_GGUF_SHA256:?Set MODEL_GGUF_SHA256}
+    entrypoint: ["/bin/sh", "/setup/import_model.sh"]
+    volumes:
+      - ollama_models:/root/.ollama
+      - type: bind
+        source: ${MODEL_GGUF_DIR:?Set MODEL_GGUF_DIR}/Llama-3.2-3B-Instruct.Q4_K_M.gguf
+        target: /model-import/Llama-3.2-3B-Instruct.Q4_K_M.gguf
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./deployment/ollama/Modelfile
+        target: /model-import/Modelfile
+        read_only: true
+      - type: bind
+        source: ./scripts/import_model.sh
+        target: /setup/import_model.sh
+        read_only: true
+
+  chat-service:
+    image: capstone-standard-runtime:local
+    pull_policy: never
+    restart: unless-stopped
+    working_dir: /app
+    command: ["/opt/venv/bin/python", "scripts/run_chat_service.py", "--host", "0.0.0.0", "--port", "8100"]
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      model-init:
+        condition: service_completed_successfully
+    environment:
+      <<: *runtime-environment
+    volumes:
+      - hf_cache:/cache/huggingface
+    healthcheck:
+      test: ["CMD", "/opt/venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8100/health', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 60s
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile.standard
+    image: capstone-standard-runtime:local
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      chat-service:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${GATEWAY_PORT:-4002}:4000"
+    environment:
+      <<: *runtime-environment
+      APP_MODE: standard
+      PORT: "4000"
+      CHAT_BACKEND_URL: http://chat-service:8100
+      CHAT_FOLLOW_UP_SECRET: ${CHAT_FOLLOW_UP_SECRET:?Set CHAT_FOLLOW_UP_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3002,http://127.0.0.1:3002}
+      SESSION_COOKIE_NAME: ${SESSION_COOKIE_NAME:-capstone_sprint6_session}
+      UPLOAD_STAGING_DIR: /tmp/capstone_uploads
+      PYTHON_EXECUTABLE: /opt/venv/bin/python
+    volumes:
+      - hf_cache:/cache/huggingface
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/health').then(r=>r.json()).then(b=>process.exit(b.app_mode==='standard'&&b.database_ready&&b.vector_index_ready&&b.ollama_ready?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile.standard
+      args:
+        NEXT_PUBLIC_GATEWAY_URL: ${NEXT_PUBLIC_GATEWAY_URL:-http://localhost:4002}
+    restart: unless-stopped
+    depends_on:
+      gateway:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${DASHBOARD_PORT:-3002}:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  mongodb_data:
+  mongodb_config:
+  mongot_data:
+  ollama_models:
+  hf_cache:
