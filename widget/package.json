@@ -3,6 +3,17 @@
     "version": "0.1.0",
     "type": "module",
     "description": "Embeddable chat widget for a self-hosted, multi-tenant support gateway. Use it as a <script> tag or as a React component.",
+    "license": "MIT",
+    "author": "Juan Cruz",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/CruzJua/capstone.git",
+        "directory": "widget"
+    },
+    "homepage": "https://github.com/CruzJua/capstone/tree/main/widget#readme",
+    "bugs": {
+        "url": "https://github.com/CruzJua/capstone/issues"
+    },
     "keywords": ["chat", "widget", "support", "customer-support", "react", "sse", "self-hosted"],
     "main": "./dist/lib/index.js",
     "module": "./dist/lib/index.js",
@@ -19,6 +30,7 @@
         "dist",
         "types",
         "README.md",
+        "LICENSE",
         "API_CONTRACT.md"
     ],
     "sideEffects": false,
